@@ -3,7 +3,7 @@ SUBDIRS = ranlib
 EXPINCDIRS = $(SUBDIRS)
 include ../Make-default.mk
 
-all: 
+all:
 	@for subdir in ${SUBDIRS}; do ( cd $$subdir ; ${MAKE} $@) || exit 10; done
 	@echo "Done."
 

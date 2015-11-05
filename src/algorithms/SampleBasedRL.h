@@ -124,9 +124,9 @@ class SampleBasedRL : public OnlineAlgorithm<int, int> {
   virtual void setFixedRewards(const Matrix& rewards) {
     model->setFixedRewards(rewards);
 #if 0
-        logmsg("Setting reward matrix\n");
-        rewards.print(stdout);
-		model->ShowModel();
+    logmsg("Setting reward matrix\n");
+    rewards.print(stdout);
+    model->ShowModel();
 #endif
   }
 

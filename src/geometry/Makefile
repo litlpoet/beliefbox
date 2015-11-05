@@ -5,7 +5,7 @@ include ../Make-default.mk
 CC_FILES := $(wildcard *.cc)
 OBJS := $(foreach f,$(CC_FILES),$(OBJS_DIR)/$(patsubst %.cc,%.o,$(f)))
 
-all:	$(LIBSMPL)
+all: $(LIBSMPL)
 
 $(LIBSMPL): $(OBJS)
 	@echo "Archiving..." $(LIBS_DIR)

@@ -12,6 +12,8 @@
 #ifndef CLASSIFIER_H
 #define CLASSIFIER_H
 
+#include "real.h"
+
 /** Generic classifier class.
  */
 template <typename InputSet, typename ClassSet, typename ClassDistribution>

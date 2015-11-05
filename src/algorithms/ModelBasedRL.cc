@@ -30,22 +30,25 @@ ModelBasedRL::ModelBasedRL(int n_states_, int n_actions_, real gamma_,
   value_iteration = new ValueIteration(mdp, gamma);
   tmpQ.resize(n_actions);
 }
+
 ModelBasedRL::~ModelBasedRL() {
 #if 0
-    mdp = model->getMeanMDP();
-    value_iteration->setMDP(mdp);
-    value_iteration->ComputeStateValuesStandard(1e-6);
-    for (int s=0; s<n_states; ++s) {
-        printf ("%f ", value_iteration->getValue(s));
-    }
-    printf ("# V expected\n");
+  mdp = model->getMeanMDP();
+  value_iteration->setMDP(mdp);
+  value_iteration->ComputeStateValuesStandard(1e-6);
+  for (int s = 0; s < n_states; ++s) {
+    printf("%f ", value_iteration->getValue(s));
+  }
+  printf("# V expected\n");
 #endif
   delete value_iteration;
 }
+
 void ModelBasedRL::Reset() {
   state = -1;
   // model->Reset();
 }
+
 /// Full observation
 real ModelBasedRL::Observe(int state, int action, real reward, int next_state,
                            int next_action) {
@@ -54,6 +57,7 @@ real ModelBasedRL::Observe(int state, int action, real reward, int next_state,
   }
   return 0.0;
 }
+
 /// Partial observation
 real ModelBasedRL::Observe(real reward, int next_state, int next_action) {
   if (state >= 0) {
@@ -64,6 +68,7 @@ real ModelBasedRL::Observe(real reward, int next_state, int next_action) {
   total_steps++;
   return 0.0;
 }
+
 /// Get an action using the current exploration policy.
 /// it calls Observe as a side-effect.
 int ModelBasedRL::Act(real reward, int next_state) {

@@ -62,30 +62,31 @@ SampleBasedRL::SampleBasedRL(int n_states_, int n_actions_, real gamma_,
   printf("# Testing MultiMPDValueIteration\n");
   multi_value_iteration->ComputeStateActionValues(0, 1);
 }
+
 SampleBasedRL::~SampleBasedRL() {
 #if 0
-    for (int i=0; i<max_samples; ++i) {
-        delete mdp_list[i];
-        mdp_list[i] = model->generate();
-        logmsg("Generating MDP model %d\n", i);
-        for (int s=0; s<n_states; ++s) {
-            for (int a=0; a<n_actions; ++a) {
-                printf ("%f ", mdp_list[i]->getExpectedReward(s, a));
-            }
-            printf("# state %d\n", s);
-        }
+  for (int i = 0; i < max_samples; ++i) {
+    delete mdp_list[i];
+    mdp_list[i] = model->generate();
+    logmsg("Generating MDP model %d\n", i);
+    for (int s = 0; s < n_states; ++s) {
+      for (int a = 0; a < n_actions; ++a) {
+        printf("%f ", mdp_list[i]->getExpectedReward(s, a));
+      }
+      printf("# state %d\n", s);
     }
+  }
 
-    CalculateUpperBound(1e-6, 1e4);
-    for (int s=0; s<n_states; ++s) {
-        printf ("%f ", UpperBound(s));
-    }
-    printf(" # SampleBasedRL upper bound\n");
-    CalculateLowerBound(1e-6, 1e4);
-    for (int s=0; s<n_states; ++s) {
-        printf ("%f ", LowerBound(s));
-    }
-    printf(" # SampleBasedRL lower bound\n");
+  CalculateUpperBound(1e-6, 1e4);
+  for (int s = 0; s < n_states; ++s) {
+    printf("%f ", UpperBound(s));
+  }
+  printf(" # SampleBasedRL upper bound\n");
+  CalculateLowerBound(1e-6, 1e4);
+  for (int s = 0; s < n_states; ++s) {
+    printf("%f ", LowerBound(s));
+  }
+  printf(" # SampleBasedRL lower bound\n");
 #endif
   for (int i = 0; i < max_samples; ++i) {
     delete mdp_list[i];
@@ -99,6 +100,7 @@ void SampleBasedRL::Reset() {
   Resample();
   // model->Reset();
 }
+
 /// Full observation
 real SampleBasedRL::Observe(int state, int action, real reward, int next_state,
                             int next_action) {
@@ -109,6 +111,7 @@ real SampleBasedRL::Observe(int state, int action, real reward, int next_state,
   current_action = next_action;
   return 0.0;
 }
+
 /// Partial observation
 real SampleBasedRL::Observe(real reward, int next_state, int next_action) {
   if (current_state >= 0) {
@@ -124,13 +127,13 @@ void SampleBasedRL::Resample() {
     delete mdp_list[i];
     mdp_list[i] = model->generate();
 #if 0
-        logmsg("Generating MDP model %d\n", i);
-        for (int s=0; s<n_states; ++s) {
-            for (int a=0; a<n_actions; ++a) {
-                printf ("%f ", mdp_list[i]->getExpectedReward(s, a));
-            }
-            printf("# state %d\n", s);
-        }
+    logmsg("Generating MDP model %d\n", i);
+    for (int s = 0; s < n_states; ++s) {
+      for (int a = 0; a < n_actions; ++a) {
+        printf("%f ", mdp_list[i]->getExpectedReward(s, a));
+      }
+      printf("# state %d\n", s);
+    }
 #endif
   }
 }

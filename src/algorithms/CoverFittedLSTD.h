@@ -17,6 +17,7 @@
 #include "BasisSet.h"
 #include "BayesianMultivariateRegression.h"
 #include "ContinuousPolicy.h"
+#include "CoverTree.h"
 #include "Environment.h"
 #include "Matrix.h"
 #include "MersenneTwister.h"
