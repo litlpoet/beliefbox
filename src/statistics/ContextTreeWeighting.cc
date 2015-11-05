@@ -12,155 +12,147 @@
 
 #include "ContextTreeWeighting.h"
 #include "DenseMarkovChain.h"
-#include "SparseMarkovChain.h"
-#include "Random.h"
-#include "Matrix.h"
 #include "Distribution.h"
+#include "Matrix.h"
+#include "Random.h"
+#include "SparseMarkovChain.h"
 
-ContextTreeWeighting::ContextTreeWeighting(int n_states, int n_models, real prior, bool dense)
+ContextTreeWeighting::ContextTreeWeighting(int n_states, int n_models,
+                                           real prior, bool dense)
     : BayesianMarkovChain(n_states, n_models, prior, dense),
-       P_obs(n_models, n_states), 
+      P_obs(n_models, n_states),
       Lkoi(n_models, n_states),
-      weight(n_models)
-{
-    n_observations = 0;
-    for (int i=0; i<n_models; ++i) {
+      weight(n_models) {
+  n_observations = 0;
+  for (int i = 0; i < n_models; ++i) {
 #if 1
-		// for alice, this works well when p = 0.1		
-        Pr[i] = pow(prior, (real) (i+1));
-        log_prior[i] = ((real) (i+1)) * log(prior);
+    // for alice, this works well when p = 0.1
+    Pr[i] = pow(prior, (real)(i + 1));
+    log_prior[i] = ((real)(i + 1)) * log(prior);
 #else
-        Pr[i] = prior;
-        log_prior[i] = log(Pr[i]);
+    Pr[i] = prior;
+    log_prior[i] = log(Pr[i]);
 #endif
-    }
+  }
 }
 
-ContextTreeWeighting::~ContextTreeWeighting()
-{
-    //printf("Killing BPSR\n");
+ContextTreeWeighting::~ContextTreeWeighting() {
+  // printf("Killing BPSR\n");
 }
 
-void ContextTreeWeighting::Reset()
-{
-    for (int i=0; i<n_models; ++i) {
-        mc[i]->Reset();
-    }
+void ContextTreeWeighting::Reset() {
+  for (int i = 0; i < n_models; ++i) {
+    mc[i]->Reset();
+  }
 }
-
 
 /// Adapt the model given the next state
-void ContextTreeWeighting::ObserveNextState(int state)
-{
-    int top_model = std::min(n_models - 1, n_observations);
+void ContextTreeWeighting::ObserveNextState(int state) {
+  int top_model = std::min(n_models - 1, n_observations);
 
-        // calculate predictions for each model
-    for (int model=0; model<=top_model; ++model) {
-        std::vector<real> p(n_states);
+  // calculate predictions for each model
+  for (int model = 0; model <= top_model; ++model) {
+    std::vector<real> p(n_states);
 
-        for (int j=0; j<n_states; j++) {
-            P_obs(model, j) =  mc[model]->NextStateProbability(j);
-        }
-            //printf("p(%d): ", i);
-        if (model == 0) {
-            weight[model] = 1;
-            for (int j=0; j<n_states; j++) {
-                Lkoi(model,j) = P_obs(model,j);
-            }
-        } else {
-            weight[model] = exp(log_prior[model]);
-            for (int j=0; j<n_states; j++) {
-                Lkoi(model,j) = weight[model] * P_obs(model, j) + (1.0 - weight[model])*Lkoi(model-1, j); 
-            }
-        }
+    for (int j = 0; j < n_states; j++) {
+      P_obs(model, j) = mc[model]->NextStateProbability(j);
     }
-    
-    real p_w = 1.0;
-    for (int model=top_model; model>=0; model--) {
-        Pr[model] = p_w * weight[model];
-        p_w *= (1.0 - weight[model]);
-
+    // printf("p(%d): ", i);
+    if (model == 0) {
+      weight[model] = 1;
+      for (int j = 0; j < n_states; j++) {
+        Lkoi(model, j) = P_obs(model, j);
+      }
+    } else {
+      weight[model] = exp(log_prior[model]);
+      for (int j = 0; j < n_states; j++) {
+        Lkoi(model, j) = weight[model] * P_obs(model, j) +
+                         (1.0 - weight[model]) * Lkoi(model - 1, j);
+      }
     }
+  }
 
-    real sum_pr_s = 0.0;
-    for (int s=0; s<n_states; ++s) {
-        real Pr_s = 0;
-        for (int model=0; model<=top_model; ++model) {
-            Pr_s += Pr[model]*P_obs(model, s);
-        }
-        Pr_next[s] = Pr_s;
-        sum_pr_s += Pr_s;
+  real p_w = 1.0;
+  for (int model = top_model; model >= 0; model--) {
+    Pr[model] = p_w * weight[model];
+    p_w *= (1.0 - weight[model]);
+  }
+
+  real sum_pr_s = 0.0;
+  for (int s = 0; s < n_states; ++s) {
+    real Pr_s = 0;
+    for (int model = 0; model <= top_model; ++model) {
+      Pr_s += Pr[model] * P_obs(model, s);
     }
+    Pr_next[s] = Pr_s;
+    sum_pr_s += Pr_s;
+  }
 
   // insert new observations
-    n_observations++;
+  n_observations++;
 
-    /// NOTE: Why not have this up to all models???
-    for (int model=0; model<n_models; ++model) {
-        //for (int model=0; model<=top_model; ++model) {
-        mc[model]->ObserveNextState(state);
-    }
-    
+  /// NOTE: Why not have this up to all models???
+  for (int model = 0; model < n_models; ++model) {
+    // for (int model=0; model<=top_model; ++model) {
+    mc[model]->ObserveNextState(state);
+  }
 }
 
 /// Get the probability of the next state
-real ContextTreeWeighting::NextStateProbability(int state)
-{
-    Pr_next /= Pr_next.Sum();
-    return Pr_next[state];
+real ContextTreeWeighting::NextStateProbability(int state) {
+  Pr_next /= Pr_next.Sum();
+  return Pr_next[state];
 }
-
 
 /// Predict the next state
 ///
 /// We are flattening the hierarchical distribution to a simple
-/// multinomial.  
+/// multinomial.
 ///
-int ContextTreeWeighting::predict()
-{
-    int top_model = std::min(n_models - 1, n_observations);
+int ContextTreeWeighting::predict() {
+  int top_model = std::min(n_models - 1, n_observations);
 
-        // calculate predictions for each model
-    for (int model=0; model<=top_model; ++model) {
-        std::vector<real> p(n_states);
+  // calculate predictions for each model
+  for (int model = 0; model <= top_model; ++model) {
+    std::vector<real> p(n_states);
 
-        for (int state=0; state<n_states; state++) {
-            P_obs(model, state) =  mc[model]->NextStateProbability(state);
-        }
-            //printf("p(%d): ", i);
-        if (model == 0) {
-            weight[model] = 1;
-            for (int state=0; state<n_states; state++) {
-                Lkoi(model, state) = P_obs(model, state);
-            }
-        } else {
-            weight[model] = exp(log_prior[model]);// + get_belief_param(model));
-            for (int state=0; state<n_states; state++) {
-                Lkoi(model,state) = weight[model] * P_obs(model, state)
-                    + (1.0 - weight[model]) * Lkoi(model - 1, state);
-            }
-        }
+    for (int state = 0; state < n_states; state++) {
+      P_obs(model, state) = mc[model]->NextStateProbability(state);
     }
-
-    real p_w = 1.0;
-    for (int model=top_model; model>=0; model--) {
-        Pr[model] = p_w * weight[model];
-        p_w *= (1.0 - weight[model]);
+    // printf("p(%d): ", i);
+    if (model == 0) {
+      weight[model] = 1;
+      for (int state = 0; state < n_states; state++) {
+        Lkoi(model, state) = P_obs(model, state);
+      }
+    } else {
+      weight[model] = exp(log_prior[model]);  // + get_belief_param(model));
+      for (int state = 0; state < n_states; state++) {
+        Lkoi(model, state) = weight[model] * P_obs(model, state) +
+                             (1.0 - weight[model]) * Lkoi(model - 1, state);
+      }
     }
+  }
+
+  real p_w = 1.0;
+  for (int model = top_model; model >= 0; model--) {
+    Pr[model] = p_w * weight[model];
+    p_w *= (1.0 - weight[model]);
+  }
 #if 0
     for (int i=0; i<=top_model; i++) {
         printf ("%f ", Pr[i]);
     }
     printf("#BPSR \n");
 #endif
-    
-    Pr /= Pr.Sum(0, top_model);
-    for (int state=0; state<n_states; ++state) {
-        Pr_next[state] = 0.0;
-        for (int model=0; model<=top_model; model++) {
-            Pr_next[state] += Pr[model]*P_obs(model, state);
-        }
+
+  Pr /= Pr.Sum(0, top_model);
+  for (int state = 0; state < n_states; ++state) {
+    Pr_next[state] = 0.0;
+    for (int model = 0; model <= top_model; model++) {
+      Pr_next[state] += Pr[model] * P_obs(model, state);
     }
+  }
 
 #if 0
     for (int model=0; model<=top_model; model++) {
@@ -176,8 +168,7 @@ int ContextTreeWeighting::predict()
         //exit(-1);
     }
 #endif
- 
-    
+
 #if 0
     printf ("# CTW ");
     for (int i=0; i<n_states; ++i) {
@@ -185,8 +176,8 @@ int ContextTreeWeighting::predict()
     }
     printf("\n");
 #endif
-    return ArgMax(&Pr_next);
-    //return DiscreteDistribution::generate(Pr_next);
+  return ArgMax(&Pr_next);
+  // return DiscreteDistribution::generate(Pr_next);
 }
 
 /// Generate the next state.
@@ -196,12 +187,10 @@ int ContextTreeWeighting::predict()
 /// samples (!) does it ?
 ///
 /// Side-effects: Changes the current state.
-int ContextTreeWeighting::generate()
-{
-    int i = predict();
-    for (int j=0; j<n_models; ++j) {
-        mc[j]->PushState(i);
-    }
-    return i;
+int ContextTreeWeighting::generate() {
+  int i = predict();
+  for (int j = 0; j < n_models; ++j) {
+    mc[j]->PushState(i);
+  }
+  return i;
 }
-

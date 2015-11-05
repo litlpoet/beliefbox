@@ -12,8 +12,8 @@
 #ifndef BAYESIAN_MARKOVCHAIN_H
 #define BAYESIAN_MARKOVCHAIN_H
 
-#include "MarkovChain.h"
 #include <vector>
+#include "MarkovChain.h"
 #include "Vector.h"
 
 /**
@@ -22,34 +22,33 @@
 /*@{*/
 
 /// A Markov Chain
-class BayesianMarkovChain
-{
-public:
-    int n_states; ///< number of distinct states
-    int n_models; ///< number of models
-    std::vector<MarkovChain*> mc; ///< Markov chain
-    std::vector<real> log_prior;
-    Vector Pr; ///< model probabilities
-    Vector Pr_next; ///< state probabilities
-    int n_observations;
+class BayesianMarkovChain {
+ public:
+  int n_states;                  ///< number of distinct states
+  int n_models;                  ///< number of models
+  std::vector<MarkovChain*> mc;  ///< Markov chain
+  std::vector<real> log_prior;
+  Vector Pr;       ///< model probabilities
+  Vector Pr_next;  ///< state probabilities
+  int n_observations;
 
-    BayesianMarkovChain (int n_states, int n_models, real prior, bool dense = false);
-    virtual ~BayesianMarkovChain();
+  BayesianMarkovChain(int n_states, int n_models, real prior,
+                      bool dense = false);
+  virtual ~BayesianMarkovChain();
 
+  /* Training and generation */
+  virtual void ObserveNextState(int state);
+  virtual real NextStateProbability(int state);
+  virtual void Reset();
+  virtual int generate();
+  virtual int predict();
 
-    /* Training and generation */
-    virtual void ObserveNextState (int state);
-    virtual real NextStateProbability (int state);
-    virtual void Reset();
-    virtual int generate();
-    virtual int predict();
-    
-    /* Helper functions */  
-    int CalculateStateID ();
-    int  PushState (int state);
-    
-    /* Debug functions */
-    void ShowTransitions ();
+  /* Helper functions */
+  int CalculateStateID();
+  int PushState(int state);
+
+  /* Debug functions */
+  void ShowTransitions();
 };
 /*@}*/
 #endif

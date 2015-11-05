@@ -9,22 +9,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <cmath>
-#include <cstdlib>
-#include <cstdio>
 #include <cassert>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 #include <stdexcept>
-#include "debug.h"
 #include "MarkovChain.h"
 #include "Random.h"
 #include "Ring.h"
-
+#include "debug.h"
 
 /** \file MarkovChain.cc
 
-	\brief Implementation of Markov chains.
+        \brief Implementation of Markov chains.
 
-	Interesting.
+        Interesting.
 */
 
 /**
@@ -44,37 +43,41 @@
 
    \return A pointer to the newly created chain, NULL if failed.
 */
-MarkovChain::MarkovChain (int n_states, int mem_size)
-{
-    //Vector::BoundsCheckingStatus bounds_checking = Vector::NO_CHECK_BOUNDS;
-    
-    if (mem_size) {
-        memory.resize(mem_size);
-    }
+MarkovChain::MarkovChain(int n_states, int mem_size) {
+  // Vector::BoundsCheckingStatus bounds_checking = Vector::NO_CHECK_BOUNDS;
 
-	real max_bits = sizeof(MCState)*8;
-	real used_bits = log((real) n_states) * ((real) (mem_size)) / log(2.0);
-	
-	if (max_bits < used_bits) {
-		fprintf(stderr, "MC state is %f bits long, while %f bits are required for memory of length %d for %d states. Aborting\n", max_bits, used_bits, mem_size, n_states);
-		exit(-1);
-	} else {
-		fprintf(stderr, "MC state is %f bits long, and %f bits are required for memory of length %d for %d states. Proceeding\n", max_bits, used_bits, mem_size, n_states);
-	}
-    mem_pos = 0;
+  if (mem_size) {
+    memory.resize(mem_size);
+  }
 
-	this->n_states = n_states;
-	this->mem_size = mem_size;
-	tot_states = 1;
+  real max_bits = sizeof(MCState) * 8;
+  real used_bits = log((real)n_states) * ((real)(mem_size)) / log(2.0);
 
-	/* Clear up the memory before use! */
-    memory.clear();
+  if (max_bits < used_bits) {
+    fprintf(stderr,
+            "MC state is %f bits long, while %f bits are required for memory "
+            "of length %d for %d states. Aborting\n",
+            max_bits, used_bits, mem_size, n_states);
+    exit(-1);
+  } else {
+    fprintf(stderr,
+            "MC state is %f bits long, and %f bits are required for memory of "
+            "length %d for %d states. Proceeding\n",
+            max_bits, used_bits, mem_size, n_states);
+  }
+  mem_pos = 0;
 
-	for (int i=0; i<mem_size; i++) {
-		tot_states *= n_states;
-	}
-    curr_state = 0;
+  this->n_states = n_states;
+  this->mem_size = mem_size;
+  tot_states = 1;
 
+  /* Clear up the memory before use! */
+  memory.clear();
+
+  for (int i = 0; i < mem_size; i++) {
+    tot_states *= n_states;
+  }
+  curr_state = 0;
 }
 
 //==========================================================
@@ -94,22 +97,21 @@ MarkovChain::MarkovChain (int n_states, int mem_size)
 
    - MarkovChainPushState(), MarkovChainReset()
 */
-MarkovChain::MCState MarkovChain::CalculateStateID () {
-	MCState id = 0;
-	//MCState n = 1;
+MarkovChain::MCState MarkovChain::CalculateStateID() {
+  MCState id = 0;
+// MCState n = 1;
 #ifdef EFFICIENT_MC_STATE_PUSH
-    id = memory.get_id(n_states);
-    //for (int i=0; i < mem_size; i++, n*=n_states) {
-    //id += memory[i]*n; 
-    //}
+  id = memory.get_id(n_states);
+// for (int i=0; i < mem_size; i++, n*=n_states) {
+// id += memory[i]*n;
+//}
 #else
-	for (MCState i=1; i<=mem_size; i++, n*=n_states) {
-		id += memory[i-1]*n; 
-	}
+  for (MCState i = 1; i <= mem_size; i++, n *= n_states) {
+    id += memory[i - 1] * n;
+  }
 #endif
-	return id;
+  return id;
 }
-
 
 //==========================================================
 // MarkovChainPushState()
@@ -126,40 +128,35 @@ MarkovChain::MCState MarkovChain::CalculateStateID () {
 
    \return It returns the ID of the popped state.
 */
-int  MarkovChain::PushState (int state) {
-	//int i;
-	int popped_state;
+int MarkovChain::PushState(int state) {
+  // int i;
+  int popped_state;
 
-    if (mem_size==0) { 
-        return 0;
-    }
+  if (mem_size == 0) {
+    return 0;
+  }
 #ifdef EFFICIENT_MC_STATE_PUSH
-	popped_state = memory.front();
-    memory.push_back(state);
+  popped_state = memory.front();
+  memory.push_back(state);
 #else
-	popped_state = memory[mem_size - 1];
-	for (i = mem_size - 1; i>0; i--) {
-		memory[i] = memory[i-1];
-	}
-	memory[0] = state;
-#endif    
-    //logmsg("Pushing %d, popping %d\n", state, popped_state);
-	return popped_state;
+  popped_state = memory[mem_size - 1];
+  for (i = mem_size - 1; i > 0; i--) {
+    memory[i] = memory[i - 1];
+  }
+  memory[0] = state;
+#endif
+  // logmsg("Pushing %d, popping %d\n", state, popped_state);
+  return popped_state;
 }
 
 /**
    \brief Frees everything related to the markov chain.
 */
-MarkovChain::~MarkovChain ()
-{
-}
+MarkovChain::~MarkovChain() {}
 
-
-
-void MarkovChain::ShowMemory()
-{
-    for (int i=0; i<mem_size; ++i) {
-        printf ("%d ", memory[i]);
-    }
-    printf("\n");
+void MarkovChain::ShowMemory() {
+  for (int i = 0; i < mem_size; ++i) {
+    printf("%d ", memory[i]);
+  }
+  printf("\n");
 }

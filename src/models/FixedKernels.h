@@ -9,41 +9,37 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <vector>
 #include "Model.h"
 #include "Vector.h"
-#include <vector>
 
-class TriangularKernel : public Model<real, real>
-{
-protected:
-	real m, w;
-public:
+class TriangularKernel : public Model<real, real> {
+ protected:
+  real m, w;
 
-	TriangularKernel(real m_, real w_);
-	virtual ~TriangularKernel() {};
-	virtual real Get(real x);
+ public:
+  TriangularKernel(real m_, real w_);
+  virtual ~TriangularKernel(){};
+  virtual real Get(real x);
 };
 
-class ConeKernel : public Model<Vector, Vector>
-{
-protected:
-	Vector m;
-	real w;
-public:
+class ConeKernel : public Model<Vector, Vector> {
+ protected:
+  Vector m;
+  real w;
 
-	ConeKernel(Vector m_, real w_);
-	virtual ~ConeKernel() {};
-	virtual real Get(real x);
+ public:
+  ConeKernel(Vector m_, real w_);
+  virtual ~ConeKernel(){};
+  virtual real Get(real x);
 };
 
+class TriangularKernelSet : public Model<real, real> {
+ protected:
+  std::vector<TriangularKernel> k;
+  int n;
 
-class TriangularKernelSet : public Model<real, real>
-{
-protected:
-	std::vector<TriangularKernel> k;
-	int n;
-public:
-	TriangularKernelSet(int n, real width, real lo, real hi);
-	virtual ~TriangularKernelSet();
+ public:
+  TriangularKernelSet(int n, real width, real lo, real hi);
+  virtual ~TriangularKernelSet();
 };
-

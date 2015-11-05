@@ -1,4 +1,4 @@
-#	$Id: Makefile,v 1.3 2006/11/06 23:42:32 olethros Exp olethros $	
+# $Id: Makefile,v 1.3 2006/11/06 23:42:32 olethros Exp olethros $ 
 # My packages
 
 PACKAGES = core algorithms geometry models statistics environments #florian
@@ -25,8 +25,8 @@ MYINCS = -I$(INCS_EXPORT)
 DBG_OPT=OPT
 
 # Add -pg flag for profiling
-CFLAGS_DBG = -fPIC -g -Wall -DUSE_DOUBLE -Wno-overloaded-virtual
-CFLAGS_OPT = -fPIC -g -O3 -Wall -DUSE_DOUBLE -DNDEBUG -Wno-overloaded-virtual
+CFLAGS_DBG = -fPIC -g -Wall -DUSE_DOUBLE -Wno-overloaded-virtual -std=c++11
+CFLAGS_OPT = -fPIC -g -O3 -Wall -DUSE_DOUBLE -DNDEBUG -Wno-overloaded-virtual -std=c++11
 #CFLAGS_DBG = -fPIC -g -Wall -pipe -pg
 #CFLAGS_OPT = -fPIC -g -O3 -Wall -DNDEBUG -pipe -pg
 CFLAGS=$(CFLAGS_$(DBG_OPT))

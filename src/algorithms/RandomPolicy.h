@@ -15,61 +15,35 @@
 #include "AbstractPolicy.h"
 #include "RandomNumberGenerator.h"
 
-class RandomPolicy  : public AbstractPolicy<Vector, int>
-{
-protected:
-	int n_actions;
-	RandomNumberGenerator* rng;
-public:
-	RandomPolicy(int n_actions_, RandomNumberGenerator* rng_)
-		: n_actions(n_actions_),
-		  rng(rng_)
-	{
-	}
-	virtual ~RandomPolicy()
-	{
-	}
-	virtual int SelectAction()
-	{
-		return rng->discrete_uniform(n_actions);
-	}
-	virtual void Observe (const Vector& previous_state, const int& action, real r, const Vector& next_state) 
-	{
-	}
-    virtual void Observe (real r, const Vector& next_state) 
-	{
-	}
-	virtual void Reset() 
-	{
-	}
+class RandomPolicy : public AbstractPolicy<Vector, int> {
+ protected:
+  int n_actions;
+  RandomNumberGenerator* rng;
+
+ public:
+  RandomPolicy(int n_actions_, RandomNumberGenerator* rng_)
+      : n_actions(n_actions_), rng(rng_) {}
+  virtual ~RandomPolicy() {}
+  virtual int SelectAction() { return rng->discrete_uniform(n_actions); }
+  virtual void Observe(const Vector& previous_state, const int& action, real r,
+                       const Vector& next_state) {}
+  virtual void Observe(real r, const Vector& next_state) {}
+  virtual void Reset() {}
 };
 
-class DiscreteRandomPolicy  : public AbstractPolicy<int, int>
-{
-protected:
-	int n_actions;
-	RandomNumberGenerator* rng;
-public:
+class DiscreteRandomPolicy : public AbstractPolicy<int, int> {
+ protected:
+  int n_actions;
+  RandomNumberGenerator* rng;
+
+ public:
   DiscreteRandomPolicy(int n_actions_, RandomNumberGenerator* rng_)
-		: n_actions(n_actions_),
-		  rng(rng_)
-	{
-	}
-	virtual ~DiscreteRandomPolicy()
-	{
-	}
-	virtual int SelectAction()
-	{
-		return rng->discrete_uniform(n_actions);
-	}
-	virtual void Observe (const int& previous_state, const int& action, real r, const int& next_state) 
-	{
-	}
-    virtual void Observe (real r, const int& next_state) 
-	{
-	}
-	virtual void Reset() 
-	{
-	}
+      : n_actions(n_actions_), rng(rng_) {}
+  virtual ~DiscreteRandomPolicy() {}
+  virtual int SelectAction() { return rng->discrete_uniform(n_actions); }
+  virtual void Observe(const int& previous_state, const int& action, real r,
+                       const int& next_state) {}
+  virtual void Observe(real r, const int& next_state) {}
+  virtual void Reset() {}
 };
 #endif

@@ -12,30 +12,20 @@
 
 #include "VectorSet.h"
 
-VectorSet::VectorSet(int n)
-{
-    this->n = n;
+VectorSet::VectorSet(int n) { this->n = n; }
+
+VectorSet::~VectorSet() {}
+
+void VectorSet::Add(Vector x) {
+  assert(x.n == n);
+  points.push_back(x);
 }
 
-VectorSet::~VectorSet()
-{
+bool ConvexHull::Add(Vector x) {
+  if (IsInConvexHull(x)) {
+    return true;
+  }
+  return false;
 }
 
-void VectorSet::Add(Vector x)
-{
-    assert (x.n == n);
-    points.push_back(x);
-}
-
-bool ConvexHull::Add(Vector x)
-{
-    if (IsInConvexHull(x)) {
-        return true;
-    }   
-    return false;
-}
-
-bool ConvexHull::IsInConvexHull(Vector x)
-{
-    return false;
-}
+bool ConvexHull::IsInConvexHull(Vector x) { return false; }

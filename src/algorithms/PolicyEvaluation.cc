@@ -1,6 +1,7 @@
 // -*- Mode: c++ -*-
 // copyright (c) 2006 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
-// $Id: PolicyEstimation.c,v 1.5 2006/11/08 17:20:17 cdimitrakakis Exp cdimitrakakis $
+// $Id: PolicyEstimation.c,v 1.5 2006/11/08 17:20:17 cdimitrakakis Exp
+// cdimitrakakis $
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -11,74 +12,67 @@
  ***************************************************************************/
 
 #include "PolicyEvaluation.h"
-#include "real.h"
+#include <cassert>
+#include <cmath>
 #include "MathFunctions.h"
 #include "Vector.h"
-#include <cmath>
-#include <cassert>
+#include "real.h"
 
 PolicyEvaluation::PolicyEvaluation(FixedDiscretePolicy* policy_,
-                                   const DiscreteMDP* mdp_, 
-                                   real gamma_,
-                                   real baseline_) 
-    : policy(policy_), mdp(mdp_), gamma(gamma_), baseline(baseline_)
-{
-    assert (mdp);
-    assert (gamma>=0 && gamma <=1);
+                                   const DiscreteMDP* mdp_, real gamma_,
+                                   real baseline_)
+    : policy(policy_), mdp(mdp_), gamma(gamma_), baseline(baseline_) {
+  assert(mdp);
+  assert(gamma >= 0 && gamma <= 1);
 
-    n_actions = mdp->getNActions();
-    n_states = mdp->getNStates();
-    Reset();
+  n_actions = mdp->getNActions();
+  n_states = mdp->getNStates();
+  Reset();
 }
 
-void PolicyEvaluation::Reset()
-{
-    if (policy) {
-        policy->Reset();
-    }
-    V.Resize(n_states);
-    for (int s=0; s<n_states; s++) {
-        V[s] = 0.0;
-	
-    }
+void PolicyEvaluation::Reset() {
+  if (policy) {
+    policy->Reset();
+  }
+  V.Resize(n_states);
+  for (int s = 0; s < n_states; s++) {
+    V[s] = 0.0;
+  }
 }
 
-PolicyEvaluation::~PolicyEvaluation()
-{
-}
+PolicyEvaluation::~PolicyEvaluation() {}
 
 /** ComputeStateValues
-   
+
     threshold - exit when difference in Q is smaller than the threshold
     max_iter - exit when the number of iterations reaches max_iter
 
 */
-void PolicyEvaluation::ComputeStateValues(real threshold, int max_iter)
-{
-    assert(policy);
-    int n_iter = 0;
-    do {
-        Delta = 0.0;
-        for (int s=0; s<n_states; s++) {
-            real pV =0.0;
-            //printf ("S: %d ", s);
-            for (int a=0; a<n_actions; a++) {
-                real p_sa = policy->getActionProbability(s, a);
-                real V_sa = getValue(s, a);
-                //printf ("+ %f*%f \n", p_sa, V_sa);
-                pV += p_sa * V_sa;
-            }
-            //printf (" =  %f\n", pV[s]);
-            Delta += fabs(V[s] - pV);
-            V[s] = pV;
-        }
-        
-        if (max_iter > 0) {
-            max_iter--;
-        }
-        n_iter++;
-    } while((Delta >= threshold)  && max_iter != 0);
-    printf ("Exiting at delta = %f, after %d iter\n", Delta, n_iter);
+void PolicyEvaluation::ComputeStateValues(real threshold, int max_iter) {
+  assert(policy);
+  int n_iter = 0;
+  do {
+    Delta = 0.0;
+    for (int s = 0; s < n_states; s++) {
+      real pV = 0.0;
+      // printf ("S: %d ", s);
+      for (int a = 0; a < n_actions; a++) {
+        real p_sa = policy->getActionProbability(s, a);
+        real V_sa = getValue(s, a);
+        // printf ("+ %f*%f \n", p_sa, V_sa);
+        pV += p_sa * V_sa;
+      }
+      // printf (" =  %f\n", pV[s]);
+      Delta += fabs(V[s] - pV);
+      V[s] = pV;
+    }
+
+    if (max_iter > 0) {
+      max_iter--;
+    }
+    n_iter++;
+  } while ((Delta >= threshold) && max_iter != 0);
+  printf("Exiting at delta = %f, after %d iter\n", Delta, n_iter);
 }
 
 /** Evaluate the policy using a discounted state occupancy matrix.
@@ -88,55 +82,44 @@ void PolicyEvaluation::ComputeStateValues(real threshold, int max_iter)
     \phi_{i,j} = \sum_t \gamma^t \Pr(s_t = j \mid s_0 = i),
     \f]
     where the probabilities depend on the MDP and the policy.
-    Then, if \f$\rho\f$ is the expected reward vector for each state, given the MDP and the policy, the expected utility vector is:
+    Then, if \f$\rho\f$ is the expected reward vector for each state, given the
+   MDP and the policy, the expected utility vector is:
     \f[
     V = \Phi \rho
     \f]
  */
-void PolicyEvaluation::ComputeStateValuesFeatureExpectation(real threshold, int max_iter)
-{
-    //const DiscreteMDP& mdp_ref = *mdp;
-    FeatureMatrix = DiscountedStateOccupancy(*mdp, *policy, gamma, threshold);
-    RecomputeStateValuesFeatureExpectation();
+void PolicyEvaluation::ComputeStateValuesFeatureExpectation(real threshold,
+                                                            int max_iter) {
+  // const DiscreteMDP& mdp_ref = *mdp;
+  FeatureMatrix = DiscountedStateOccupancy(*mdp, *policy, gamma, threshold);
+  RecomputeStateValuesFeatureExpectation();
 }
 
 /// Do the calculation without calculating the feature matrix
-void PolicyEvaluation::RecomputeStateValuesFeatureExpectation()
-{
-    Vector rho(n_states);
-    for (int state = 0; state<n_states; ++state) {
-        rho(state) = 0.0;
-        for (int action = 0; action<n_actions; ++action) {
-            rho(state) += mdp->getExpectedReward(state, action) * policy->getActionProbability(state, action);
-        }
+void PolicyEvaluation::RecomputeStateValuesFeatureExpectation() {
+  Vector rho(n_states);
+  for (int state = 0; state < n_states; ++state) {
+    rho(state) = 0.0;
+    for (int action = 0; action < n_actions; ++action) {
+      rho(state) += mdp->getExpectedReward(state, action) *
+                    policy->getActionProbability(state, action);
     }
-    const Matrix& F_ref = FeatureMatrix;
-    const Vector& rho_ref = rho;
-    V = F_ref * rho_ref;
+  }
+  const Matrix& F_ref = FeatureMatrix;
+  const Vector& rho_ref = rho;
+  V = F_ref * rho_ref;
 }
-
-
-
-
 
 /// Get the value of a particular state-action pair
-real PolicyEvaluation::getValue (int state, int action) const
-{
-    real V_next = 0.0;
-    //for (int s2=0; s2<n_states; s2++) {
-    DiscreteStateSet next = mdp->getNextStates(state, action);
-    for (DiscreteStateSet::iterator i=next.begin();
-         i!=next.end();
-         ++i) {
-        int s2 = *i;
-        real P = mdp->getTransitionProbability(state, action, s2);
-        V_next += P * V[s2];
-    }
-	real V_s = mdp->getExpectedReward(state, action) + gamma*V_next - baseline;
-    return V_s;
+real PolicyEvaluation::getValue(int state, int action) const {
+  real V_next = 0.0;
+  // for (int s2=0; s2<n_states; s2++) {
+  DiscreteStateSet next = mdp->getNextStates(state, action);
+  for (DiscreteStateSet::iterator i = next.begin(); i != next.end(); ++i) {
+    int s2 = *i;
+    real P = mdp->getTransitionProbability(state, action, s2);
+    V_next += P * V[s2];
+  }
+  real V_s = mdp->getExpectedReward(state, action) + gamma * V_next - baseline;
+  return V_s;
 }
-
-
-
-
-

@@ -12,10 +12,11 @@
 #ifndef REWARD_POLICY_BELIEF_H
 #define REWARD_POLICY_BELIEF_H
 
-#include "PolicyBelief.h"
 #include "DiscreteMDP.h"
+#include "PolicyBelief.h"
 
-/** A model for inverse reinforcement learning, using a prior on epsilon optimality of policies.
+/** A model for inverse reinforcement learning, using a prior on epsilon
+   optimality of policies.
 
     From the paper
 
@@ -23,58 +24,51 @@
     C. Dimitrakakis, C. Rothkopf, EWRL 2011.
 
  */
-class RewardPolicyBelief
-{
-protected:
-	int n_states; ///< the number of states
-	int n_actions; ///< the number of actions
-	real lambda; ///< Exponential distribution parameter for the sub-optimality of policies
-	real epsilon; ///< accuracy
-    DirichletProductPolicyBelief policy_belief;   ///< prior about policies
-	real gamma; ///< value of gamma (assumed known here)
-	DiscreteMDP mdp; ///< the actual MDP (transitions assumed known here)
-	std::vector<DiscreteSpaceRewardDistribution*> rewards; ///< set of reward functions
-    int n_policies; ///< number of policy samples required
-	std::vector<FixedDiscretePolicy*> policies; ///< storage for sampled policies from the belief
-	Vector P_rewards; ///< posterior probability of each reward function
-    Vector estimated_reward;
-public:
-    RewardPolicyBelief(real lambda_,
-                       real gamma_,
-					   const DiscreteMDP& mdp_,
-					   const std::vector<DiscreteSpaceRewardDistribution*> rewards_);	
+class RewardPolicyBelief {
+ protected:
+  int n_states;   ///< the number of states
+  int n_actions;  ///< the number of actions
+  real lambda;    ///< Exponential distribution parameter for the sub-optimality
+  /// of policies
+  real epsilon;                                ///< accuracy
+  DirichletProductPolicyBelief policy_belief;  ///< prior about policies
+  real gamma;       ///< value of gamma (assumed known here)
+  DiscreteMDP mdp;  ///< the actual MDP (transitions assumed known here)
+  std::vector<DiscreteSpaceRewardDistribution*>
+      rewards;     ///< set of reward functions
+  int n_policies;  ///< number of policy samples required
+  std::vector<FixedDiscretePolicy*>
+      policies;      ///< storage for sampled policies from the belief
+  Vector P_rewards;  ///< posterior probability of each reward function
+  Vector estimated_reward;
 
-    RewardPolicyBelief(real lambda_,
-                       real gamma_,
-					   const DiscreteMDP& mdp_);
+ public:
+  RewardPolicyBelief(
+      real lambda_, real gamma_, const DiscreteMDP& mdp_,
+      const std::vector<DiscreteSpaceRewardDistribution*> rewards_);
 
-    RewardPolicyBelief(real lambda_,
-                       real gamma_,
-                       const DiscreteMDP& mdp_,
-                       const DirichletDistribution& reward_prior,
-                       int n_reward_samples);
+  RewardPolicyBelief(real lambda_, real gamma_, const DiscreteMDP& mdp_);
 
-	virtual ~RewardPolicyBelief();
-	
-	virtual FixedDiscretePolicy* CalculatePosterior(Demonstrations<int, int>& D);
-	
-	/// Set number of samples
-	void setNSamples(int n_policies_)
-	{
-		n_policies = n_policies_;
-	}
+  RewardPolicyBelief(real lambda_, real gamma_, const DiscreteMDP& mdp_,
+                     const DirichletDistribution& reward_prior,
+                     int n_reward_samples);
 
-	/// Set accuracy
-	void setAccuracy(real epsilon_)
-	{
-		epsilon = epsilon_;
-		assert(epsilon > 0);
-        //n_policies = (int) ceil(pow((1 - gamma) * epsilon, -2.0));
-        n_policies = (int) ceil(1.0 / epsilon);
-        printf("# setting accuracy to %f -> n_policies = %d\n", 
-               epsilon,
-               n_policies);
-	}
+  virtual ~RewardPolicyBelief();
+
+  virtual FixedDiscretePolicy* CalculatePosterior(Demonstrations<int, int>& D);
+
+  /// Set number of samples
+  void setNSamples(int n_policies_) { n_policies = n_policies_; }
+
+  /// Set accuracy
+  void setAccuracy(real epsilon_) {
+    epsilon = epsilon_;
+    assert(epsilon > 0);
+    // n_policies = (int) ceil(pow((1 - gamma) * epsilon, -2.0));
+    n_policies = (int)ceil(1.0 / epsilon);
+    printf("# setting accuracy to %f -> n_policies = %d\n", epsilon,
+           n_policies);
+  }
 };
 
 #endif

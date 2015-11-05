@@ -10,100 +10,81 @@
  ***************************************************************************/
 
 #include "Wishart.h"
-#include "ranlib.h"
-#include "SpecialFunctions.h"
 #include "NormalDistribution.h"
+#include "SpecialFunctions.h"
+#include "ranlib.h"
 
 Wishart::Wishart()
-    : Precision(Matrix::Unity(1,1)),
-      Covariance(Matrix::Unity(1,1)),
+    : Precision(Matrix::Unity(1, 1)),
+      Covariance(Matrix::Unity(1, 1)),
       k(1),
-      n(1)
-{
-    
-}
+      n(1) {}
 
 /// We initialise k to the number of rows, otherwise the prior is improper
 Wishart::Wishart(real n_, const Matrix& V, bool is_covariance)
-    : k(V.Rows()),
-      n(n_)
-{
-    if (n < k) {
-        n = k;
+    : k(V.Rows()), n(n_) {
+  if (n < k) {
+    n = k;
+  }
+  assert(V.Rows() == V.Columns());
+  if (is_covariance) {
+    setCovariance(V);
+  } else {
+    setPrecision(V);
+  }
+}
+
+Wishart::~Wishart() {}
+
+void Wishart::generate(Matrix& X) const { Serror("Not implemented\n"); }
+
+/// Smith & Hocking, "Wishart Variate Generator"
+Matrix Wishart::generate() const {
+  NormalDistribution norm;
+  Matrix T = Covariance.Cholesky();
+  Matrix B(k, k);
+
+  for (int i = 0; i < k; ++i) {
+    real r = (real)genchi((real)(n - i));
+    B(i, i) = sqrt(r);
+  }
+
+  for (int i = 0; i < k; ++i) {
+    for (int j = (i + 1); j < k; ++j) {
+      B(i, j) = norm.generate();
     }
-    assert(V.Rows() == V.Columns());
-    if (is_covariance) {
-        setCovariance(V);
-    } else {
-        setPrecision(V);
-    }
-}
+  }
 
-Wishart::~Wishart()
-{
-    
-}
-
-void Wishart::generate(Matrix& X) const
-{
-    Serror("Not implemented\n");
-}
-
-
-///Smith & Hocking, "Wishart Variate Generator"
-Matrix Wishart::generate() const
-{
-	NormalDistribution norm;
-	Matrix T = Covariance.Cholesky();
-	Matrix B(k,k);
-	
-	for(int i = 0; i < k; ++i){
-	    real r = (real)genchi((real)(n - i));
-		B(i,i) = sqrt(r);
-	}
-	
-	for(int i = 0; i < k; ++i){
-		for(int j = (i + 1); j < k; ++j){
-			B(i,j) = norm.generate();
-		}
-	}
-    
-	Matrix X = B*T;
-	return (Transpose(X) * X);
+  Matrix X = B * T;
+  return (Transpose(X) * X);
 }
 
 /** the log pdf */
-real Wishart::log_pdf(const Matrix& X) const
-{
-    assert(X.isSymmetric());
-    static real log_2 = log(2.0);
-    static real log_pi = log(M_PI);
+real Wishart::log_pdf(const Matrix& X) const {
+  assert(X.isSymmetric());
+  static real log_2 = log(2.0);
+  static real log_pi = log(M_PI);
 
-    real rk = (real) k;
+  real rk = (real)k;
 
-    real log_c = - (0.5 * rk * n * log_2
-                    + 0.25 * rk * (rk - 1.0) * log_pi);
+  real log_c = -(0.5 * rk * n * log_2 + 0.25 * rk * (rk - 1.0) * log_pi);
 
-    for (int j=0; j<k; ++j) {
-        log_c -= logGamma(0.5 * (n - j));
+  for (int j = 0; j < k; ++j) {
+    log_c -= logGamma(0.5 * (n - j));
+  }
+
+  real trace_VX = 0.0;
+  for (int i = 0; i < k; ++i) {
+    for (int j = 0; j < k; ++j) {
+      trace_VX += Precision(i, j) * X(j, i);
     }
+  }
 
-    real trace_VX = 0.0;
-    for (int i=0; i<k; ++i) {
-        for (int j=0; j<k; ++j) {
-            trace_VX += Precision(i,j) * X(j,i);
-        }
-    }
+  real det_V = Precision.det();
+  real det_X = X.det();
 
-    real det_V = Precision.det();
-    real det_X = X.det();
+  real log_p = log_c + 0.5 * n * log(det_V) +
+               0.5 * (n - rk - 1.0) * log(det_X) - 0.5 * trace_VX;
 
-    real log_p = log_c 
-        + 0.5 * n * log(det_V)
-        + 0.5 * (n - rk - 1.0) * log(det_X)
-        - 0.5 * trace_VX;
-
-    return log_p;
+  return log_p;
 }
-
-

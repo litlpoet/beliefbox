@@ -11,48 +11,33 @@
 #ifndef POMDP_BELIEF_PREDICTOR_H
 #define POMDP_BELIEF_PREDICTOR_H
 
-#include "POMDPBeliefState.h"
 #include "DiscretePOMDP.h"
 #include "FactoredPredictor.h"
+#include "POMDPBeliefState.h"
 
 /// Abstract class for prediction with actios
-class POMDPBeliefPredictor : public FactoredPredictor
-{
-    
-protected:
-    DiscretePOMDP* pomdp;
-    DiscretePOMDPBeliefState* belief_state;
-public:
-    POMDPBeliefPredictor(DiscretePOMDP* pomdp_)
-        : pomdp(pomdp_)
-    {
-        belief_state = new DiscretePOMDPBeliefState(pomdp);
-    }
-    virtual ~POMDPBeliefPredictor()
-    {
-        delete belief_state;
-    }
-    
-    /* Training and generation */
-    virtual real Observe (int prd)
-    {
-        return 1.0 / (real) pomdp->getNObservations();
-    }
-    virtual real Observe (int act, int prd)
-    {
-        return belief_state->Observe(act, prd, 0);
-    }
-    virtual real ObservationProbability (int act, int x) 
-    {
-        return belief_state->ObservationProbability(act, x, 0);
-    }
-    virtual void Reset()
-    {                                          
-        belief_state->Reset();
-    }
-    
-}; 
+class POMDPBeliefPredictor : public FactoredPredictor {
+ protected:
+  DiscretePOMDP* pomdp;
+  DiscretePOMDPBeliefState* belief_state;
 
+ public:
+  POMDPBeliefPredictor(DiscretePOMDP* pomdp_) : pomdp(pomdp_) {
+    belief_state = new DiscretePOMDPBeliefState(pomdp);
+  }
+  virtual ~POMDPBeliefPredictor() { delete belief_state; }
 
+  /* Training and generation */
+  virtual real Observe(int prd) {
+    return 1.0 / (real)pomdp->getNObservations();
+  }
+  virtual real Observe(int act, int prd) {
+    return belief_state->Observe(act, prd, 0);
+  }
+  virtual real ObservationProbability(int act, int x) {
+    return belief_state->ObservationProbability(act, x, 0);
+  }
+  virtual void Reset() { belief_state->Reset(); }
+};
 
 #endif

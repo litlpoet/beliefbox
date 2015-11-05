@@ -12,40 +12,38 @@
 #ifndef GRID_H
 #define GRID_H
 
-
-#include "Vector.h"
 #include <cassert>
+#include "Vector.h"
 
 /** A simple grid structure.
 
     It subdivides an \f$n\f$-dimensional space in \f$2^n\f$ subspaces.
  */
-struct Grid
-{
-    Vector lower_bound;
-    Vector upper_bound;
-    Vector mid_point;
-    int n_dimensions;
-    Grid(Vector& lower_bound_, Vector& upper_bound_);
-    int getInterval(const Vector& x) const;
+struct Grid {
+  Vector lower_bound;
+  Vector upper_bound;
+  Vector mid_point;
+  int n_dimensions;
+  Grid(Vector& lower_bound_, Vector& upper_bound_);
+  int getInterval(const Vector& x) const;
 };
 
 /** A simple grid structure.
 
-    It subdivides an \f$n\f$-dimensional space in \f$K^n\f$ subspace.    
+    It subdivides an \f$n\f$-dimensional space in \f$K^n\f$ subspace.
  */
-struct EvenGrid
-{
-    Vector lower_bound;
-    Vector upper_bound;
-    Vector delta;
-    int n_dimensions;
-    int n_intervals;
-    int K; ///< Number of subdivisions per dimension.
-    EvenGrid(const Vector& lower_bound_, const Vector& upper_bound_, int K_);
-	EvenGrid(const Vector& lower_bound_, const Vector& upper_bound_, const Vector& delta_, int K_);
-    int getInterval(const Vector& x) const;
-    int getNIntervals() const;
-    Vector getCenter(int interval) const;
+struct EvenGrid {
+  Vector lower_bound;
+  Vector upper_bound;
+  Vector delta;
+  int n_dimensions;
+  int n_intervals;
+  int K;  ///< Number of subdivisions per dimension.
+  EvenGrid(const Vector& lower_bound_, const Vector& upper_bound_, int K_);
+  EvenGrid(const Vector& lower_bound_, const Vector& upper_bound_,
+           const Vector& delta_, int K_);
+  int getInterval(const Vector& x) const;
+  int getNIntervals() const;
+  Vector getCenter(int interval) const;
 };
 #endif

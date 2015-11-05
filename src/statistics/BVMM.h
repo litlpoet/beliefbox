@@ -12,18 +12,16 @@
 #ifndef BVMM_H
 #define BVMM_H
 
-#include "BayesianMarkovChain.h"
-#include <vector>
 #include <map>
-#include "Vector.h"
+#include <vector>
+#include "BayesianMarkovChain.h"
 #include "Matrix.h"
+#include "Vector.h"
 
 /**
    \ingroup StatisticsGroup
  */
 /*@{*/
-
-
 
 /// A Bayesian variable order Markov chain
 ///
@@ -31,55 +29,50 @@
 /// "Bayesian Variable Order Markov Models",
 /// C. Dimitrakakis, AI-STATS 2010.
 ///
-class BVMM : public BayesianMarkovChain
-{
-protected:
-    const bool polya;
-    Matrix P_obs; ///< Probability of observations for model k
-    Matrix Lkoi; ///< Probability of observations for all models up to k
-    std::vector<real> weight; ///< temporary weight of model
-    typedef std::map<int, real, std::greater<int> > BeliefMap;
-    typedef BeliefMap::iterator BeliefMapIterator;
-public:
-    std::vector<BeliefMap> beliefs;
+class BVMM : public BayesianMarkovChain {
+ protected:
+  const bool polya;
+  Matrix P_obs;  ///< Probability of observations for model k
+  Matrix Lkoi;   ///< Probability of observations for all models up to k
+  std::vector<real> weight;  ///< temporary weight of model
+  typedef std::map<int, real, std::greater<int> > BeliefMap;
+  typedef BeliefMap::iterator BeliefMapIterator;
 
-    BVMM (int n_states, int n_models, float prior, bool polya_, bool dense = false);
+ public:
+  std::vector<BeliefMap> beliefs;
 
-    inline real get_belief_param(int model)
-    {
-        int src = mc[model]->getCurrentState();
-        BeliefMapIterator i = beliefs[model].find(src);
-		if (i==beliefs[model].end()) {
-			return 0.0;
-		} else {
-			return i->second;
-		}
+  BVMM(int n_states, int n_models, float prior, bool polya_,
+       bool dense = false);
+
+  inline real get_belief_param(int model) {
+    int src = mc[model]->getCurrentState();
+    BeliefMapIterator i = beliefs[model].find(src);
+    if (i == beliefs[model].end()) {
+      return 0.0;
+    } else {
+      return i->second;
     }
+  }
 
-    inline void set_belief_param(int model, real value)
-    {
-        int src = mc[model]->getCurrentState();
-        BeliefMapIterator i =  beliefs[model].find(src);
-        if (i!=beliefs[model].end()) {
-            i->second = value;
-        } else {
-            beliefs[model].insert(std::make_pair(src, value));
-        }
+  inline void set_belief_param(int model, real value) {
+    int src = mc[model]->getCurrentState();
+    BeliefMapIterator i = beliefs[model].find(src);
+    if (i != beliefs[model].end()) {
+      i->second = value;
+    } else {
+      beliefs[model].insert(std::make_pair(src, value));
     }
+  }
 
-    virtual ~BVMM();
+  virtual ~BVMM();
 
-    
-    /* Training and generation */
-    virtual void ObserveNextState (int state);
-    inline void Observe(int x) {
-        ObserveNextState(x);
-    }
-    virtual real NextStateProbability (int state);
-    virtual void Reset();
-    virtual int generate();
-    virtual int predict();
-    
+  /* Training and generation */
+  virtual void ObserveNextState(int state);
+  inline void Observe(int x) { ObserveNextState(x); }
+  virtual real NextStateProbability(int state);
+  virtual void Reset();
+  virtual int generate();
+  virtual int predict();
 };
 /*@}*/
 #endif

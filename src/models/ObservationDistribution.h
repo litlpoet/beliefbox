@@ -13,13 +13,12 @@
 #define OBSERVATION_DISTRIBUTION_H
 
 template <typename StateType, typename ObservationType>
-class ObservationDistribution
-{
+class ObservationDistribution {
  public:
-    virtual ~ObservationDistribution() {}
-    virtual ObservationType generate(StateType state) = 0;
-    virtual ObservationType expected(StateType state) = 0;
-    virtual real pdf(StateType state, ObservationType observation) = 0;
+  virtual ~ObservationDistribution() {}
+  virtual ObservationType generate(StateType state) = 0;
+  virtual ObservationType expected(StateType state) = 0;
+  virtual real pdf(StateType state, ObservationType observation) = 0;
 };
 
 #endif

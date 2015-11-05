@@ -13,8 +13,7 @@
 #ifndef POINT_SET_H
 #define POINT_SET_H
 
-class PointSet
-{
+class PointSet {
  public:
   virtual ~PointSet();
 };

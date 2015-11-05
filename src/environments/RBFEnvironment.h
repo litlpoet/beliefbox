@@ -12,48 +12,33 @@
 #ifndef RBF_ENVIRONMENT_H
 #define ENVIRONMENT_H
 
-#include "Environment.h"
 #include "BasisSet.h"
+#include "Environment.h"
 
 /// Discretise an environment via a set of RBFs.
-class RBF_Environment : public DiscreteEnvironment
-{
-protected:
-    RBF_Environment<Vector, int>& environment;
-public:
-    RBF_Environment(Environment<Vector, int>& environment_) 
-        : environment(environment_)
-    {
-    }
-    virtual ~RBF_Environment() 
-    {
-    }
+class RBF_Environment : public DiscreteEnvironment {
+ protected:
+  RBF_Environment<Vector, int>& environment;
 
-    /// put the environment in its natural state
-    virtual void Reset() = 0;
+ public:
+  RBF_Environment(Environment<Vector, int>& environment_)
+      : environment(environment_) {}
+  virtual ~RBF_Environment() {}
 
-    /// returns true if the action succeeds
-    virtual bool Act(A action) = 0;
+  /// put the environment in its natural state
+  virtual void Reset() = 0;
 
-    virtual MDP<S, A>* getMDP() const
-    {
-        return NULL;
-    }
-    /// returns the current state
-    S getState()
-    {
-        return state;
-    }
+  /// returns true if the action succeeds
+  virtual bool Act(A action) = 0;
 
-    /// returns the current reward
-    real getReward()
-    {
-        return reward;
-    }
+  virtual MDP<S, A>* getMDP() const { return NULL; }
+  /// returns the current state
+  S getState() { return state; }
 
+  /// returns the current reward
+  real getReward() { return reward; }
 };
 
 typedef Environment<int, int> DiscreteEnvironment;
-
 
 #endif

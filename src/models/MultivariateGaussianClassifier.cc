@@ -9,71 +9,67 @@
  *                                                                         *
  ***************************************************************************/
 
-#include"MultivariateGaussianClassifier.h"
+#include "MultivariateGaussianClassifier.h"
 
 /// Construct the class
-MultivariateGaussianClassifier::MultivariateGaussianClassifier(int n_inputs_, int n_classes_)
+MultivariateGaussianClassifier::MultivariateGaussianClassifier(int n_inputs_,
+                                                               int n_classes_)
     : n_inputs(n_inputs_),
       n_classes(n_classes_),
       class_distribution(n_classes),
       prior(n_classes, 0.5),
-      output(n_classes)
-{
-    Vector mu(n_inputs);
-    real tau = 1.0;
-    real alpha = (real) n_inputs; //1.0;
-    Matrix T(Matrix::Unity(n_inputs, n_inputs));
-    
-    for (int i=0; i<n_classes; ++i) {
-        class_distribution[i] = new MultivariateNormalUnknownMeanPrecision(mu, tau, alpha, T);
-    }
+      output(n_classes) {
+  Vector mu(n_inputs);
+  real tau = 1.0;
+  real alpha = (real)n_inputs;  // 1.0;
+  Matrix T(Matrix::Unity(n_inputs, n_inputs));
 
+  for (int i = 0; i < n_classes; ++i) {
+    class_distribution[i] =
+        new MultivariateNormalUnknownMeanPrecision(mu, tau, alpha, T);
+  }
 }
 
 /// Destroy
-MultivariateGaussianClassifier::~MultivariateGaussianClassifier()
-{
-    for (int i=0; i<n_classes; ++i) {
-        delete class_distribution[i];
-    }
+MultivariateGaussianClassifier::~MultivariateGaussianClassifier() {
+  for (int i = 0; i < n_classes; ++i) {
+    delete class_distribution[i];
+  }
 }
 
 /// Classify a vector x
-Vector& MultivariateGaussianClassifier::Output(const Vector& x)
-{
-    for (int i=0; i<n_classes; ++i) {
-        output(i) = class_distribution[i]->log_pdf(x);
-        if (std::isnan(output(i))) {
-            Serror("Output %d is nan", i);
-            output.print(stdout);
-            class_distribution[i]->Show();
-        }
+Vector& MultivariateGaussianClassifier::Output(const Vector& x) {
+  for (int i = 0; i < n_classes; ++i) {
+    output(i) = class_distribution[i]->log_pdf(x);
+    if (std::isnan(output(i))) {
+      Serror("Output %d is nan", i);
+      output.print(stdout);
+      class_distribution[i]->Show();
     }
-    output += log(prior.getMarginal());
-    real S = output.logSum();
-    output -= S;
-    for (int i=0; i<n_classes; ++i) {
-        output(i) = exp(output(i));
-        if (std::isnan(output(i))) {
-            Serror("Output %d is nan", i);
-            output.print(stdout);
-            class_distribution[i]->Show();
-            exit(-1);
-        }
+  }
+  output += log(prior.getMarginal());
+  real S = output.logSum();
+  output -= S;
+  for (int i = 0; i < n_classes; ++i) {
+    output(i) = exp(output(i));
+    if (std::isnan(output(i))) {
+      Serror("Output %d is nan", i);
+      output.print(stdout);
+      class_distribution[i]->Show();
+      exit(-1);
     }
-    return output;
+  }
+  return output;
 }
 
-real MultivariateGaussianClassifier::Observe(const Vector& x, const int label)
-{
-    assert(label >= 0 && label < n_classes);
-    real probability = Output(x)(label);
-    class_distribution[label]->Observe(x);
-    prior.Observe(label);
-    return probability;
+real MultivariateGaussianClassifier::Observe(const Vector& x, const int label) {
+  assert(label >= 0 && label < n_classes);
+  real probability = Output(x)(label);
+  class_distribution[label]->Observe(x);
+  prior.Observe(label);
+  return probability;
 }
 
-Vector MultivariateGaussianClassifier::getClassMean(const int label) const
-{
-    return class_distribution[label]->getMean();
+Vector MultivariateGaussianClassifier::getClassMean(const int label) const {
+  return class_distribution[label]->getMean();
 }

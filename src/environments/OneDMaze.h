@@ -22,25 +22,21 @@
 ///
 /// Returns a reward of 0 at every step,
 /// and a reward of 1 at the end.
-class OneDMaze : public DiscreteEnvironment
-{
-protected:
-    int hidden_state;
-    int n_hidden_states;
-    RandomNumberGenerator* rng;
-public:
-    OneDMaze(int n_hidden_states_, RandomNumberGenerator* rng_);
+class OneDMaze : public DiscreteEnvironment {
+ protected:
+  int hidden_state;
+  int n_hidden_states;
+  RandomNumberGenerator* rng;
 
-    virtual ~OneDMaze();
-    
-    virtual void Reset();
-    virtual bool Act(const int& action);
+ public:
+  OneDMaze(int n_hidden_states_, RandomNumberGenerator* rng_);
 
-    virtual const char* Name()
-    {
-        return "OneD Maze";
-    }
+  virtual ~OneDMaze();
 
+  virtual void Reset();
+  virtual bool Act(const int& action);
+
+  virtual const char* Name() { return "OneD Maze"; }
 };
 
 #endif

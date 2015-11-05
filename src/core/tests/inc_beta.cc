@@ -1,5 +1,6 @@
 /* -*- Mode: c++ -*- */
-/* VER: $Id: MathFunctions.h,v 1.2 2006/11/06 15:48:53 cdimitrakakis Exp cdimitrakakis $ */
+/* VER: $Id: MathFunctions.h,v 1.2 2006/11/06 15:48:53 cdimitrakakis Exp
+ * cdimitrakakis $ */
 // copyright (c) 2006 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
@@ -13,20 +14,18 @@
 #ifdef MAKE_MAIN
 
 #include "SpecialFunctions.h"
-#include "EasyClock.h"
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 #include <exception>
 #include <stdexcept>
+#include "EasyClock.h"
 
-int main(void)
-{
-    
-    float x = 0.9;
-    float a = 7.0;
-    float b = 0.5;
-    printf ("betainc (%f, %f, %f) = %f\n", x, a, b, betai(x, a, b));
-    return 0;
+int main(void) {
+  float x = 0.9;
+  float a = 7.0;
+  float b = 0.5;
+  printf("betainc (%f, %f, %f) = %f\n", x, a, b, betai(x, a, b));
+  return 0;
 }
 
 #endif

@@ -34,30 +34,23 @@
     as value iteration, are not derived from this class, but can be
     used in the implementation of any derived class.  */
 template <typename A, typename S>
-class OnlineAlgorithm
-{
-public:
-    OnlineAlgorithm()
-    {
-    }
-    virtual ~OnlineAlgorithm()
-    {
-    }
-    /// call this at the end of an episode.
-    virtual void Reset()
-    {
-    }
-    /// Partial SARSA observation (can be used with eligibility traces)
-    virtual real Observe (real reward, S next_state, A next_action) = 0;
-    /// Get an action using the current exploration policy.
-    /// it calls Observe as a side-effect.
-    virtual A Act(real reward, S next_state) = 0;
-    virtual real getValue (S state, A action) = 0;
-    /// Some algorithms may implement a different strategy when the reward matrix SxA is given. Implementation is not obligatory.
-    virtual void setFixedRewards(const Matrix& rewards) 
-    {
-        Swarning("not implemented\n");
-    }
+class OnlineAlgorithm {
+ public:
+  OnlineAlgorithm() {}
+  virtual ~OnlineAlgorithm() {}
+  /// call this at the end of an episode.
+  virtual void Reset() {}
+  /// Partial SARSA observation (can be used with eligibility traces)
+  virtual real Observe(real reward, S next_state, A next_action) = 0;
+  /// Get an action using the current exploration policy.
+  /// it calls Observe as a side-effect.
+  virtual A Act(real reward, S next_state) = 0;
+  virtual real getValue(S state, A action) = 0;
+  /// Some algorithms may implement a different strategy when the reward matrix
+  /// SxA is given. Implementation is not obligatory.
+  virtual void setFixedRewards(const Matrix& rewards) {
+    Swarning("not implemented\n");
+  }
 };
 
 /// @}

@@ -12,63 +12,55 @@
 #ifndef KNN_MODEL_H
 #define KNN_MODEL_H
 
-#include "Vector.h"
-#include "KDTree.h"
 #include <list>
 #include <vector>
+#include "KDTree.h"
+#include "Vector.h"
 
-class TrajectorySample
-{
-public:
-    Vector s; ///< starting state
-    int a; ///< action taken
-    real r; ///< reward received
-    Vector s2; ///< next state
-    real V; ///< value of state
-    real dV; ///< value difference
-    bool terminal; ///< if state is terminal state
-    TrajectorySample(Vector s_, int a_, real r_, Vector s2_, bool terminal_=false)
-        : s(s_), a(a_), r(r_), s2(s2_), V(0.0), dV(1.0), terminal(terminal_)
-    {
-    }
-        
-    
+class TrajectorySample {
+ public:
+  Vector s;       ///< starting state
+  int a;          ///< action taken
+  real r;         ///< reward received
+  Vector s2;      ///< next state
+  real V;         ///< value of state
+  real dV;        ///< value difference
+  bool terminal;  ///< if state is terminal state
+  TrajectorySample(Vector s_, int a_, real r_, Vector s2_,
+                   bool terminal_ = false)
+      : s(s_), a(a_), r(r_), s2(s2_), V(0.0), dV(1.0), terminal(terminal_) {}
 };
 
 /** A K-Nearest-neighbour model of a controlled process. */
-class KNNModel
-{
-protected:
-    int n_actions; ///< The number of actions
-    int n_dim; ///< The number of state dimensions
-    std::vector<KDTree<TrajectorySample>*> kd_tree; ///< One tree per action
-    //RBFBasisSet basis;
-    std::list<TrajectorySample> samples;
-    real gamma;
-    bool optimistic_values;
-    real optimism;
-    real r_max;
-    int max_samples;
-    real threshold;
-public:	
-    KNNModel(int n_actions, int n_dim, real gamma_ = 0.9, bool optimistic = true, real optimism_=0.1, real r_max_=0.0);
-    ~KNNModel();
-    void AddSample(TrajectorySample sample, int K, real beta);
-    void GetExpectedTransition(real alpha, Vector& x, int action, real& reward, Vector& y, int K, real b);
-    real GetExpectedActionValue(Vector& x, int a, int K, real b);
-    real GetExpectedValue(Vector& x, int K, real b);
-    int GetBestAction(Vector& x, int K, real b);
-    void UpdateValue(TrajectorySample& start_sample, real alpha, int K, real b);
-    void ValueIteration(real alpha, int K, real b);
-    void Show();
-    /// The maximum number of samples to store
-    void SetMaxSamples(int max_samples_)
-    {
-        max_samples = max_samples_;
-    }
+class KNNModel {
+ protected:
+  int n_actions;  ///< The number of actions
+  int n_dim;      ///< The number of state dimensions
+  std::vector<KDTree<TrajectorySample>*> kd_tree;  ///< One tree per action
+  // RBFBasisSet basis;
+  std::list<TrajectorySample> samples;
+  real gamma;
+  bool optimistic_values;
+  real optimism;
+  real r_max;
+  int max_samples;
+  real threshold;
+
+ public:
+  KNNModel(int n_actions, int n_dim, real gamma_ = 0.9, bool optimistic = true,
+           real optimism_ = 0.1, real r_max_ = 0.0);
+  ~KNNModel();
+  void AddSample(TrajectorySample sample, int K, real beta);
+  void GetExpectedTransition(real alpha, Vector& x, int action, real& reward,
+                             Vector& y, int K, real b);
+  real GetExpectedActionValue(Vector& x, int a, int K, real b);
+  real GetExpectedValue(Vector& x, int K, real b);
+  int GetBestAction(Vector& x, int K, real b);
+  void UpdateValue(TrajectorySample& start_sample, real alpha, int K, real b);
+  void ValueIteration(real alpha, int K, real b);
+  void Show();
+  /// The maximum number of samples to store
+  void SetMaxSamples(int max_samples_) { max_samples = max_samples_; }
 };
-
-
-
 
 #endif

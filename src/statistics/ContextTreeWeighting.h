@@ -20,26 +20,24 @@
  */
 /*@{*/
 
-
 /// A Markov Chain
-class ContextTreeWeighting : public BayesianMarkovChain
-{
-protected:
-    Matrix P_obs; ///< Probability of observations for model k
-    Matrix Lkoi; ///< Probability of observations for all models up to k
-    std::vector<real> weight; ///< temporary weight of model
-public:
-    int n_observations;
+class ContextTreeWeighting : public BayesianMarkovChain {
+ protected:
+  Matrix P_obs;  ///< Probability of observations for model k
+  Matrix Lkoi;   ///< Probability of observations for all models up to k
+  std::vector<real> weight;  ///< temporary weight of model
+ public:
+  int n_observations;
 
-    ContextTreeWeighting (int n_states, int n_models, real prior, bool dense = false);
-    virtual ~ContextTreeWeighting();
-    /* Training and generation */
-    virtual void ObserveNextState (int state);
-    virtual real NextStateProbability (int state);
-    virtual void Reset();
-    virtual int generate();
-    virtual int predict();
-    
+  ContextTreeWeighting(int n_states, int n_models, real prior,
+                       bool dense = false);
+  virtual ~ContextTreeWeighting();
+  /* Training and generation */
+  virtual void ObserveNextState(int state);
+  virtual real NextStateProbability(int state);
+  virtual void Reset();
+  virtual int generate();
+  virtual int predict();
 };
 /*@}*/
 #endif

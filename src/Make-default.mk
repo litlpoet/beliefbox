@@ -3,11 +3,11 @@
 
 PACKAGES = core algorithms geometry models statistics environments #florian
 # Compiler and Linker
-CC = clang++ # - some people may have to use clang instead
-CXX = clang++ 
-LD = clang # - you can link with 'ld' too
+CC = g++
+CXX = g++
+LD = ld
 AR = ar -rus
-DEP = clang -MM -D__DEPEND__
+DEP = g++ -MM -D__DEPEND__
 
 
 # Libraries
@@ -25,8 +25,8 @@ MYINCS = -I$(INCS_EXPORT)
 DBG_OPT=OPT
 
 # Add -pg flag for profiling
-CFLAGS_DBG = -fPIC -g -Wall -DUSE_DOUBLE -Wno-overloaded-virtual
-CFLAGS_OPT = -fPIC -g -O3 -Wall -DUSE_DOUBLE -DNDEBUG -Wno-overloaded-virtual
+CFLAGS_DBG = -fPIC -g -Wall -DUSE_DOUBLE -Wno-overloaded-virtual -std=c++11
+CFLAGS_OPT = -fPIC -g -O3 -Wall -DUSE_DOUBLE -DNDEBUG -Wno-overloaded-virtual -std=c++11
 #CFLAGS_DBG = -fPIC -g -Wall -pipe -pg
 #CFLAGS_OPT = -fPIC -g -O3 -Wall -DNDEBUG -pipe -pg
 CFLAGS=$(CFLAGS_$(DBG_OPT))
@@ -50,7 +50,7 @@ LIBS_DIR = $(SMPL_DIR)/$(LIB_DIR_NAME)
 OBJS_DIR = $(SMPL_DIR)/$(OBJ_DIR_NAME)
 LIBSMPL = $(LIBS_DIR)/libsmpl.a
 LIBSMPLXX = $(LIBS_DIR)/libsmpl++.a
-LIBS = -L$(LIBS_DIR) $(MYLIBS) -latlas -lcblas -lgsl
+LIBS = -L$(LIBS_DIR) $(MYLIBS) -latlas -lcblas -lgsl -lgslcblas # #-lblas(* best) -lgslcblas -lgsl 
 EXPORTED_LIBS = -lranlib
 MAIN_LIB = -lsmpl
 INCS := -I$(SMPL_DIR)/core $(MYINCS)

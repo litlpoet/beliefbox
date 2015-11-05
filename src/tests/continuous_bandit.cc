@@ -1,5 +1,6 @@
 /* -*- Mode: C++; -*- */
-/* VER: $Id: test_simple_bandit.c,v 1.1 2006/10/31 16:59:39 cdimitrakakis Exp cdimitrakakis $*/
+/* VER: $Id: test_simple_bandit.c,v 1.1 2006/10/31 16:59:39 cdimitrakakis Exp
+ * cdimitrakakis $*/
 // copyright (c) 2004 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
@@ -11,18 +12,16 @@
  ***************************************************************************/
 #ifdef MAKE_MAIN
 
-#include <vector>
 #include <cmath>
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 #include <ctime>
+#include <vector>
 
-#include "DiscreteBanditPolicy.h"
 #include "ActionValueEstimate.h"
-#include "PFActionValueEstimate.h"
+#include "DiscreteBanditPolicy.h"
 #include "EasyClock.h"
+#include "PFActionValueEstimate.h"
 #include "UCB.h"
-
-
 
 #endif

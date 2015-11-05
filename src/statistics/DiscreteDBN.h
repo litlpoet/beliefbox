@@ -12,9 +12,9 @@
 #ifndef DiscreteDBN_H
 #define DiscreteDBN_H
 
+#include <vector>
 #include "DiscreteVariable.h"
 #include "SparseGraph.h"
-#include <vector>
 #include "Vector.h"
 
 /** A Dynamic Bayesian Network.
@@ -24,16 +24,16 @@ variable has some parents such that \f$P(X(t+1) | X(t), A(t)) =
 \prod_i P(X_i(t+1) | \phi_i)\f$.We count the number of times each
 transition has been observed.
 */
-class DiscreteDBN
-{
-protected:
-    SparseGraph& graph;
-    std::vector<int> n_parents;
-    std::vector<std::vector<int> > Nc;
-    DiscreteVector values;
-    int getCountIndex(int n, std::vector<int> X);
-public:
-    DiscreteDBN(DiscreteVector _values, SparseGraph& _graph, int prior = 0);
-    int observe(std::vector<int> X);
+class DiscreteDBN {
+ protected:
+  SparseGraph& graph;
+  std::vector<int> n_parents;
+  std::vector<std::vector<int> > Nc;
+  DiscreteVector values;
+  int getCountIndex(int n, std::vector<int> X);
+
+ public:
+  DiscreteDBN(DiscreteVector _values, SparseGraph& _graph, int prior = 0);
+  int observe(std::vector<int> X);
 };
 #endif

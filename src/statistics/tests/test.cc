@@ -11,25 +11,24 @@
 
 #ifdef MAKE_MAIN
 #include "ContextTreeKDTree.h"
-#include "ContextTreeRealLine.h"
-#include "Random.h"
 #include <vector>
+#include "BetaDistribution.h"
+#include "ContextTreeRealLine.h"
 #include "EasyClock.h"
-#include "NormalDistribution.h"
 #include "MultivariateNormal.h"
 #include "MultivariateNormalUnknownMeanPrecision.h"
-#include "BetaDistribution.h"
+#include "NormalDistribution.h"
+#include "Random.h"
 #include "ranlib.h"
 
-int main()
-{
-    long seed = time(NULL);
+int main() {
+  long seed = time(NULL);
 
-    setall(seed, seed / 100);
-    for (int i=0; i<=10; ++i) {
-        printf("%f\n", genchi(1 + i));
-    }
-    return 0;
+  setall(seed, seed / 100);
+  for (int i = 0; i <= 10; ++i) {
+    printf("%f\n", genchi(1 + i));
+  }
+  return 0;
 }
 
 #endif

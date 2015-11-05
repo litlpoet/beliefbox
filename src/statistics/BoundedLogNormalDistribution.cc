@@ -11,78 +11,57 @@
 
 #include "BoundedLogNormalDistribution.h"
 
-BoundedLogNormal::BoundedLogNormal(const Vector& lower_bound, const Vector& upper_bound)
+BoundedLogNormal::BoundedLogNormal(const Vector& lower_bound,
+                                   const Vector& upper_bound)
     : n_dim(lower_bound.Size()),
       a(lower_bound),
       b(upper_bound),
-      c((a+b) * 0.5),
-      d(pow(b-a, -2.0))
-{
-    assert(a.Size() == b.Size());
-    for (int i=0; i<n_dim; ++i) {
-        assert(a(i) < b(i));
-    }
-    normal_density =
-        new MultivariateNormalUnknownMeanPrecision(Vector(n_dim), 
-                                                   1.0, 
-                                                   1.0,
-                                                   Matrix::Unity(n_dim, n_dim));
-        
+      c((a + b) * 0.5),
+      d(pow(b - a, -2.0)) {
+  assert(a.Size() == b.Size());
+  for (int i = 0; i < n_dim; ++i) {
+    assert(a(i) < b(i));
+  }
+  normal_density = new MultivariateNormalUnknownMeanPrecision(
+      Vector(n_dim), 1.0, 1.0, Matrix::Unity(n_dim, n_dim));
 }
 
+void BoundedLogNormal::Reset() { normal_density->Reset(); }
 
-void BoundedLogNormal::Reset()
-{
-    normal_density->Reset();
+BoundedLogNormal::~BoundedLogNormal() { delete normal_density; }
+Vector BoundedLogNormal::generate() {
+  Serror("Fix me!\n");
+  return c;
+}
+Vector BoundedLogNormal::generate() const {
+  Serror("Fix me!\n");
+  return c;
 }
 
-BoundedLogNormal::~BoundedLogNormal()
-{
-    delete normal_density;
+real BoundedLogNormal::Observe(const Vector& x) {
+  return normal_density->Observe(transform(x));
 }
-Vector BoundedLogNormal::generate()
-{
-    Serror("Fix me!\n");
-    return c;
-} 
-Vector BoundedLogNormal::generate() const
-{
-    Serror("Fix me!\n");
-    return c;
-}
-
-real BoundedLogNormal::Observe(const Vector& x)
-{
-    return normal_density->Observe(transform(x));
-}
-
 
 /// Note that this the marginal likelihood!
-real BoundedLogNormal::pdf(const Vector& x) const
-{
-    return normal_density->pdf(transform(x));
+real BoundedLogNormal::pdf(const Vector& x) const {
+  return normal_density->pdf(transform(x));
 }
 /// The marginal log-likelihood
-real BoundedLogNormal::log_pdf(const Vector& x) const
-{
-    return normal_density->log_pdf(transform(x));
+real BoundedLogNormal::log_pdf(const Vector& x) const {
+  return normal_density->log_pdf(transform(x));
 }
-const Vector& BoundedLogNormal::getMean() const
-{
-    Serror("Fix me!\n");
-    return normal_density->getMean();
+const Vector& BoundedLogNormal::getMean() const {
+  Serror("Fix me!\n");
+  return normal_density->getMean();
 }
 
-void BoundedLogNormal::calculatePosterior(const Vector& x)
-{
-    normal_density->calculatePosterior(x);
+void BoundedLogNormal::calculatePosterior(const Vector& x) {
+  normal_density->calculatePosterior(x);
 }
-Vector BoundedLogNormal::transform(const Vector& x) const
-{
-    return (c - x) * log (d * (x - a) * (b - x));
+Vector BoundedLogNormal::transform(const Vector& x) const {
+  return (c - x) * log(d * (x - a) * (b - x));
 }
-Vector BoundedLogNormal::inverse_transform(const Vector& x) const
-{
-    Serror("Fix me!\n");
-    return x;
+Vector BoundedLogNormal::inverse_transform(const Vector& x) const {
+  Serror("Fix me!\n");
+  return x;
 }

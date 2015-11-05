@@ -10,47 +10,42 @@
  ***************************************************************************/
 
 #include "RewardBelief.h"
-#include "RewardDistribution.h"
 #include "Matrix.h"
+#include "RewardDistribution.h"
 
-DiscreteSpaceRewardDistribution* DirichletRewardBelief::sample() const
-{
-	DiscreteSpaceRewardDistribution* reward_distribution
-		= new DiscreteSpaceRewardDistribution (n_states, n_actions);
-	Matrix M = sampleMatrix();
-	for (int s=0; s<n_states; ++s) {
-		for (int a=0; a<n_actions; ++a) {
-			reward_distribution->setFixedReward(s, a, M(s, a));
-		}
-	}
-	return reward_distribution;
+DiscreteSpaceRewardDistribution* DirichletRewardBelief::sample() const {
+  DiscreteSpaceRewardDistribution* reward_distribution =
+      new DiscreteSpaceRewardDistribution(n_states, n_actions);
+  Matrix M = sampleMatrix();
+  for (int s = 0; s < n_states; ++s) {
+    for (int a = 0; a < n_actions; ++a) {
+      reward_distribution->setFixedReward(s, a, M(s, a));
+    }
+  }
+  return reward_distribution;
 }
 
-Matrix DirichletRewardBelief::sampleMatrix() const
-{
-
-	Matrix M(n_states, n_actions);
-	Vector R = dirichlet.generate();
-	int i=0; 
-	for (int s=0; s<n_states; ++s) {
-		for (int a=0; a<n_actions; ++a) {
-			M(s, a) = R(i++);
-		}
-	}
-	return M;
+Matrix DirichletRewardBelief::sampleMatrix() const {
+  Matrix M(n_states, n_actions);
+  Vector R = dirichlet.generate();
+  int i = 0;
+  for (int s = 0; s < n_states; ++s) {
+    for (int a = 0; a < n_actions; ++a) {
+      M(s, a) = R(i++);
+    }
+  }
+  return M;
 }
 
-real DirichletRewardBelief::log_pdf(const Matrix& M) const
-{
-
-    assert(n_states == M.Rows());
-    assert(n_actions == M.Columns());
-	Vector R(n_states * n_actions);
-	int i=0; 
-	for (int s=0; s<n_states; ++s) {
-		for (int a=0; a<n_actions; ++a) {
-			R(i++) = M(s, a);
-		}
-	}
-    return dirichlet.log_pdf(R);
+real DirichletRewardBelief::log_pdf(const Matrix& M) const {
+  assert(n_states == M.Rows());
+  assert(n_actions == M.Columns());
+  Vector R(n_states * n_actions);
+  int i = 0;
+  for (int s = 0; s < n_states; ++s) {
+    for (int a = 0; a < n_actions; ++a) {
+      R(i++) = M(s, a);
+    }
+  }
+  return dirichlet.log_pdf(R);
 }

@@ -12,17 +12,14 @@
 #include "SparseMarkovChain.h"
 #include "Random.h"
 
-SparseMarkovChain::SparseMarkovChain(int n_states,
-                                     int mem_size)
-	: MarkovChain(n_states, mem_size),
-      transitions((int) pow((double) n_states, (double) mem_size), n_states)
-{
-	fprintf(stderr, "Making sparse markov chain with %d states and %d memory\n", n_states, mem_size);
+SparseMarkovChain::SparseMarkovChain(int n_states, int mem_size)
+    : MarkovChain(n_states, mem_size),
+      transitions((int)pow((double)n_states, (double)mem_size), n_states) {
+  fprintf(stderr, "Making sparse markov chain with %d states and %d memory\n",
+          n_states, mem_size);
 }
 
-SparseMarkovChain::~SparseMarkovChain()
-{
-}
+SparseMarkovChain::~SparseMarkovChain() {}
 
 /**
    \brief Train a markov chain.
@@ -38,16 +35,14 @@ SparseMarkovChain::~SparseMarkovChain()
 
    \return Probability of having observed the next state.
 */
-real SparseMarkovChain::ObserveNextState (int state)
-{
-	assert((state>=0)&&(state<n_states));
-	curr_state = CalculateStateID();
-	real Pr = getProbability(curr_state, state);
-	transitions.observe(curr_state, state);
-    PushState (state);
-    return Pr;
+real SparseMarkovChain::ObserveNextState(int state) {
+  assert((state >= 0) && (state < n_states));
+  curr_state = CalculateStateID();
+  real Pr = getProbability(curr_state, state);
+  transitions.observe(curr_state, state);
+  PushState(state);
+  return Pr;
 }
-
 
 /**
    \brief Likelihood of an observation for the markov chain.
@@ -59,89 +54,75 @@ real SparseMarkovChain::ObserveNextState (int state)
 
    \return The probability of the transition to that state.
 */
-real SparseMarkovChain::NextStateProbability (int state)
-{
-	assert((state>=0)&&(state<n_states));
+real SparseMarkovChain::NextStateProbability(int state) {
+  assert((state >= 0) && (state < n_states));
 
-	curr_state = CalculateStateID ();
-	assert (curr_state>=0 && curr_state<tot_states);
-	return getProbability(curr_state, state);
+  curr_state = CalculateStateID();
+  assert(curr_state >= 0 && curr_state < tot_states);
+  return getProbability(curr_state, state);
 }
 
-
-void SparseMarkovChain::getNextStateProbabilities(std::vector<real>& p)
-{
-    curr_state = CalculateStateID();
-    return getProbabilities(curr_state, p);
+void SparseMarkovChain::getNextStateProbabilities(std::vector<real>& p) {
+  curr_state = CalculateStateID();
+  return getProbabilities(curr_state, p);
 }
-
-
 
 /// Get the number of transitions from \c src to \c dst
-real SparseMarkovChain::getTransition (MCState src, int dst)
-{
-	assert((src>=0)&&(src<n_states));
-	assert((dst>=0)&&(dst<n_states));
-	return transitions.get_weight(src, dst);
+real SparseMarkovChain::getTransition(MCState src, int dst) {
+  assert((src >= 0) && (src < n_states));
+  assert((dst >= 0) && (dst < n_states));
+  return transitions.get_weight(src, dst);
 }
-
-
 
 /// Get the transition probability from \c src to \c dst
 ///
 /// Takes into account the threshold.
-real SparseMarkovChain::getProbability(MCState src, int dst)
-{
-	assert((src>=0)&&(src<tot_states));
-	assert((dst>=0)&&(dst<n_states));
-	real sum = 0.0;
-	int N = transitions.nof_destinations();
-	
-	for (int i=0; i<N; ++i) {
-		sum += transitions.get_weight(src, i);
-	}
-	
-	return (transitions.get_weight(src, dst) + threshold) / (sum + threshold * ((real) N));
+real SparseMarkovChain::getProbability(MCState src, int dst) {
+  assert((src >= 0) && (src < tot_states));
+  assert((dst >= 0) && (dst < n_states));
+  real sum = 0.0;
+  int N = transitions.nof_destinations();
+
+  for (int i = 0; i < N; ++i) {
+    sum += transitions.get_weight(src, i);
+  }
+
+  return (transitions.get_weight(src, dst) + threshold) /
+         (sum + threshold * ((real)N));
 }
 
 /// Get the transition probabilities
 ///
 /// Takes into account the threshold.
-void SparseMarkovChain::getProbabilities(MCState src, std::vector<real>& p)
-{
-	assert((src>=0)&&(src<tot_states));
-	assert((int) p.size()== n_states);
-	real sum = 0.0;
-	int N = transitions.nof_destinations();
-	
-	for (int i=0; i<N; ++i) {
-        p[i] = threshold + transitions.get_weight(src, i);
-		sum += p[i];
-	}
+void SparseMarkovChain::getProbabilities(MCState src, std::vector<real>& p) {
+  assert((src >= 0) && (src < tot_states));
+  assert((int)p.size() == n_states);
+  real sum = 0.0;
+  int N = transitions.nof_destinations();
 
-    real invsum = 1.0 / sum;
-	for (int i=0; i<N; ++i) {
-        p[i] *= invsum;
-	}
+  for (int i = 0; i < N; ++i) {
+    p[i] = threshold + transitions.get_weight(src, i);
+    sum += p[i];
+  }
+
+  real invsum = 1.0 / sum;
+  for (int i = 0; i < N; ++i) {
+    p[i] *= invsum;
+  }
 }
-
 
 /// Get the density of the transition probabilities \c p from \c src
-real SparseMarkovChain::pdf(MCState src, Vector p)
-{
-	assert((src>=0)&&(src<tot_states));
-	Swarning("Not implemented\n");
-	return 0.0;
+real SparseMarkovChain::pdf(MCState src, Vector p) {
+  assert((src >= 0) && (src < tot_states));
+  Swarning("Not implemented\n");
+  return 0.0;
 }
 
-
-
 /// Set the transition probability from \c src to \c dst
-void SparseMarkovChain::setTransition (MCState src, int dst, real value)
-{
-	assert((src>=0)&&(src<tot_states));
-	assert((dst>=0)&&(dst<n_states));
-        //transitions[dst * tot_states + src] = value;
+void SparseMarkovChain::setTransition(MCState src, int dst, real value) {
+  assert((src >= 0) && (src < tot_states));
+  assert((dst >= 0) && (dst < n_states));
+  // transitions[dst * tot_states + src] = value;
 }
 
 /**
@@ -154,12 +135,9 @@ void SparseMarkovChain::setTransition (MCState src, int dst, real value)
 
    See also MarkovChainSoftmaxNormalize()
 */
-void SparseMarkovChain::setThreshold (real threshold)
-{
-	this->threshold = threshold;
+void SparseMarkovChain::setThreshold(real threshold) {
+  this->threshold = threshold;
 }
-
-
 
 /**
    \brief Reset the chain
@@ -170,15 +148,12 @@ void SparseMarkovChain::setThreshold (real threshold)
    sequences).
 
 */
-void SparseMarkovChain::Reset ()
-{
-	//int i;
-    memory.clear();
-    memory.resize(mem_size);
-	curr_state = 0;
+void SparseMarkovChain::Reset() {
+  // int i;
+  memory.clear();
+  memory.resize(mem_size);
+  curr_state = 0;
 }
-
-
 
 /**
    \brief Generate values from the chain.
@@ -197,54 +172,48 @@ void SparseMarkovChain::Reset ()
    nothing could be generated.
 
 */
-int SparseMarkovChain::GenerateStatic ()
-{
-	real tot = 0.0f;
-        //int curr = CalculateStateID ();
-	real sel = urandom();
-	for (int j=0; j<n_states; j++) {
-		real P = 0.0;//Pr[curr + j*tot_states];
-		tot += P;
-		if (sel<=tot && P>0.0f) {
-			return j;
-		}
-	}
+int SparseMarkovChain::GenerateStatic() {
+  real tot = 0.0f;
+  // int curr = CalculateStateID ();
+  real sel = urandom();
+  for (int j = 0; j < n_states; j++) {
+    real P = 0.0;  // Pr[curr + j*tot_states];
+    tot += P;
+    if (sel <= tot && P > 0.0f) {
+      return j;
+    }
+  }
 
-	return -1;
+  return -1;
 }
 
 /**
    \brief Generate the next state
-  
+
    Generates a value for the next state.
 
-  
+
 */
-int SparseMarkovChain::generate ()
-{
-	real tot = 0.0f;
-    //int curr = CalculateStateID ();
-	real sel = urandom();
-	for (int j=0; j<n_states; j++) {
-		real P = 0.0;//Pr[curr + j*tot_states];
-		tot += P;
-		if (sel<=tot && P>0.0f) {
-			PushState(j);
-			return j;
-		}
-	}
-	int j = rand()%n_states;
-	PushState(j);
-	return j;
+int SparseMarkovChain::generate() {
+  real tot = 0.0f;
+  // int curr = CalculateStateID ();
+  real sel = urandom();
+  for (int j = 0; j < n_states; j++) {
+    real P = 0.0;  // Pr[curr + j*tot_states];
+    tot += P;
+    if (sel <= tot && P > 0.0f) {
+      PushState(j);
+      return j;
+    }
+  }
+  int j = rand() % n_states;
+  PushState(j);
+  return j;
 }
-
-
-
-
 
 /**
    Can be useful for debugging.
-   
+
    A way to test the Markov Chain's operation is to create a Markov
    Chain populated with randomly initialised transitions, use it to
    generate a sequence and then make a Markov Chain of the same order
@@ -253,17 +222,16 @@ int SparseMarkovChain::generate ()
    the data.
 */
 
-int SparseMarkovChain::ShowTransitions () {
-	printf ("\nState transition dump %ld\n", tot_states);
-	for (int i=0; i<tot_states; i++) {
-		printf ("Transition %d : ", i);
-        std::vector<real> p(n_states);
-        getProbabilities(i, p);
-		for (int j=0; j<n_states; j++) {
-            printf (" %f", p[j]);
-		}
-        printf("\n");
-	}
-	return 0;
+int SparseMarkovChain::ShowTransitions() {
+  printf("\nState transition dump %ld\n", tot_states);
+  for (int i = 0; i < tot_states; i++) {
+    printf("Transition %d : ", i);
+    std::vector<real> p(n_states);
+    getProbabilities(i, p);
+    for (int j = 0; j < n_states; j++) {
+      printf(" %f", p[j]);
+    }
+    printf("\n");
+  }
+  return 0;
 }
-

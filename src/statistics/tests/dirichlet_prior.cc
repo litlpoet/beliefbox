@@ -13,65 +13,60 @@
 #include "Dirichlet.h"
 #include "DirichletFiniteOutcomes.h"
 
-int main (void)
-{
-    int N = 1024;
-    DirichletDistribution dirichlet(N);
-    DirichletFiniteOutcomes finite_dirichlet(N);
+int main(void) {
+  int N = 1024;
+  DirichletDistribution dirichlet(N);
+  DirichletFiniteOutcomes finite_dirichlet(N);
 
-	Vector pre = dirichlet.GetParameters();
-	Vector data(N);
-    Vector theta(N);
+  Vector pre = dirichlet.GetParameters();
+  Vector data(N);
+  Vector theta(N);
 
-    for (int i=0; i<N; ++i) {
-        if (i >= 0) {
-            theta(i) = 1.0; // (1.0 + (real) i);
-        } else {
-            theta(i) = 0.0;
-        }
+  for (int i = 0; i < N; ++i) {
+    if (i >= 0) {
+      theta(i) = 1.0;  // (1.0 + (real) i);
+    } else {
+      theta(i) = 0.0;
     }
+  }
 
-    theta /= theta.Sum();
-    MultinomialDistribution P(theta);
+  theta /= theta.Sum();
+  MultinomialDistribution P(theta);
 
-    int interval = 100;
-    int c = interval;
-    for (int t=0; t<1000; t++) {
-        Vector x = P.generate();
+  int interval = 100;
+  int c = interval;
+  for (int t = 0; t < 1000; t++) {
+    Vector x = P.generate();
 
-        dirichlet.update(&x);
-        finite_dirichlet.update(&x);
+    dirichlet.update(&x);
+    finite_dirichlet.update(&x);
 
-        //Vector post = dirichlet.GetParameters();
-        //Vector gen = dirichlet.generate();
+    // Vector post = dirichlet.GetParameters();
+    // Vector gen = dirichlet.generate();
 
-        //Vector post = dirichlet.getMarginal();
-        //Vector gen = finite_dirichlet.getMarginal();
+    // Vector post = dirichlet.getMarginal();
+    // Vector gen = finite_dirichlet.getMarginal();
 
-        Vector post = finite_dirichlet.getMarginal();
-        Vector gen = finite_dirichlet.generate();
-        c--;
-        if (c == 0) {
-            real err1 = 0;
-            real err2 = 0;
-            for (int i=0; i<N; i++) {
-                err1 += fabs(theta(i) - post(i));
-                err2 += fabs(theta(i) - gen(i));
+    Vector post = finite_dirichlet.getMarginal();
+    Vector gen = finite_dirichlet.generate();
+    c--;
+    if (c == 0) {
+      real err1 = 0;
+      real err2 = 0;
+      for (int i = 0; i < N; i++) {
+        err1 += fabs(theta(i) - post(i));
+        err2 += fabs(theta(i) - gen(i));
 #if 1
-                printf ("%d %f %f %f\n",
-                        i,
-                        theta(i),
-                        post(i),
-                        gen(i));
+        printf("%d %f %f %f\n", i, theta(i), post(i), gen(i));
 #endif
-            }
-            printf ("%f %f\n", err1, err2);
-            c = interval;
-        }
-        pre = post;
+      }
+      printf("%f %f\n", err1, err2);
+      c = interval;
     }
+    pre = post;
+  }
 
-    return 0;
+  return 0;
 }
 
 #endif

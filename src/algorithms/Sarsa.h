@@ -13,57 +13,47 @@
 #ifndef SARSA_H
 #define SARSA_H
 
+#include <vector>
 #include "DiscreteMDP.h"
 #include "DiscretePolicy.h"
 #include "ExplorationPolicy.h"
 #include "Matrix.h"
-#include "real.h"
 #include "OnlineAlgorithm.h"
-#include <vector>
+#include "real.h"
 
-class Sarsa : public OnlineAlgorithm<int, int>
-{
-protected:
-    const int n_states; ///< number of states
-    const int n_actions; ///< number 
-    real gamma; ///< discount factor
-    real lambda; ///< eligibility trace decay rate
-    real alpha; ///< learning rate 
-    VFExplorationPolicy* exploration_policy; ///< exploration policy
-    real initial_value; ///< initial value for Q values
-    real baseline; ///< baseline reward
+class Sarsa : public OnlineAlgorithm<int, int> {
+ protected:
+  const int n_states;                       ///< number of states
+  const int n_actions;                      ///< number
+  real gamma;                               ///< discount factor
+  real lambda;                              ///< eligibility trace decay rate
+  real alpha;                               ///< learning rate
+  VFExplorationPolicy* exploration_policy;  ///< exploration policy
+  real initial_value;                       ///< initial value for Q values
+  real baseline;                            ///< baseline reward
 
-    Matrix Q;
-    Matrix el;
+  Matrix Q;
+  Matrix el;
 
-    int state; ///< current state
-    int action; ///< current action
+  int state;   ///< current state
+  int action;  ///< current action
 
-public:
-    Sarsa(int n_states_,
-          int n_actions_,
-          real gamma_,
-          real lambda_,
-          real alpha_,
-          VFExplorationPolicy* exploration_policy_,
-          real initial_value_= 0.0,
-          real baseline_ = 0.0);
-    virtual ~Sarsa();
-    virtual void Reset();
-    /// Full SARSA observation (no eligibility traces)
-    virtual real Observe (int state, int action, real reward, int next_state, int next_action);
-    /// Partial SARSA observation (can be used with eligibility traces)
-    virtual real Observe (real reward, int next_state, int next_action);
-    /// Get an action using the current exploration policy.
-    /// it calls Observe as a side-effect.
-    virtual int Act(real reward, int next_state);
+ public:
+  Sarsa(int n_states_, int n_actions_, real gamma_, real lambda_, real alpha_,
+        VFExplorationPolicy* exploration_policy_, real initial_value_ = 0.0,
+        real baseline_ = 0.0);
+  virtual ~Sarsa();
+  virtual void Reset();
+  /// Full SARSA observation (no eligibility traces)
+  virtual real Observe(int state, int action, real reward, int next_state,
+                       int next_action);
+  /// Partial SARSA observation (can be used with eligibility traces)
+  virtual real Observe(real reward, int next_state, int next_action);
+  /// Get an action using the current exploration policy.
+  /// it calls Observe as a side-effect.
+  virtual int Act(real reward, int next_state);
 
-    virtual real getValue (int state, int action)
-    {
-        return Q(state, action);
-    }
-    
+  virtual real getValue(int state, int action) { return Q(state, action); }
 };
 
 #endif
-

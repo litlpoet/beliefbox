@@ -15,20 +15,20 @@
 
 typedef MDP<int, Vector> ContinuousActionMDP;
 
-typedef TransitionDistribution<int, Vector> ContinuousActionTransitionDistribution;
+typedef TransitionDistribution<int, Vector>
+    ContinuousActionTransitionDistribution;
 typedef RewardDistribution<int, Vector> ContinuousActionRewardDistribution;
-
 
 /** Continuous bandit MDP.
  *
  * In this type of MDP there are bandits.
  * Hooray.
- * 
+ *
  */
-class ContinuousBanditMDP : public ContinuousActionMDP
-{
-
-public:
-	ContinuousBanditMDP(ContinuousActionTransitionDistribution& transition_distribution_, ContinuousActionRewardDistribution& reward_distribution_);
-	virtual ~ContinuousBanditMDP();
+class ContinuousBanditMDP : public ContinuousActionMDP {
+ public:
+  ContinuousBanditMDP(
+      ContinuousActionTransitionDistribution& transition_distribution_,
+      ContinuousActionRewardDistribution& reward_distribution_);
+  virtual ~ContinuousBanditMDP();
 };

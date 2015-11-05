@@ -19,37 +19,35 @@
 /*@{*/
 
 /// A dense implementation of a Markov chain
-class DenseMarkovChain : public MarkovChain
-{
-protected:
-    void EstimateProbabilities(MCState curr);
-    int n_transitions; ///< total number of transitions
-	Vector transitions; ///< history-wide transition table
-    Vector Pr; ///< transition probabilities
+class DenseMarkovChain : public MarkovChain {
+ protected:
+  void EstimateProbabilities(MCState curr);
+  int n_transitions;   ///< total number of transitions
+  Vector transitions;  ///< history-wide transition table
+  Vector Pr;           ///< transition probabilities
 
-public:
-    DenseMarkovChain (int n_states, int mem_size);
-    virtual ~DenseMarkovChain ();
+ public:
+  DenseMarkovChain(int n_states, int mem_size);
+  virtual ~DenseMarkovChain();
 
-    /* probabilities */
-    virtual real getTransition (MCState src, int dst);
-    virtual real getProbability (MCState src, int dst);
-    virtual void getProbabilities(MCState src, std::vector<real>& p);
-    virtual void getNextStateProbabilities(std::vector<real>& p);
-    virtual real pdf(MCState src, Vector q);
-    virtual void setTransition (MCState src, int dst, real value) ;
-    virtual void setThreshold (real threshold);
+  /* probabilities */
+  virtual real getTransition(MCState src, int dst);
+  virtual real getProbability(MCState src, int dst);
+  virtual void getProbabilities(MCState src, std::vector<real>& p);
+  virtual void getNextStateProbabilities(std::vector<real>& p);
+  virtual real pdf(MCState src, Vector q);
+  virtual void setTransition(MCState src, int dst, real value);
+  virtual void setThreshold(real threshold);
 
+  /* Training and generation */
+  virtual real ObserveNextState(int state);
+  virtual real NextStateProbability(int state);
+  virtual void Reset();
+  virtual int GenerateStatic();
+  virtual int generate();
 
-    /* Training and generation */
-    virtual real ObserveNextState (int state);
-    virtual real NextStateProbability (int state);
-    virtual void Reset ();
-    virtual int GenerateStatic ();
-    virtual int generate ();
-
-    /* Debug functions */
-    virtual int ShowTransitions ();
+  /* Debug functions */
+  virtual int ShowTransitions();
 };
 /*@}*/
 #endif

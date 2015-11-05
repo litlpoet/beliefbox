@@ -12,82 +12,63 @@
 
 #include "ContextBandit.h"
 
-
-ContextBandit::ContextBandit(uint n_states_,
-                             uint n_actions_,
-                             RandomNumberGenerator* rng_,
-                             bool normal)
-    : DiscreteEnvironment(n_states_, n_actions_),
-      rng(rng_)
-{ 
-    logmsg ("Making bandit with %d states, %d actions\n", n_states, n_actions);
-    mdp = new DiscreteMDP (n_states, n_actions, NULL);
-    assert(rng);
-    state = 0;
-    reward = 0;
-    // setup rewards
-    for (uint s=0; s<n_states; ++s) {
-        for (uint a=0; a<n_actions; a++) {
-            Distribution* reward_dist;
-            if (normal) {
-                reward_dist = new NormalDistribution(normal_prior.generate(), 1.0);
-            } else {
-                reward_dist = new BernoulliDistribution(urandom());
-            }
-            mdp->setRewardDistribution(s, a, reward_dist);
-            rewards.push_back(reward_dist);
-        }
+ContextBandit::ContextBandit(uint n_states_, uint n_actions_,
+                             RandomNumberGenerator* rng_, bool normal)
+    : DiscreteEnvironment(n_states_, n_actions_), rng(rng_) {
+  logmsg("Making bandit with %d states, %d actions\n", n_states, n_actions);
+  mdp = new DiscreteMDP(n_states, n_actions, NULL);
+  assert(rng);
+  state = 0;
+  reward = 0;
+  // setup rewards
+  for (uint s = 0; s < n_states; ++s) {
+    for (uint a = 0; a < n_actions; a++) {
+      Distribution* reward_dist;
+      if (normal) {
+        reward_dist = new NormalDistribution(normal_prior.generate(), 1.0);
+      } else {
+        reward_dist = new BernoulliDistribution(urandom());
+      }
+      mdp->setRewardDistribution(s, a, reward_dist);
+      rewards.push_back(reward_dist);
     }
+  }
 
-    // set up transitions
-    real Pr = 1.0 / (real) n_states;
-    for (uint s=0; s<n_states; s++) {
-        for (uint a=0; a<n_actions; a++) {
-            for (uint s2=0; s2<n_states; s2++) {
-                //printf ("%d %d %d / %d", s, a, s2, n_states);
-                mdp->setTransitionProbability(s, a, s2, Pr);
-            }
-        }
+  // set up transitions
+  real Pr = 1.0 / (real)n_states;
+  for (uint s = 0; s < n_states; s++) {
+    for (uint a = 0; a < n_actions; a++) {
+      for (uint s2 = 0; s2 < n_states; s2++) {
+        // printf ("%d %d %d / %d", s, a, s2, n_states);
+        mdp->setTransitionProbability(s, a, s2, Pr);
+      }
     }
-    mdp->Check();
-    Reset();
+  }
+  mdp->Check();
+  Reset();
 }
-
 
 /// put the environment in its natural state
-void ContextBandit::Reset()
-{
-    state = (int) rng->discrete_uniform(n_states);
-    reward = 0;
-    mdp->setState(state);
+void ContextBandit::Reset() {
+  state = (int)rng->discrete_uniform(n_states);
+  reward = 0;
+  mdp->setState(state);
 }
-
 
 /// returns true if the action succeeds, false if we are in a terminal state
-bool ContextBandit::Act(const int& action)
-{
-    reward = mdp->Act(action);
-    state = mdp->getState();
-    return true;  // we continue
+bool ContextBandit::Act(const int& action) {
+  reward = mdp->Act(action);
+  state = mdp->getState();
+  return true;  // we continue
 }
 
-
-ContextBandit::~ContextBandit()
-{
-    for (uint i=0; i<rewards.size(); ++i) {
-        delete rewards[i];
-    }
-    delete mdp;
+ContextBandit::~ContextBandit() {
+  for (uint i = 0; i < rewards.size(); ++i) {
+    delete rewards[i];
+  }
+  delete mdp;
 }
 
-DiscreteMDP* ContextBandit::getMDP() const
-{
-    return new DiscreteMDP(*mdp);
-}
+DiscreteMDP* ContextBandit::getMDP() const { return new DiscreteMDP(*mdp); }
 
-const char* ContextBandit::Name()
-{
-    return "Context Bandit";
-}
-
-
+const char* ContextBandit::Name() { return "Context Bandit"; }

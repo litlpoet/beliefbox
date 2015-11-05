@@ -17,37 +17,30 @@
 #include "RandomNumberGenerator.h"
 
 class RandomNumberFile : RandomNumberGenerator {
-protected:
-    std::vector<ulong> pool;
-    uint position;
-public:
-    RandomNumberFile(std::string filename);
-    virtual ~RandomNumberFile() {}
+ protected:
+  std::vector<ulong> pool;
+  uint position;
 
-    /// Initializes the random number generator with the computer clock.
-    virtual void seed() {}
-    /// Initializes the random number generator with the given long "the_seed_".
-    virtual void manualSeed(ulong the_seed_)
-    {
-        position = the_seed_ % pool.size();
-    }
+ public:
+  RandomNumberFile(std::string filename);
+  virtual ~RandomNumberFile() {}
 
-    /// Returns the starting seed used.
-    virtual ulong getInitialSeed()
-    {
-        return 0;
-    }
+  /// Initializes the random number generator with the computer clock.
+  virtual void seed() {}
+  /// Initializes the random number generator with the given long "the_seed_".
+  virtual void manualSeed(ulong the_seed_) {
+    position = the_seed_ % pool.size();
+  }
 
-    /// Generates a uniform 32 bits integer.
-    virtual ulong random();
+  /// Returns the starting seed used.
+  virtual ulong getInitialSeed() { return 0; }
 
-    /// Generates a uniform random number on [0,1[.
-    virtual real uniform();
-    int pool_size() {
-        return pool.size();
-    }
+  /// Generates a uniform 32 bits integer.
+  virtual ulong random();
+
+  /// Generates a uniform random number on [0,1[.
+  virtual real uniform();
+  int pool_size() { return pool.size(); }
 };
-
-
 
 #endif

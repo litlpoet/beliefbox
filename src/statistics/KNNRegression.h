@@ -14,24 +14,22 @@
 
 #include "KDTree.h"
 //#include "CoverTree.h"
-#include "PointPair.h"
 #include "BasisSet.h"
+#include "PointPair.h"
 
 /** K-Nearest-Neighbour regression */
-class KNNRegression
-{
-protected:
-    int M; ///< Tree and conditioning variable dimension
-    int N; ///< Dimension of the conditioned variable
-	KDTree<PointPair> kd_tree; ///< The tree
-	//CoverTree<PointPair> kd_tree;
-    //RBFBasisSet basis;
-    std::list<PointPair> pairs; ///< A list of pairs
-public:	
-    KNNRegression(int m, int n);
-    void AddElement(const PointPair& p);
-    void Evaluate(Vector&x, Vector& y, int K);
+class KNNRegression {
+ protected:
+  int M;                      ///< Tree and conditioning variable dimension
+  int N;                      ///< Dimension of the conditioned variable
+  KDTree<PointPair> kd_tree;  ///< The tree
+  // CoverTree<PointPair> kd_tree;
+  // RBFBasisSet basis;
+  std::list<PointPair> pairs;  ///< A list of pairs
+ public:
+  KNNRegression(int m, int n);
+  void AddElement(const PointPair& p);
+  void Evaluate(Vector& x, Vector& y, int K);
 };
-
 
 #endif

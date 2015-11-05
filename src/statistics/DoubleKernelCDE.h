@@ -12,7 +12,6 @@
 #ifndef DOUBLE_KERNEL_CDE_H
 #define DOUBLE_KERNEL_CDE_H
 
-
 #include <vector>
 #include "Vector.h"
 
@@ -21,41 +20,30 @@
     Estimate P(x | y) = sum_c K_c(x) P(c | y).
 
  */
-class DoubleKernelCDE
-{
-protected:
-    int n_x; ///< dimensionality of X
-    int n_y; ///< dimensionality of Y
-    struct PointPair
-    {
-        Vector x;
-        Vector y;
-        PointPair(const Vector& x_,
-                  const Vector& y_)
-            : x(x_), y(y_)
-        { 
-        }
-    };
-    std::vector<PointPair> D;
-    real b_x;
-    real b_y;
-public:
+class DoubleKernelCDE {
+ protected:
+  int n_x;  ///< dimensionality of X
+  int n_y;  ///< dimensionality of Y
+  struct PointPair {
+    Vector x;
+    Vector y;
+    PointPair(const Vector& x_, const Vector& y_) : x(x_), y(y_) {}
+  };
+  std::vector<PointPair> D;
+  real b_x;
+  real b_y;
 
-    DoubleKernelCDE(int n_x_dimensions,
-                    int n_y_dimensions,
-                    real initial_bandwidth);
-    void AddPoint(const Vector& x, const Vector& y)
-    {
-        D.push_back(PointPair(x, y));
-    }
-    real Observe(const Vector& x, const Vector& y); 
-    real pdf(const Vector& x, const Vector& y);
-    real log_pdf(const Vector& x, const Vector& y);
-    void BootstrapBandwidth(bool stochastic = false);
-    void Show()
-    {
-		printf ("# Double Kernel CDE\n");
-    }
+ public:
+  DoubleKernelCDE(int n_x_dimensions, int n_y_dimensions,
+                  real initial_bandwidth);
+  void AddPoint(const Vector& x, const Vector& y) {
+    D.push_back(PointPair(x, y));
+  }
+  real Observe(const Vector& x, const Vector& y);
+  real pdf(const Vector& x, const Vector& y);
+  real log_pdf(const Vector& x, const Vector& y);
+  void BootstrapBandwidth(bool stochastic = false);
+  void Show() { printf("# Double Kernel CDE\n"); }
 };
 
 #endif

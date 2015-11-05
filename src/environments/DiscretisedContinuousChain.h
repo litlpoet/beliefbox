@@ -1,5 +1,6 @@
 // -*- Mode: c++ -*-
-// copyright (c) 2008-2009 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
+// copyright (c) 2008-2009 by Christos Dimitrakakis
+// <christos.dimitrakakis@gmail.com>
 // copyright (c) 2003-2008 Michail G. Lagoudakis
 // $Revision$
 /***************************************************************************
@@ -18,35 +19,29 @@
 #include "Vector.h"
 #include "real.h"
 
-class DiscretisedContinuousChain : public Environment<int, int>
-{
-protected:
-    void Simulate();
-    real position;
-    void DiscretiseState()
-    {
-        if (endsim) {
-            state = 0;
-            return;
-        } 
-        real diff = (position + 1.0) / 2.0;
-        state = 1 + (int) round(diff*(n_states - 2));
-        if (state <= 0) state = 1;
-        else if (state >= (int) n_states) state = n_states - 1;
+class DiscretisedContinuousChain : public Environment<int, int> {
+ protected:
+  void Simulate();
+  real position;
+  void DiscretiseState() {
+    if (endsim) {
+      state = 0;
+      return;
     }
-public:
-    DiscretisedContinuousChain(int n_states);
-    virtual ~DiscretisedContinuousChain();
-    virtual void Reset();
-    virtual bool Act(int action);
-    virtual void Simulate(int action);
+    real diff = (position + 1.0) / 2.0;
+    state = 1 + (int)round(diff * (n_states - 2));
+    if (state <= 0)
+      state = 1;
+    else if (state >= (int)n_states)
+      state = n_states - 1;
+  }
+
+ public:
+  DiscretisedContinuousChain(int n_states);
+  virtual ~DiscretisedContinuousChain();
+  virtual void Reset();
+  virtual bool Act(int action);
+  virtual void Simulate(int action);
 };
-
-
-
-
-
-
-
 
 #endif

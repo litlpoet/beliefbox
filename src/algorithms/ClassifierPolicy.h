@@ -14,36 +14,21 @@
 
 #include "AbstractPolicy.h"
 
-class ClassifierPolicy  : public AbstractPolicy<Vector, int>
-{
-protected:
-	Classifier<Vector,int,Vector>* classifier;
-public:
-	ClassifierPolicy(Classifier<Vector,int,Vector>* classifier_) :
-        classifier(classifier_)
-    {
-    }
-	virtual ~ClassifierPolicy()
-    {
-    }
-	virtual int SelectAction()
-	{
-		return classifier->Classify(state);
-	}
-	virtual void Observe (Vector& previous_state, int& action, real r, Vector& next_state)
-    {
-        classifier->Observe(previous_state, action);
-    }
-    virtual void Observe (real r, Vector& next_state) 
-    {
-        return;
-    }
-	virtual void Reset()
-    {
-    }
-	virtual void SetState(Vector& state)
-	{ 
-		this->state = state;
-	}
+class ClassifierPolicy : public AbstractPolicy<Vector, int> {
+ protected:
+  Classifier<Vector, int, Vector>* classifier;
+
+ public:
+  ClassifierPolicy(Classifier<Vector, int, Vector>* classifier_)
+      : classifier(classifier_) {}
+  virtual ~ClassifierPolicy() {}
+  virtual int SelectAction() { return classifier->Classify(state); }
+  virtual void Observe(Vector& previous_state, int& action, real r,
+                       Vector& next_state) {
+    classifier->Observe(previous_state, action);
+  }
+  virtual void Observe(real r, Vector& next_state) { return; }
+  virtual void Reset() {}
+  virtual void SetState(Vector& state) { this->state = state; }
 };
 #endif

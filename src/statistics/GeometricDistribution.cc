@@ -11,17 +11,14 @@
 #include "GeometricDistribution.h"
 #include "Random.h"
 
-real GeometricDistribution::generate() const
-{
-    real x = urandom();
-    return floor(log(x) * gen_scale);
+real GeometricDistribution::generate() const {
+  real x = urandom();
+  return floor(log(x) * gen_scale);
 }
 
-real GeometricDistribution::pdf(real x) const
-{
-    if (x == floor(x)) {
-        return p * pow((1 - p), x);
-    }
-    return 0.0;
+real GeometricDistribution::pdf(real x) const {
+  if (x == floor(x)) {
+    return p * pow((1 - p), x);
+  }
+  return 0.0;
 }
-

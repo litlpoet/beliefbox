@@ -17,88 +17,84 @@
 
 /// Constructor
 KFold::KFold(Matrix& data_, int K_)
-	: data(data_),
-	  n_folds(K_),
-	  n_records(data.Rows()),
-	  n_columns(data.Columns()),
-	  assignment(n_records),
-	  totals(n_folds)
-{
-	MersenneTwisterRNG rng;
-	rng.manualSeed(1801174128); 
-	for (int k=0; k<n_folds; ++k) {
-		totals[k] = 0;
-	}
-	for (int t=0; t<n_records; ++t) {
-		int x = rng.discrete_uniform(n_folds);
-		assignment[t] = x;
-		totals[x] ++;
-	}
-	bool flag = true;
-	while (flag) {
-		flag = false;
-		for (int k=0; k<n_folds; ++k) {
-			if (totals[k] == 0) {
-				flag = true;
-				// choose a random, assigned part
-				int t = rng.discrete_uniform(n_records);
-				int swapped = assignment[t];
-				assignment[t] = k;
-				totals[k]++;
-				totals[swapped]--;
-			}
-		}
-	}
-	printf("# Making %d-fold with totals: ", n_folds);
-	for (int k=0; k<n_folds; ++k) {
-		printf ("%d ", totals[k]);
-	}
-	printf("\n");
+    : data(data_),
+      n_folds(K_),
+      n_records(data.Rows()),
+      n_columns(data.Columns()),
+      assignment(n_records),
+      totals(n_folds) {
+  MersenneTwisterRNG rng;
+  rng.manualSeed(1801174128);
+  for (int k = 0; k < n_folds; ++k) {
+    totals[k] = 0;
+  }
+  for (int t = 0; t < n_records; ++t) {
+    int x = rng.discrete_uniform(n_folds);
+    assignment[t] = x;
+    totals[x]++;
+  }
+  bool flag = true;
+  while (flag) {
+    flag = false;
+    for (int k = 0; k < n_folds; ++k) {
+      if (totals[k] == 0) {
+        flag = true;
+        // choose a random, assigned part
+        int t = rng.discrete_uniform(n_records);
+        int swapped = assignment[t];
+        assignment[t] = k;
+        totals[k]++;
+        totals[swapped]--;
+      }
+    }
+  }
+  printf("# Making %d-fold with totals: ", n_folds);
+  for (int k = 0; k < n_folds; ++k) {
+    printf("%d ", totals[k]);
+  }
+  printf("\n");
 }
 
-Matrix KFold::getTrainFold(int n, int T)
-{
-	assert(n>=0 && n<n_folds);
+Matrix KFold::getTrainFold(int n, int T) {
+  assert(n >= 0 && n < n_folds);
 
-	int M = n_records - totals[n];
-	if (T > 0 && T < M) {
-		M = T;
-	}
-	Matrix fold(M, n_columns);
-	int m = 0;
-	for (int t=0; t<n_records; ++t) {
-		if (assignment[t]!=n) {
-			for (int i=0; i<n_columns; ++i) {
-				fold(m, i) = data(t, i);
-			}
-			if (++m >= M) {
-				break;
-			}
-		}
-	}
-	return fold;
+  int M = n_records - totals[n];
+  if (T > 0 && T < M) {
+    M = T;
+  }
+  Matrix fold(M, n_columns);
+  int m = 0;
+  for (int t = 0; t < n_records; ++t) {
+    if (assignment[t] != n) {
+      for (int i = 0; i < n_columns; ++i) {
+        fold(m, i) = data(t, i);
+      }
+      if (++m >= M) {
+        break;
+      }
+    }
+  }
+  return fold;
 }
 
+Matrix KFold::getTestFold(int n, int T) {
+  assert(n >= 0 && n < n_folds);
 
-Matrix KFold::getTestFold(int n, int T)
-{
-	assert(n>=0 && n<n_folds);
-
-	int M = totals[n];
-	Matrix fold(M, n_columns);
-	if (T > 0 && T < M) {
-		M = T;
-	}
-	int m = 0;
-	for (int t=0; t<n_records; ++t) {
-		if (assignment[t]==n) {
-			for (int i=0; i<n_columns; ++i) {
-				fold(m, i) = data(t, i);
-			}
-			if (++m >= M) {
-				break;
-			}
-		}
-	}
-	return fold;
+  int M = totals[n];
+  Matrix fold(M, n_columns);
+  if (T > 0 && T < M) {
+    M = T;
+  }
+  int m = 0;
+  for (int t = 0; t < n_records; ++t) {
+    if (assignment[t] == n) {
+      for (int i = 0; i < n_columns; ++i) {
+        fold(m, i) = data(t, i);
+      }
+      if (++m >= M) {
+        break;
+      }
+    }
+  }
+  return fold;
 }

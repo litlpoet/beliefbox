@@ -12,17 +12,16 @@
 #include "Sampling.h"
 #include <cassert>
 
-int PropSample (std::vector<real>& w)
-{
-    int n = w.size();
-    assert(n > 0);
-    real X = UniformSample();
-    real s = 0.0;
-    for (int i=0; i<n; i++) {
-        s += w[i];
-        if (X < s) {
-            return i;
-        }
+int PropSample(std::vector<real>& w) {
+  int n = w.size();
+  assert(n > 0);
+  real X = UniformSample();
+  real s = 0.0;
+  for (int i = 0; i < n; i++) {
+    s += w[i];
+    if (X < s) {
+      return i;
     }
-    return rand()%n;
+  }
+  return rand() % n;
 }

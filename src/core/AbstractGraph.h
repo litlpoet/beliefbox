@@ -1,5 +1,6 @@
 /* -*- Mode: C++; -*- */
-/* VER: $Id: StateActionPolicy.h,v 1.1 2006/10/23 08:33:32 olethros Exp cdimitrakakis $*/
+/* VER: $Id: StateActionPolicy.h,v 1.1 2006/10/23 08:33:32 olethros Exp
+ * cdimitrakakis $*/
 // copyright (c) 2006 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
@@ -15,8 +16,8 @@
 
 #include <cstdlib>
 #include <list>
-#include <vector>
 #include <set>
+#include <vector>
 #include "real.h"
 
 /*@{*/
@@ -24,81 +25,68 @@
 /// classes implementing graph semantics. Most of the non-pure virtual
 /// functions do not need to be over-ridden, unless a sub-class has a
 /// special fast implementation for one of them.
-class AbstractGraph
-{
-protected:
-    int N; ///< number of nodes
-    bool directional; ///< whether it is directional
-    virtual bool hasCycles_iter (std::vector<bool>& mark, int n);
-public:
-    AbstractGraph(int N, bool directional);
-    virtual ~AbstractGraph();
-    
-    /// The number of nodes
-    int n_nodes()
-    {
-        return N;
-    }
+class AbstractGraph {
+ protected:
+  int N;             ///< number of nodes
+  bool directional;  ///< whether it is directional
+  virtual bool hasCycles_iter(std::vector<bool>& mark, int n);
 
-    /// Whether the graph is directional
-    bool is_directional()
-    {
-        return directional;
-    }
-    
-    virtual int n_out_edges (int i);
-    virtual int n_in_edges (int i);
-    virtual int n_edges (int i);
-    virtual int kConnectivity(); 
-    virtual int kConnectivity(int i, int* C = NULL); 
-    virtual int kConnectivity(int i, int j, int* C = NULL); 
-    virtual bool hasCycles ();
-    virtual bool edge (int src, int dst) = 0;
+ public:
+  AbstractGraph(int N, bool directional);
+  virtual ~AbstractGraph();
+
+  /// The number of nodes
+  int n_nodes() { return N; }
+
+  /// Whether the graph is directional
+  bool is_directional() { return directional; }
+
+  virtual int n_out_edges(int i);
+  virtual int n_in_edges(int i);
+  virtual int n_edges(int i);
+  virtual int kConnectivity();
+  virtual int kConnectivity(int i, int* C = NULL);
+  virtual int kConnectivity(int i, int j, int* C = NULL);
+  virtual bool hasCycles();
+  virtual bool edge(int src, int dst) = 0;
 };
-
 
 struct StructuralNode;
 
-struct StructuralEdge
-{
-    StructuralNode* src;
-    StructuralNode* dst;
+struct StructuralEdge {
+  StructuralNode* src;
+  StructuralNode* dst;
 };
 
-struct StructuralNode
-{
-    std::list<StructuralEdge*> out_edges;
-    std::list<StructuralEdge*> in_edges;
+struct StructuralNode {
+  std::list<StructuralEdge*> out_edges;
+  std::list<StructuralEdge*> in_edges;
 };
-
-
 
 template <typename V, typename Q>
-class TemplatedGraph : public AbstractGraph
-{
-public:
-    /// The templated node class
-    struct Node
-    {
-        StructuralNode node;
-        V v;
-    };
+class TemplatedGraph : public AbstractGraph {
+ public:
+  /// The templated node class
+  struct Node {
+    StructuralNode node;
+    V v;
+  };
 
-    /// Te templated edge class
-    struct Edge
-    {
-        StructuralEdge edge;
-        Q q;
-    };
-public:
-    /// Returns true if there is an edge from \c src to \c dst.
-    virtual bool edge (int src, int dst) = 0; 
+  /// Te templated edge class
+  struct Edge {
+    StructuralEdge edge;
+    Q q;
+  };
 
-    /// Value of a node
-    virtual V Value (int node) = 0; 
+ public:
+  /// Returns true if there is an edge from \c src to \c dst.
+  virtual bool edge(int src, int dst) = 0;
 
-    /// Value of an edge
-    virtual Q Value (int src, int dst) = 0;
+  /// Value of a node
+  virtual V Value(int node) = 0;
+
+  /// Value of an edge
+  virtual Q Value(int src, int dst) = 0;
 };
 
 /*@}*/

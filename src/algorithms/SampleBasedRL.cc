@@ -12,13 +12,9 @@
 
 #include "SampleBasedRL.h"
 
-SampleBasedRL::SampleBasedRL(int n_states_,
-                             int n_actions_,
-                             real gamma_,
-                             real epsilon_,
-                             MDPModel* model_,
-                             RandomNumberGenerator* rng_,
-                             int max_samples_,
+SampleBasedRL::SampleBasedRL(int n_states_, int n_actions_, real gamma_,
+                             real epsilon_, MDPModel* model_,
+                             RandomNumberGenerator* rng_, int max_samples_,
                              bool use_upper_bound_)
     : n_states(n_states_),
       n_actions(n_actions_),
@@ -38,35 +34,35 @@ SampleBasedRL::SampleBasedRL(int n_states_,
       use_upper_bound(use_upper_bound_),
       use_sampling_threshold(false),
       sampling_threshold(0.1),
-      weights(max_samples)
-{
-	if (gamma < 1.0 && update_interval > 1.0 / (1.0 - gamma)) {
-		update_interval = 1.0 / (1.0 - gamma);
-	}
-    printf("# Starting Sample-Based-RL with %d states, %d actions, %d samples, update interval %d\n", n_states, n_actions, max_samples, update_interval);
+      weights(max_samples) {
+  if (gamma < 1.0 && update_interval > 1.0 / (1.0 - gamma)) {
+    update_interval = 1.0 / (1.0 - gamma);
+  }
+  printf(
+      "# Starting Sample-Based-RL with %d states, %d actions, %d samples, "
+      "update interval %d\n",
+      n_states, n_actions, max_samples, update_interval);
 
-    current_state = -1;
+  current_state = -1;
 
-    real w_i = 1.0 / (real) max_samples;
-    mdp_list.resize(max_samples);
-    value_iteration.resize(max_samples);
-    printf("# Generating mean MDP\n");
-    //mdp_list[0] = model->getMeanMDP();
-    for (int i=0; i<max_samples; ++i) {
-        printf("# Generating sampled MDP\n");
-        mdp_list[i] = model->generate();
-        weights[i] = w_i;
-        value_iteration[i] = new ValueIteration(mdp_list[i], gamma);
-    }
+  real w_i = 1.0 / (real)max_samples;
+  mdp_list.resize(max_samples);
+  value_iteration.resize(max_samples);
+  printf("# Generating mean MDP\n");
+  // mdp_list[0] = model->getMeanMDP();
+  for (int i = 0; i < max_samples; ++i) {
+    printf("# Generating sampled MDP\n");
+    mdp_list[i] = model->generate();
+    weights[i] = w_i;
+    value_iteration[i] = new ValueIteration(mdp_list[i], gamma);
+  }
 
-    printf ("# Setting up MultiMPDValueIteration\n");
-    multi_value_iteration = new MultiMDPValueIteration(weights, mdp_list, gamma);
-    printf ("# Testing MultiMPDValueIteration\n");
-    multi_value_iteration->ComputeStateActionValues(0,1);
+  printf("# Setting up MultiMPDValueIteration\n");
+  multi_value_iteration = new MultiMDPValueIteration(weights, mdp_list, gamma);
+  printf("# Testing MultiMPDValueIteration\n");
+  multi_value_iteration->ComputeStateActionValues(0, 1);
 }
-SampleBasedRL::~SampleBasedRL()
-{
-
+SampleBasedRL::~SampleBasedRL() {
 #if 0
     for (int i=0; i<max_samples; ++i) {
         delete mdp_list[i];
@@ -91,46 +87,42 @@ SampleBasedRL::~SampleBasedRL()
     }
     printf(" # SampleBasedRL lower bound\n");
 #endif
-    for (int i=0; i<max_samples; ++i) {
-        delete mdp_list[i];
-        delete value_iteration[i];
-    }
-    delete multi_value_iteration;
+  for (int i = 0; i < max_samples; ++i) {
+    delete mdp_list[i];
+    delete value_iteration[i];
+  }
+  delete multi_value_iteration;
 }
-void SampleBasedRL::Reset()
-{
-    current_state = -1;
-    next_update = T;
-    Resample();
-    //model->Reset();
+void SampleBasedRL::Reset() {
+  current_state = -1;
+  next_update = T;
+  Resample();
+  // model->Reset();
 }
 /// Full observation
-real SampleBasedRL::Observe (int state, int action, real reward, int next_state, int next_action)
-{
-    if (state>=0) {
-        model->AddTransition(state, action, reward, next_state);
-    }
-    current_state = next_state;
-    current_action = next_action;
-    return 0.0;
+real SampleBasedRL::Observe(int state, int action, real reward, int next_state,
+                            int next_action) {
+  if (state >= 0) {
+    model->AddTransition(state, action, reward, next_state);
+  }
+  current_state = next_state;
+  current_action = next_action;
+  return 0.0;
 }
-/// Partial observation 
-real SampleBasedRL::Observe (real reward, int next_state, int next_action)
-{
-    if (current_state >= 0) {
-        model->AddTransition(current_state, current_action, reward, next_state);
-    }
-    current_state = next_state;
-    current_action = next_action;
-    return 0.0;
+/// Partial observation
+real SampleBasedRL::Observe(real reward, int next_state, int next_action) {
+  if (current_state >= 0) {
+    model->AddTransition(current_state, current_action, reward, next_state);
+  }
+  current_state = next_state;
+  current_action = next_action;
+  return 0.0;
 }
 
-
-void SampleBasedRL::Resample()
-{
-    for (int i=0; i<max_samples; ++i) {
-        delete mdp_list[i];
-        mdp_list[i] = model->generate();
+void SampleBasedRL::Resample() {
+  for (int i = 0; i < max_samples; ++i) {
+    delete mdp_list[i];
+    mdp_list[i] = model->generate();
 #if 0
         logmsg("Generating MDP model %d\n", i);
         for (int s=0; s<n_states; ++s) {
@@ -140,134 +132,127 @@ void SampleBasedRL::Resample()
             printf("# state %d\n", s);
         }
 #endif
-    }
+  }
 }
 
+void SampleBasedRL::CalculateUpperBound(real accuracy, int iterations) {
+  for (int j = 0; j < max_samples; ++j) {
+    value_iteration[j]->setMDP(mdp_list[j]);
+    value_iteration[j]->ComputeStateValuesStandard(accuracy, iterations);
+  }
 
-void SampleBasedRL::CalculateUpperBound(real accuracy, int iterations)
-{
-    for (int j=0; j<max_samples; ++j) {
-        value_iteration[j]->setMDP(mdp_list[j]);
-        value_iteration[j]->ComputeStateValuesStandard(accuracy, iterations);
+  real Z = 1.0 / (real)max_samples;
+  for (int s = 0; s < n_states; ++s) {
+    for (int a = 0; a < n_actions; ++a) {
+      QU(s, a) = 0;
+      for (int i = 0; i < max_samples; i++) {
+        QU(s, a) += value_iteration[i]->getValue(s, a);
+      }
     }
-    
-    real Z = 1.0 / (real) max_samples;
-    for (int s=0; s<n_states; ++s) {
-        for (int a=0; a<n_actions; ++a) {
-            QU(s,a) = 0;
-            for (int i=0; i<max_samples; i++) {
-                QU(s, a) += value_iteration[i]->getValue(s, a);
-            }
-        }
-    }
-    QU *= Z;
-    for (int s=0; s<n_states; ++s) {
+  }
+  QU *= Z;
+  for (int s = 0; s < n_states; ++s) {
 #if 1
-        VU(s) = QU(s, 0);
-        for (int a=1; a<n_actions; ++a) {
-            VU(s) = std::max<real>(VU(s), QU(s, a));
-        }
+    VU(s) = QU(s, 0);
+    for (int a = 1; a < n_actions; ++a) {
+      VU(s) = std::max<real>(VU(s), QU(s, a));
+    }
 #endif
-    }
+  }
 }
 
-void SampleBasedRL::CalculateLowerBound(real accuracy, int iterations)
-{
-    multi_value_iteration->setMDPList(mdp_list);
-    multi_value_iteration->ComputeStateValues(accuracy, iterations);
-    
-    for (int s=0; s<n_states; ++s) {
-        for (int a=0; a<n_actions; ++a) {
-            QL(s,a) = multi_value_iteration->getValue(s, a);
-        }
-    }
-    for (int s=0; s<n_states; ++s) {
-        VL(s) = QL(s, 0);
-        for (int a=1; a<n_actions; ++a) {
-            VL(s) = std::max<real>(VL(s), QL(s, a));
-        }
-    }
-}
+void SampleBasedRL::CalculateLowerBound(real accuracy, int iterations) {
+  multi_value_iteration->setMDPList(mdp_list);
+  multi_value_iteration->ComputeStateValues(accuracy, iterations);
 
+  for (int s = 0; s < n_states; ++s) {
+    for (int a = 0; a < n_actions; ++a) {
+      QL(s, a) = multi_value_iteration->getValue(s, a);
+    }
+  }
+  for (int s = 0; s < n_states; ++s) {
+    VL(s) = QL(s, 0);
+    for (int a = 1; a < n_actions; ++a) {
+      VL(s) = std::max<real>(VL(s), QL(s, a));
+    }
+  }
+}
 
 /// Get an action using the current exploration policy.
 /// it calls Observe as a side-effect.
-int SampleBasedRL::Act(real reward, int next_state)
-{
-    assert(next_state >= 0 && next_state < n_states);
-    T++;
+int SampleBasedRL::Act(real reward, int next_state) {
+  assert(next_state >= 0 && next_state < n_states);
+  T++;
 
-    // update the model
-    if (current_state >= 0) {
-        model->AddTransition(current_state, current_action, reward, next_state);
-    }
-    current_state = next_state;
+  // update the model
+  if (current_state >= 0) {
+    model->AddTransition(current_state, current_action, reward, next_state);
+  }
+  current_state = next_state;
 
-    // Update MDPs
-    //mdp_list[0] = model->getMeanMDP();
-    // Do note waste much time generating MDPs
-    
-    bool do_update = false;
-    if (use_sampling_threshold) {
-        for (int i=0; i<max_samples; ++i) {
-            real p = mdp_list[i]->getTransitionProbability(current_state, current_action, next_state);
-            weights[i] *= p;
-        }
-        weights /= weights.Sum();
-        if (Max(weights) > 1.0 - sampling_threshold) {
-            //printf("Minimum: %f\n", Min(weights));
-            //weights.print(stdout);
-            do_update = true;
-            for (int i=0; i<max_samples; ++i) {
-                weights[i] = 1.0 / (real) max_samples;
-            }
-        }
-    } else {
-        if (T >= next_update) {    
-            do_update = true;
-        }
-    }
-    if (do_update) {    
-      printf("# update: %d\n", T);
-        //model->ShowModel();
-        update_interval += 1;//(int) (ceil)(1.01*(double) T);
-        next_update = T + update_interval;
-        Resample();
-        if (use_upper_bound) {
-            CalculateUpperBound(1e-3, 1e3);
-        } else {
-            CalculateLowerBound(1e-3, 1e3);
-        }
-    }
+  // Update MDPs
+  // mdp_list[0] = model->getMeanMDP();
+  // Do note waste much time generating MDPs
 
-    // update values    
+  bool do_update = false;
+  if (use_sampling_threshold) {
+    for (int i = 0; i < max_samples; ++i) {
+      real p = mdp_list[i]->getTransitionProbability(
+          current_state, current_action, next_state);
+      weights[i] *= p;
+    }
+    weights /= weights.Sum();
+    if (Max(weights) > 1.0 - sampling_threshold) {
+      // printf("Minimum: %f\n", Min(weights));
+      // weights.print(stdout);
+      do_update = true;
+      for (int i = 0; i < max_samples; ++i) {
+        weights[i] = 1.0 / (real)max_samples;
+      }
+    }
+  } else {
+    if (T >= next_update) {
+      do_update = true;
+    }
+  }
+  if (do_update) {
+    printf("# update: %d\n", T);
+    // model->ShowModel();
+    update_interval += 1;  //(int) (ceil)(1.01*(double) T);
+    next_update = T + update_interval;
+    Resample();
     if (use_upper_bound) {
-        //CalculateUpperBound(0, 1);
-        for (int i=0; i<n_actions; i++) {
-            tmpQ[i] = UpperBound(next_state, i);
-        }
+      CalculateUpperBound(1e-3, 1e3);
     } else {
-        //CalculateLowerBound(0, 1);
-        for (int i=0; i<n_actions; i++) {
-            tmpQ[i] = LowerBound(next_state, i);
-        }
-
+      CalculateLowerBound(1e-3, 1e3);
     }
+  }
 
-    int next_action;
-    real epsilon_t = epsilon / (1.0 + sqrt((real) T));
-
-    // choose action
-    if (urandom()<epsilon_t) {
-        next_action = rng->discrete_uniform(n_actions);
-        //printf("RANDOM %d\n", next_action);
-    } else {
-        next_action = ArgMax(tmpQ);
+  // update values
+  if (use_upper_bound) {
+    // CalculateUpperBound(0, 1);
+    for (int i = 0; i < n_actions; i++) {
+      tmpQ[i] = UpperBound(next_state, i);
     }
-    current_action = next_action;
-    //printf("%f %d %d %d #epsilon\n", epsilon_t, next_action, T, next_update);
-    
-    return current_action;
+  } else {
+    // CalculateLowerBound(0, 1);
+    for (int i = 0; i < n_actions; i++) {
+      tmpQ[i] = LowerBound(next_state, i);
+    }
+  }
+
+  int next_action;
+  real epsilon_t = epsilon / (1.0 + sqrt((real)T));
+
+  // choose action
+  if (urandom() < epsilon_t) {
+    next_action = rng->discrete_uniform(n_actions);
+    // printf("RANDOM %d\n", next_action);
+  } else {
+    next_action = ArgMax(tmpQ);
+  }
+  current_action = next_action;
+  // printf("%f %d %d %d #epsilon\n", epsilon_t, next_action, T, next_update);
+
+  return current_action;
 }
-
-

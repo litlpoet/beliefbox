@@ -14,29 +14,25 @@
 #define ABSTRACT_POLICY_H
 
 #include <vector>
-#include "real.h"
 #include "MDPDistribution.h"
+#include "real.h"
 
 template <typename StateType, typename ActionType>
-class AbstractPolicy
-{
-public:	
-	StateType state;
-	virtual ~AbstractPolicy(){};
-	virtual ActionType SelectAction() = 0;
-	virtual void Observe (const StateType& previous_state, const ActionType& action, real r, const StateType& next_state) = 0;
-    virtual void Observe (real r, const StateType& next_state) = 0;
-	virtual void Reset() = 0;
-	virtual void setState(const StateType& state)
-	{ 
-		this->state = state;
-	}
-    virtual void setEpsilonGreedy(real epsilon_)
-    {
-        Serror("Not implented\n");
-        exit(-1);
-    }
+class AbstractPolicy {
+ public:
+  StateType state;
+  virtual ~AbstractPolicy(){};
+  virtual ActionType SelectAction() = 0;
+  virtual void Observe(const StateType& previous_state,
+                       const ActionType& action, real r,
+                       const StateType& next_state) = 0;
+  virtual void Observe(real r, const StateType& next_state) = 0;
+  virtual void Reset() = 0;
+  virtual void setState(const StateType& state) { this->state = state; }
+  virtual void setEpsilonGreedy(real epsilon_) {
+    Serror("Not implented\n");
+    exit(-1);
+  }
 };
-
 
 #endif

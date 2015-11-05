@@ -9,33 +9,28 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef MULTIVARIATE_GAUSSIAN_CLASSIFIER_H
 #define MULTIVARIATE_GAUSSIAN_CLASSIFIER_H
 
-#include "MultivariateNormalUnknownMeanPrecision.h"
-#include "Dirichlet.h"
 #include <vector>
+#include "Dirichlet.h"
+#include "MultivariateNormalUnknownMeanPrecision.h"
 
 /// A classifier using a multivariate gaussian for each class.
-class MultivariateGaussianClassifier
-{
-public:
-    const int n_inputs; ///< dimensionality  of observations
-    const int n_classes; ///< number of classes
-    std::vector<MultivariateNormalUnknownMeanPrecision*> class_distribution; ///< the distribution for each class
-    DirichletDistribution prior; ///< The class prior distribution
-    Vector output;
-    MultivariateGaussianClassifier(int n_inputs_, int n_classes_);
-    ~MultivariateGaussianClassifier();
-    int Classify(const Vector& x) 
-    {
-        return ArgMax(Output(x));
-    }
-    Vector& Output(const Vector& x);
-    real Observe(const Vector& x, const int label);
-    Vector getClassMean(const int label) const;
-
+class MultivariateGaussianClassifier {
+ public:
+  const int n_inputs;   ///< dimensionality  of observations
+  const int n_classes;  ///< number of classes
+  std::vector<MultivariateNormalUnknownMeanPrecision*>
+      class_distribution;       ///< the distribution for each class
+  DirichletDistribution prior;  ///< The class prior distribution
+  Vector output;
+  MultivariateGaussianClassifier(int n_inputs_, int n_classes_);
+  ~MultivariateGaussianClassifier();
+  int Classify(const Vector& x) { return ArgMax(Output(x)); }
+  Vector& Output(const Vector& x);
+  real Observe(const Vector& x, const int label);
+  Vector getClassMean(const int label) const;
 };
 
 #endif

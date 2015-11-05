@@ -1,5 +1,6 @@
 // -*- Mode: c++ -*-
-// copyright (c) 2005-2009 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
+// copyright (c) 2005-2009 by Christos Dimitrakakis
+// <christos.dimitrakakis@gmail.com>
 // $Id: MDPModel.c,v 1.1 2006/10/23 08:33:32 olethros Exp cdimitrakakis $
 /***************************************************************************
  *                                                                         *
@@ -11,174 +12,159 @@
  ***************************************************************************/
 
 #include "MDPModel.h"
+#include <iostream>
 #include "Distribution.h"
 #include "Random.h"
 #include "SingularDistribution.h"
-#include <iostream>
 
-DiscreteMDP* MDPModel::CreateMDP() const
-{
-    mdp_dbg("Making a DiscreteMDP with %d states, %d actions from model\n", n_states, n_actions);
-    DiscreteMDP* mdp = new DiscreteMDP(n_states, n_actions, NULL);
-    for (int i=0; i<n_states; ++i) {
-        for (int a=0; a<n_actions; ++a) {
-            SingularDistribution* ER = new SingularDistribution(getExpectedReward(i, a));
-            mdp->reward_distribution.addRewardDistribution(i, a, ER);
-            real sum_p = 0.0;
+DiscreteMDP* MDPModel::CreateMDP() const {
+  mdp_dbg("Making a DiscreteMDP with %d states, %d actions from model\n",
+          n_states, n_actions);
+  DiscreteMDP* mdp = new DiscreteMDP(n_states, n_actions, NULL);
+  for (int i = 0; i < n_states; ++i) {
+    for (int a = 0; a < n_actions; ++a) {
+      SingularDistribution* ER =
+          new SingularDistribution(getExpectedReward(i, a));
+      mdp->reward_distribution.addRewardDistribution(i, a, ER);
+      real sum_p = 0.0;
 
-            for (int j=0; j<n_states; ++j) {
-                real p = getTransitionProbability(i, a, j);
-                sum_p += p;
-                if (p) {
-                    mdp->setTransitionProbability(i, a, j, p);
-                    //printf("p(s'=%d|s=%d, a=%d)=%f\n", j, i, a, p);
-                }
-            }
-            if (fabs(sum_p - 1.0) > 0.001) {
-                printf ("sum_s' p(s'|s=%d, a=%d) = %f\n", i, a, sum_p);
-                assert(0);
-                exit(-1);
-            }
+      for (int j = 0; j < n_states; ++j) {
+        real p = getTransitionProbability(i, a, j);
+        sum_p += p;
+        if (p) {
+          mdp->setTransitionProbability(i, a, j, p);
+          // printf("p(s'=%d|s=%d, a=%d)=%f\n", j, i, a, p);
         }
+      }
+      if (fabs(sum_p - 1.0) > 0.001) {
+        printf("sum_s' p(s'|s=%d, a=%d) = %f\n", i, a, sum_p);
+        assert(0);
+        exit(-1);
+      }
     }
-    mdp->Check();
-    return mdp;
+  }
+  mdp->Check();
+  return mdp;
 }
 
-void MDPModel::ShowModel() const
-{
-    for (int a=0; a<n_actions; a++) {
-        for (int i=0; i<n_states; i++) {
-            std::cout << a << "," << i << ":";
-            for (int j=0; j<n_states; j++) {
-                real p = getTransitionProbability(i, a, j);
-                if (p<0.01) p =0.0f;
-                std::cout << p << " ";
-            }
-            std::cout << std::endl;
-        }
+void MDPModel::ShowModel() const {
+  for (int a = 0; a < n_actions; a++) {
+    for (int i = 0; i < n_states; i++) {
+      std::cout << a << "," << i << ":";
+      for (int j = 0; j < n_states; j++) {
+        real p = getTransitionProbability(i, a, j);
+        if (p < 0.01) p = 0.0f;
+        std::cout << p << " ";
+      }
+      std::cout << std::endl;
     }
+  }
 
-   for (int a=0; a<n_actions; a++) {
-        for (int i=0; i<n_states; i++) {
-            std::cout << "R(" << a << "," << i 
-                      << ") = " << getExpectedReward(i, a)
-                      << std::endl; 
-        }
-   }
-}
-
-GradientDescentMDPModel::GradientDescentMDPModel (int n_states, int n_actions, Distribution* initial_transitions, Distribution* initial_rewards) 
-    : MDPModel (n_states, n_actions)
-{
-    this->initial_transitions = initial_transitions;
-    this->initial_rewards = initial_rewards;
-
-    N = n_states * n_actions;
-
-    P = new real* [N];
-    for (int i=0; i<N; i++) {
-        P[i] = new real [n_states];
+  for (int a = 0; a < n_actions; a++) {
+    for (int i = 0; i < n_states; i++) {
+      std::cout << "R(" << a << "," << i << ") = " << getExpectedReward(i, a)
+                << std::endl;
     }
-    R = new real [N];
-
-    Reset();
+  }
 }
 
-void GradientDescentMDPModel::Reset()
-{
-    for (int i=0; i<N; i++) {
-        for (int j=0; j<n_states; j++) {
-            P[i][j] = initial_transitions->generate();
-        }
+GradientDescentMDPModel::GradientDescentMDPModel(
+    int n_states, int n_actions, Distribution* initial_transitions,
+    Distribution* initial_rewards)
+    : MDPModel(n_states, n_actions) {
+  this->initial_transitions = initial_transitions;
+  this->initial_rewards = initial_rewards;
+
+  N = n_states * n_actions;
+
+  P = new real*[N];
+  for (int i = 0; i < N; i++) {
+    P[i] = new real[n_states];
+  }
+  R = new real[N];
+
+  Reset();
+}
+
+void GradientDescentMDPModel::Reset() {
+  for (int i = 0; i < N; i++) {
+    for (int j = 0; j < n_states; j++) {
+      P[i][j] = initial_transitions->generate();
     }
+  }
 
-    for (int i=0; i<N; i++) {
-        R [i] = initial_rewards->generate();
-    } 
+  for (int i = 0; i < N; i++) {
+    R[i] = initial_rewards->generate();
+  }
 }
 
-GradientDescentMDPModel::~GradientDescentMDPModel()
-{
-    for (int i=0; i<N; i++) {
-        delete [] P[i];
+GradientDescentMDPModel::~GradientDescentMDPModel() {
+  for (int i = 0; i < N; i++) {
+    delete[] P[i];
+  }
+  delete[] P;
+  delete[] R;
+}
+
+void GradientDescentMDPModel::AddTransition(int s, int a, real r, int s2) {
+  int ID = getID(s, a);
+  real* Ps = P[ID];
+
+  // DISABLED_ASSERT(s2>=0 && s2<n_states);
+  // update transition probabilities
+  real sum = 0.0f;
+  for (int i = 0; i < n_states; i++) {
+    if (i == s2) {
+      Ps[i] += alpha * (1.0f - Ps[i]);
+    } else {
+      Ps[i] -= alpha * Ps[i];
     }
-    delete [] P;
-    delete [] R;
-}
+    sum += Ps[i];
+  }
 
-
-void GradientDescentMDPModel::AddTransition(int s, int a, real r, int s2)
-{
-    int ID = getID (s, a);
-    real* Ps=P[ID];
-        
-        
-    //DISABLED_ASSERT(s2>=0 && s2<n_states);
-    // update transition probabilities
-    real sum = 0.0f;
-    for (int i=0; i<n_states; i++) {
-        if (i==s2) {
-            Ps[i] += alpha * (1.0f - Ps[i]);
-        } else {
-            Ps[i] -= alpha * Ps[i];
-        }
-        sum += Ps[i];
+  if (fabs(sum - 1.0f) > 0.01f) {  // should not be necessary to normalise
+    std::cerr << "vector sum " << sum
+              << " violates constraint, renormalising.\n";
+    real isum = 1.0f / sum;
+    for (int i = 0; i < n_states; i++) {
+      Ps[i] *= isum;
     }
-        
+  }
 
-    if (fabs(sum-1.0f)>0.01f) {         // should not be necessary to normalise
-        std::cerr << "vector sum "
-                  << sum << " violates constraint, renormalising.\n";
-        real isum = 1.0f/sum;
-        for (int i=0; i<n_states; i++) {
-            Ps[i] *= isum;
-        }
+  // update rewards (maybe replace with a gaussian model?)
+  R[ID] += alpha * (r - R[ID]);
+}
+
+real GradientDescentMDPModel::GenerateReward(int s, int a) const {
+  int ID = getID(s, a);
+  return R[ID];
+}
+
+int GradientDescentMDPModel::GenerateTransition(int s, int a) const {
+  int ID = getID(s, a);
+  real* Ps = P[ID];
+  real sum = 0.0f;
+  real X = urandom();
+
+  int select = 0;
+  for (int i = 0; i < n_states; i++) {
+    sum += Ps[i];
+    if (X < sum) {
+      select = i;
+      break;
     }
-
-    // update rewards (maybe replace with a gaussian model?)
-    R[ID] += alpha * (r - R[ID]);
+  }
+  return select;
 }
 
-
-
-
-
-
-
-real GradientDescentMDPModel::GenerateReward (int s, int a) const
-{
-    int ID = getID (s, a);
-    return R[ID];
+real GradientDescentMDPModel::getTransitionProbability(int s, int a,
+                                                       int s2) const {
+  int ID = getID(s, a);
+  assert(s2 >= 0 && s2 < n_states);
+  return P[ID][s2];
 }
 
-int GradientDescentMDPModel::GenerateTransition (int s, int a) const
-{
-    int ID = getID (s,a);
-    real* Ps=P[ID];
-    real sum = 0.0f;
-    real X = urandom();
-
-    int select = 0;
-    for (int i=0; i<n_states; i++) {
-        sum += Ps[i];
-        if (X<sum) {
-            select = i;
-            break;
-        }
-    }
-    return select;
-}
-
-real GradientDescentMDPModel::getTransitionProbability (int s, int a, int s2) const
-{
-    int ID = getID (s, a);                
-    assert (s2>=0 && s2<n_states);
-    return P[ID][s2];
-}
-
-real GradientDescentMDPModel::getExpectedReward (int s, int a) const
-{
-    int ID = getID (s, a);
-    return R[ID];
+real GradientDescentMDPModel::getExpectedReward(int s, int a) const {
+  int ID = getID(s, a);
+  return R[ID];
 }

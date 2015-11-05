@@ -1,5 +1,6 @@
 /* -*- Mode: C++; -*- */
-// copyright (c) 20012 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
+// copyright (c) 20012 by Christos Dimitrakakis
+// <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,28 +20,26 @@
     of outcomes. It is a straightforward extension of the Dirichlet
     distribution.
 
-	This particular version of the process assumes that all values will eventually be seen.
+        This particular version of the process assumes that all values will
+   eventually be seen.
  */
-class DirichletFiniteOutcomes : public DirichletDistribution
-{
-protected:
-    real prior_alpha;
-    int n_seen_symbols;
-  public:
-    DirichletFiniteOutcomes();
-    DirichletFiniteOutcomes(int n, real p = 1.0);
-    virtual ~DirichletFiniteOutcomes();
-    virtual void generate(Vector& x) const;
-    virtual Vector generate() const;
-    virtual real pdf(const Vector& x) const;
-    virtual real log_pdf(const Vector& x) const;
-    virtual void update(Vector* x);
-    virtual real Observe(int i);
-    virtual Vector getMarginal() const;
-    virtual void resize(int n, real p = 0.0);
+class DirichletFiniteOutcomes : public DirichletDistribution {
+ protected:
+  real prior_alpha;
+  int n_seen_symbols;
 
+ public:
+  DirichletFiniteOutcomes();
+  DirichletFiniteOutcomes(int n, real p = 1.0);
+  virtual ~DirichletFiniteOutcomes();
+  virtual void generate(Vector& x) const;
+  virtual Vector generate() const;
+  virtual real pdf(const Vector& x) const;
+  virtual real log_pdf(const Vector& x) const;
+  virtual void update(Vector* x);
+  virtual real Observe(int i);
+  virtual Vector getMarginal() const;
+  virtual void resize(int n, real p = 0.0);
 };
 
 #endif
-
-

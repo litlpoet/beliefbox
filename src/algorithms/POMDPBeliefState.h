@@ -14,25 +14,24 @@
 
 #include "DiscretePOMDP.h"
 
-class DiscretePOMDPBeliefState
-{
-protected:
-    DiscretePOMDP* pomdp;
-    int n_states;
-    Vector belief;
-    Vector log_belief;
-public: 
-    DiscretePOMDPBeliefState(DiscretePOMDP* pomdp_);
-    ~DiscretePOMDPBeliefState();
+class DiscretePOMDPBeliefState {
+ protected:
+  DiscretePOMDP* pomdp;
+  int n_states;
+  Vector belief;
+  Vector log_belief;
 
-    /// Obtain a single observation and reward
-    real Observe(int x, real r);
-    /// Obtain current action, next observation and reward
-    real Observe(int a, int x, real r);
-    /// Obtain current action, next observation and reward
-    real ObservationProbability(int a, int x, real r);
-    void Reset();
+ public:
+  DiscretePOMDPBeliefState(DiscretePOMDP* pomdp_);
+  ~DiscretePOMDPBeliefState();
 
+  /// Obtain a single observation and reward
+  real Observe(int x, real r);
+  /// Obtain current action, next observation and reward
+  real Observe(int a, int x, real r);
+  /// Obtain current action, next observation and reward
+  real ObservationProbability(int a, int x, real r);
+  void Reset();
 };
 
 #endif

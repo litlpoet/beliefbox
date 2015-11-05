@@ -12,25 +12,22 @@
 #ifndef DBNMDP_H
 #define DBNMDP_H
 
-
 #include "MDPDistribution.h"
 
 /** A distribution over MDPs - these are observable MDPs, so the
-	templatisation is over the observed variables: state and action.
-	Rewards are always real numbers.
+        templatisation is over the observed variables: state and action.
+        Rewards are always real numbers.
  */
-class DBNMDP :  public DiscreteMDPDistribution
-{
-public:
-	/// Destroy the MDP Distribution
-	virtual ~DBNMDP() {}
+class DBNMDP : public DiscreteMDPDistribution {
+ public:
+  /// Destroy the MDP Distribution
+  virtual ~DBNMDP() {}
 
-	/// Generate a sample from the distribution.
-	virtual MDP<int, int> generate();
+  /// Generate a sample from the distribution.
+  virtual MDP<int, int> generate();
 
-	/// Register an observation, thus changing the distribution.
-	virtual void observe (int s, int a, real r, int s2) = 0;
+  /// Register an observation, thus changing the distribution.
+  virtual void observe(int s, int a, real r, int s2) = 0;
 };
-
 
 #endif

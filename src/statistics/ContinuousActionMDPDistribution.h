@@ -24,14 +24,12 @@ typedef MDPDistribution<int, Vector> ContinuousActionMDPDistribution;
  *
  * This has only one state.
  */
-class ContinuousBanditDistribution : public ContinuousActionMDPDistribution
-{
-protected:
-	
-public:
-	virtual ~ContinuousBanditDistribution();
-	virtual ContinuousActionMDP generate();
-	virtual void observe (int s, Vector a, real r, int s2) = 0;
+class ContinuousBanditDistribution : public ContinuousActionMDPDistribution {
+ protected:
+ public:
+  virtual ~ContinuousBanditDistribution();
+  virtual ContinuousActionMDP generate();
+  virtual void observe(int s, Vector a, real r, int s2) = 0;
 };
 
 #endif

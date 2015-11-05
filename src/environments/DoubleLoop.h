@@ -13,43 +13,37 @@
 #ifndef DOUBLE_LOOP_H
 #define DOUBLE_LOOP_H
 
+#include "DiscreteMDP.h"
 #include "Environment.h"
 #include "RandomNumberGenerator.h"
-#include "DiscreteMDP.h"
 
 /// A simple environment to test exploration.
 ///
 /// Adapted from Dearden, 1998, "Bayesian Q-Learning"
-class DoubleLoop : public DiscreteEnvironment
-{
-protected:
-	real r_left; ///< reward at start state
-	real r_right; ///< reward at end state
-public:
-    DiscreteMDP* model; ///< internal model
-    DoubleLoop(real r_left_ = 2.0, real r_right_ = 1.0);
-    
-    virtual ~DoubleLoop();
-    
-    virtual void Reset();
-    virtual bool Act(const int&action);
+class DoubleLoop : public DiscreteEnvironment {
+ protected:
+  real r_left;   ///< reward at start state
+  real r_right;  ///< reward at end state
+ public:
+  DiscreteMDP* model;  ///< internal model
+  DoubleLoop(real r_left_ = 2.0, real r_right_ = 1.0);
 
-    virtual const char* Name()
-    {
-        return "River Swim";
-    }
-	virtual real getTransitionProbability(const int& state, const int& action, const int& next_state) const 
-    {
-        return model->getTransitionProbability(state, action, next_state);
-    }
-        
+  virtual ~DoubleLoop();
 
-    virtual real getExpectedReward(const int& state, const int& action) const 
-    {
-        return model->getExpectedReward(state, action);
-    }
+  virtual void Reset();
+  virtual bool Act(const int& action);
 
-    virtual DiscreteMDP* getMDP() const;
+  virtual const char* Name() { return "River Swim"; }
+  virtual real getTransitionProbability(const int& state, const int& action,
+                                        const int& next_state) const {
+    return model->getTransitionProbability(state, action, next_state);
+  }
+
+  virtual real getExpectedReward(const int& state, const int& action) const {
+    return model->getExpectedReward(state, action);
+  }
+
+  virtual DiscreteMDP* getMDP() const;
 };
 
 #endif

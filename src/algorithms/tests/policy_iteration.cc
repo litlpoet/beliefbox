@@ -1,5 +1,6 @@
 /* -*- Mode: C++; -*- */
-/* VER: $Id: Distribution.h,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp cdimitrakakis $*/
+/* VER: $Id: Distribution.h,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp
+ * cdimitrakakis $*/
 // copyright (c) 2006 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
@@ -12,102 +13,96 @@
 
 #ifdef MAKE_MAIN
 #include "ValueIteration.h"
-#include "PolicyIteration.h"
-#include "AverageValueIteration.h"
 #include "AveragePolicyEvaluation.h"
-#include "Gridworld.h"
-#include "InventoryManagement.h"
-#include "RandomMDP.h"
-#include "OptimisticTask.h"
+#include "AverageValueIteration.h"
 #include "DiscreteChain.h"
 #include "DiscretePolicy.h"
+#include "Gridworld.h"
+#include "InventoryManagement.h"
+#include "OptimisticTask.h"
+#include "PolicyIteration.h"
+#include "RandomMDP.h"
 
-int main (void)
-{
-    int period = 30;
-    int max_items = 10;
-    real gamma = 0.95;
-    real demand = 0.1;
-    real random = 0.0;
-    real pit = -100.0;
-    real goal = 0.0;
-    real step = -0.1;
-    real margin = 1.1;
-    
-    //InventoryManagement inventory_management (period, max_items, demand, margin);
-    
-    Gridworld grid_world("/home/olethros/projects/beliefbox/dat/maze2", random, pit, goal, step);
-    OptimisticTask optimistic_task(0.1, 0.01);
-    DiscreteChain chain_task(5);
-    //RandomMDP random_mdp(1, 4, 0.01, 0.1, 0, 1, false);
-    //random_mdp.AperiodicityTransform(0.99);
-    //const DiscreteMDP* mdp = random_mdp.getMDP();
-    //const DiscreteMDP* mdp = inventory_management.getMDP();
-    //const DiscreteMDP* mdp = grid_world.getMDP();
-    //const DiscreteMDP* mdp = optimistic_task.getMDP();
-    const DiscreteMDP* mdp = chain_task.getMDP();
+int main(void) {
+  int period = 30;
+  int max_items = 10;
+  real gamma = 0.95;
+  real demand = 0.1;
+  real random = 0.0;
+  real pit = -100.0;
+  real goal = 0.0;
+  real step = -0.1;
+  real margin = 1.1;
 
-    int n_states = mdp->getNStates();
-    int n_actions = mdp->getNActions();
-    printf ("# states: %d, actions: %d\n", n_states, n_actions);
-    AveragePolicyEvaluation average_policy_evaluation(NULL, mdp);
-    PolicyIteration policy_iteration(&average_policy_evaluation, mdp, gamma);
-    ValueIteration value_iteration(mdp, gamma);
-    //AverageValueIteration value_iteration(mdp);
+  // InventoryManagement inventory_management (period, max_items, demand,
+  // margin);
 
-    std::vector<real> Q(n_actions);
+  Gridworld grid_world("/home/olethros/projects/beliefbox/dat/maze2", random,
+                       pit, goal, step);
+  OptimisticTask optimistic_task(0.1, 0.01);
+  DiscreteChain chain_task(5);
+  // RandomMDP random_mdp(1, 4, 0.01, 0.1, 0, 1, false);
+  // random_mdp.AperiodicityTransform(0.99);
+  // const DiscreteMDP* mdp = random_mdp.getMDP();
+  // const DiscreteMDP* mdp = inventory_management.getMDP();
+  // const DiscreteMDP* mdp = grid_world.getMDP();
+  // const DiscreteMDP* mdp = optimistic_task.getMDP();
+  const DiscreteMDP* mdp = chain_task.getMDP();
 
-	real accuracy = 0;
+  int n_states = mdp->getNStates();
+  int n_actions = mdp->getNActions();
+  printf("# states: %d, actions: %d\n", n_states, n_actions);
+  AveragePolicyEvaluation average_policy_evaluation(NULL, mdp);
+  PolicyIteration policy_iteration(&average_policy_evaluation, mdp, gamma);
+  ValueIteration value_iteration(mdp, gamma);
+  // AverageValueIteration value_iteration(mdp);
 
-    printf ("Average Policy iteration\n");
-    policy_iteration.ComputeStateValues(accuracy, 1000);
-    for (int s=0; s<mdp->getNStates(); s++) {
-        printf ("%.2f ", policy_iteration.getValue(s));
+  std::vector<real> Q(n_actions);
+
+  real accuracy = 0;
+
+  printf("Average Policy iteration\n");
+  policy_iteration.ComputeStateValues(accuracy, 1000);
+  for (int s = 0; s < mdp->getNStates(); s++) {
+    printf("%.2f ", policy_iteration.getValue(s));
+  }
+  printf(", D = %.1f, b = %.1f\n", policy_iteration.Delta,
+         policy_iteration.baseline);
+
+  printf("Value iteration\n");
+  // value_iteration.ComputeStateActionValues(accuracy, 1000);
+  value_iteration.ComputeStateValues(accuracy, 1000);
+  for (int s = 0; s < mdp->getNStates(); s++) {
+    printf("%.2f ", value_iteration.getValue(s));
+  }
+  printf(", D = %.1f, b = %.1f\n", value_iteration.Delta,
+         value_iteration.baseline);
+
+  printf("Policy Evaluation\n");
+  FixedDiscretePolicy* vi_policy = value_iteration.getPolicy();
+  PolicyEvaluation policy_evaluation(vi_policy, mdp, gamma);
+  policy_evaluation.ComputeStateValues(accuracy, 1000);
+  for (int s = 0; s < mdp->getNStates(); s++) {
+    printf("%.2f ", policy_evaluation.getValue(s));
+  }
+  printf("\n");
+  policy_evaluation.ComputeStateValuesFeatureExpectation(accuracy, 1000);
+  for (int s = 0; s < mdp->getNStates(); s++) {
+    printf("%.2f ", policy_evaluation.getValue(s));
+  }
+  printf("\n");
+
+  // mdp->ShowModel();
+  if (1) {
+    FILE* f = fopen("test.dot", "w");
+    if (f) {
+      fprintf(f, "digraph MDP {\n");
+      fprintf(f, "ranksep=2; rankdir=LR; \n");
+      mdp->dotModel(f);
+      fprintf(f, "}\n");
+      fclose(f);
     }
-    printf(", D = %.1f, b = %.1f\n",
-              policy_iteration.Delta,
-              policy_iteration.baseline);
-
-    printf ("Value iteration\n");
-    //value_iteration.ComputeStateActionValues(accuracy, 1000);
-    value_iteration.ComputeStateValues(accuracy, 1000);
-    for (int s=0; s<mdp->getNStates(); s++) {
-        printf ("%.2f ", value_iteration.getValue(s));
-    }
-    printf(", D = %.1f, b = %.1f\n",
-              value_iteration.Delta,
-              value_iteration.baseline);
-	
-	printf("Policy Evaluation\n");
-	FixedDiscretePolicy* vi_policy = value_iteration.getPolicy();
-	PolicyEvaluation policy_evaluation (vi_policy, mdp, gamma);
-	policy_evaluation.ComputeStateValues(accuracy, 1000);
-	for (int s=0; s<mdp->getNStates(); s++) {
-		printf ("%.2f ", policy_evaluation.getValue(s));
-    }
-	printf("\n");
-	policy_evaluation.ComputeStateValuesFeatureExpectation(accuracy, 1000);
-	for (int s=0; s<mdp->getNStates(); s++) {
-		printf ("%.2f ", policy_evaluation.getValue(s));
-    }
-	printf("\n");
-	
-    //mdp->ShowModel();
-   if (1) {
-       FILE* f = fopen("test.dot", "w");
-       if (f) {
-           fprintf (f, "digraph MDP {\n");
-           fprintf (f, "ranksep=2; rankdir=LR; \n");
-           mdp->dotModel(f);
-           fprintf (f, "}\n");
-           fclose(f);
-       }
-   }
-
-   
-   
-
+  }
 }
-
 
 #endif

@@ -12,53 +12,41 @@
 #ifndef GRID_TREE_H
 #define GRID_TREE_H
 
-
-#include "Grid.h"
 #include <cassert>
+#include "Grid.h"
 
 /** A simple grid structure.
 
     It subdivides an \f$n\f$-dimensional space in \f$2^n\f$ subspace
     of equal volumes.
-    
+
  */
-struct GridTree
-{
-    struct Node
-    {
-        Grid grid;
-        std::vector<GridTree::Node*> next;
-        int depth;
-        int t;
-        Node(Vector& lower_bound, Vector& upper_bound, int depth_)
-            : grid(lower_bound, upper_bound),
-              next(lower_bound.Size()),
-              depth(depth_),
-              t(0)
-        {
-            
+struct GridTree {
+  struct Node {
+    Grid grid;
+    std::vector<GridTree::Node*> next;
+    int depth;
+    int t;
+    Node(Vector& lower_bound, Vector& upper_bound, int depth_)
+        : grid(lower_bound, upper_bound),
+          next(lower_bound.Size()),
+          depth(depth_),
+          t(0) {}
+    ~Node() {
+      int n = next.size();
+      for (int i = 0; i < n; ++i) {
+        if (next[i]) {
+          delete next[i];
         }
-        ~Node()
-        {
-            int n = next.size();
-            for (int i=0; i<n; ++i) {
-                if (next[i]) {
-                    delete next[i];
-                }
-            }
-        }
-    };
-    Node* root;
-    
-    int n_dimensions;
-    GridTree(Vector& lower_bound, Vector& upper_bound);
-    std::vector<int> getInterval(Vector& x);
-    ~GridTree()
-    {
-        delete root;
+      }
     }
+  };
+  Node* root;
+
+  int n_dimensions;
+  GridTree(Vector& lower_bound, Vector& upper_bound);
+  std::vector<int> getInterval(Vector& x);
+  ~GridTree() { delete root; }
 };
-
-
 
 #endif

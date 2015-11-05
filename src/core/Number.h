@@ -13,24 +13,21 @@
 #ifndef NUMBER_H
 #define NUMBER_H
 
-/** A general number class  
+/** A general number class
 */
-class Number : public Object
-{
-public:
+class Number : public Object {
+ public:
   virtual ~Number() {}
 };
 
-class Discrete : public Number
-{
-public:
+class Discrete : public Number {
+ public:
   int value;
   virtual ~Discrete() {}
 };
 
-class Continuous : public Number
-{
-public:
+class Continuous : public Number {
+ public:
   std::vector<float> value;
   virtual ~Continuous() {}
 };

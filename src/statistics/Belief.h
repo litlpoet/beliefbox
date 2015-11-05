@@ -15,20 +15,19 @@
 #include "Object.h"
 
 /** This is a generic belief container class.
-	
-	The purpose of this class is to serve as a container for various
-	types of beliefs; both those arising from simple conjugate priors
-	of i.i.d. observations, as well as more complex ones.
-	
-	For this reason, the implementation of a belief object should be
-	relatively simple, with most of the functionality being
-	implemented in the contained classes.
-	
+
+        The purpose of this class is to serve as a container for various
+        types of beliefs; both those arising from simple conjugate priors
+        of i.i.d. observations, as well as more complex ones.
+
+        For this reason, the implementation of a belief object should be
+        relatively simple, with most of the functionality being
+        implemented in the contained classes.
+
  */
-class Belief : public Object
-{
+class Belief : public Object {
  public:
-    virtual ~Belief() {}	
+  virtual ~Belief() {}
 };
 
 #endif

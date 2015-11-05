@@ -14,20 +14,17 @@
 
 #include "Vector.h"
 
-/** A pair of two points. 
+/** A pair of two points.
 
     This class is useful for conditional density estimation and
     regression.
  */
-class PointPair
-{
-public:
-    Vector x; ///< The first point
-    Vector y; ///< The secoind point
-    /// Constructor
-    PointPair(const Vector& x_, const Vector& y_) : x(x_), y(y_)
-    {
-    }
+class PointPair {
+ public:
+  Vector x;  ///< The first point
+  Vector y;  ///< The secoind point
+  /// Constructor
+  PointPair(const Vector& x_, const Vector& y_) : x(x_), y(y_) {}
 };
 
 #endif

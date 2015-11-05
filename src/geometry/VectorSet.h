@@ -10,36 +10,31 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef VECTOR_SET_H
 #define VECTOR_SET_H
 
-#include "Vector.h"
 #include <list>
+#include "Vector.h"
 
-
-
-class VectorSet
-{
+class VectorSet {
  protected:
-    std::list<Vector> points;
-    int n;
+  std::list<Vector> points;
+  int n;
+
  public:
-    VectorSet(int n);
-    virtual ~VectorSet();
-    virtual void Add(Vector x);
-
+  VectorSet(int n);
+  virtual ~VectorSet();
+  virtual void Add(Vector x);
 };
 
-class ConvexHull
-{
-protected:
-    VectorSet vector_set;
-public:
-    virtual ~ConvexHull();
-    virtual bool Add(Vector x);
-    virtual bool IsInConvexHull(Vector x);
-};
+class ConvexHull {
+ protected:
+  VectorSet vector_set;
 
+ public:
+  virtual ~ConvexHull();
+  virtual bool Add(Vector x);
+  virtual bool IsInConvexHull(Vector x);
+};
 
 #endif

@@ -12,23 +12,25 @@
 #ifndef POMDP_H
 #define POMDP_H
 
-#include "real.h"
-#include "SmartAssert.h"
 #include "MDP.h"
+#include "SmartAssert.h"
+#include "real.h"
 
-
-template<typename ObservationType, typename StateType, typename ActionType>
+template <typename ObservationType, typename StateType, typename ActionType>
 class POMDP : public MDP<StateType, ActionType> {
-protected:
-	ObservationDistribution<StateType, ObservationType>& observation_distribution;
-public:
-    POMDP(TransitionDistribution<StateType, ActionType>& transition_distribution_,
-		  RewardDistribution<StateType, ActionType>& reward_distribution_,
-		  ObservationDistribution<StateType, ObservationType>& observation_distribution_)
-        : MDP<StateType, ActionType> (transition_distribution_, reward_distribution),
-		  observation_distribution(observation_distribution_)
-          
-		  virtual ~POMDP() {}
+ protected:
+  ObservationDistribution<StateType, ObservationType>& observation_distribution;
+
+ public:
+  POMDP(TransitionDistribution<StateType, ActionType>& transition_distribution_,
+        RewardDistribution<StateType, ActionType>& reward_distribution_,
+        ObservationDistribution<StateType, ObservationType>&
+            observation_distribution_)
+      : MDP<StateType, ActionType>(transition_distribution_,
+                                   reward_distribution),
+        observation_distribution(observation_distribution_)
+
+            virtual ~POMDP() {}
 };
 
 #endif

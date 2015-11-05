@@ -12,40 +12,39 @@
 
 #include "Tensor.h"
 
+#include <cstdlib>
 #include <iostream>
 #include <list>
-#include <cstdlib>
 using namespace std;
 
-int main(void)
-{
-    int size=4;
-    vector<int> X(size);
-    
-    for (int i=0; i<size; ++i) {
-        X[i] = 1 + rand()%16;
-    }
+int main(void) {
+  int size = 4;
+  vector<int> X(size);
 
-    Tensor tensor(X);
-   
-    cout << "This test should succeed\n";
+  for (int i = 0; i < size; ++i) {
+    X[i] = 1 + rand() % 16;
+  }
 
-    vector<int> x(size);
-    int n_iter = 1000;
-    for (int iter=0; iter<n_iter; ++iter) {
-        for (int i=0; i<size; ++i) {
-            x[i] = rand()%X[i];
-        }
-        tensor.Y(x) = iter;
-    }
+  Tensor tensor(X);
 
-    cout << "This test should fail\n";
-    for (int iter=0; iter<n_iter; ++iter) {
-        for (int i=0; i<size; ++i) {
-            x[i] = 1 + rand()%X[i];
-        }
-        tensor.Y(x) = iter;
+  cout << "This test should succeed\n";
+
+  vector<int> x(size);
+  int n_iter = 1000;
+  for (int iter = 0; iter < n_iter; ++iter) {
+    for (int i = 0; i < size; ++i) {
+      x[i] = rand() % X[i];
     }
+    tensor.Y(x) = iter;
+  }
+
+  cout << "This test should fail\n";
+  for (int iter = 0; iter < n_iter; ++iter) {
+    for (int i = 0; i < size; ++i) {
+      x[i] = 1 + rand() % X[i];
+    }
+    tensor.Y(x) = iter;
+  }
 }
 
 #endif

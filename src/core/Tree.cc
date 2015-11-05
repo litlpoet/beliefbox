@@ -11,8 +11,4 @@
 
 #include "Tree.h"
 
-VoidTree::VoidTree(void* node)
-{
-    root = new VoidTreeNode(node);
-}
-
+VoidTree::VoidTree(void* node) { root = new VoidTreeNode(node); }

@@ -5,30 +5,30 @@ include ../Make-default.mk
 CC_FILES := $(wildcard *.cc)
 OBJS := $(foreach f,$(CC_FILES),$(OBJS_DIR)/$(patsubst %.cc,%.o,$(f)))
 
-all:	$(LIBSMPL)
+all:  $(LIBSMPL)
 
 $(LIBSMPL): $(OBJS)
-	@echo "Archiving..." $(LIBS_DIR)
-	@$(AR) $(LIBSMPL) $(OBJS)
+  @echo "Archiving..." $(LIBS_DIR)
+  @$(AR) $(LIBSMPL) $(OBJS)
 
 $(OBJS_DIR)/%.o: %.cc .depend
-	@mkdir -p $(OBJS_DIR)
-	@echo $<
-	@$(CXX) $(CXXFLAGS) $(INCS) -o $@ -c $<
+  @mkdir -p $(OBJS_DIR)
+  @echo $<
+  @$(CXX) $(CXXFLAGS) $(INCS) -o $@ -c $<
 
 distclean:
-	@\rm -f .depend
+  @\rm -f .depend
 
 clean:
-	@echo "Remove objects file and dependencies..."
-	@\rm -Rf $(OBJS) $(LIBSMPL)
-	@\rm -f .depend
-	@\rm -f *~
+  @echo "Remove objects file and dependencies..."
+  @\rm -Rf $(OBJS) $(LIBSMPL)
+  @\rm -f .depend
+  @\rm -f *~
 
 .depend:
-	@echo "Tracking dependencies..."
-	@\rm -f .depend
-	@for file in *.cc ; do printf "$(OBJS_DIR)/" >> .depend; $(DEP) $(CFLAGS) $(INCS) $$file >> .depend; done
+  @echo "Tracking dependencies..."
+  @\rm -f .depend
+  @for file in *.cc ; do printf "$(OBJS_DIR)/" >> .depend; $(DEP) $(CFLAGS) $(INCS) $$file >> .depend; done
 
 
 ifneq ($(MAKECMDGOALS),distclean)

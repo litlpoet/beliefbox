@@ -16,28 +16,19 @@
 /** Dynamic programming using beliefs.
 
 This is dynamic programming using only beliefs, so no other state
-variable is included.  
+variable is included.
 
 */
 template <typename Belief, typename Policy>
-class BeliefDynamicProgramming
-{
-protected:
-	Belief belief; ///< A belief is a certain type of distribution
-	Policy policy;  
-public:
-	BeliefDynamicProgramming(Belief& initial_belief, Policy& policy)
-		:
-		belief(initial_belief)
-		~virtual BeliefDynamicProgramming()
-	{
-	}
-	void Expand(int T)
-	{
-		
-	}
-	
+class BeliefDynamicProgramming {
+ protected:
+  Belief belief;  ///< A belief is a certain type of distribution
+  Policy policy;
+
+ public:
+  BeliefDynamicProgramming(Belief& initial_belief, Policy& policy)
+      : belief(initial_belief) ~virtual BeliefDynamicProgramming() {}
+  void Expand(int T) {}
 };
 
 #endif
-

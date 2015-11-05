@@ -12,46 +12,37 @@
 #include "KNNRegression.h"
 
 /// Constructor
-KNNRegression::KNNRegression(int m, int n) : M(m), N(n), kd_tree(m) 
-{
-}
+KNNRegression::KNNRegression(int m, int n) : M(m), N(n), kd_tree(m) {}
 
 /// Add an element
-void KNNRegression::AddElement(const PointPair& p)
-{
-    pairs.push_back(p);
-    kd_tree.AddVectorObject(p.x, &pairs.back());
-    //basis.AddCenter(p.x, 1.0);
+void KNNRegression::AddElement(const PointPair& p) {
+  pairs.push_back(p);
+  kd_tree.AddVectorObject(p.x, &pairs.back());
+  // basis.AddCenter(p.x, 1.0);
 }
 
 /// Obtain a K-nearest neighbour estimate of E[y | x].
-void KNNRegression::Evaluate(Vector& x, Vector& y, int K)
-{
+void KNNRegression::Evaluate(Vector& x, Vector& y, int K) {
+  RBF rbf(x, 1.0);
 
-    RBF rbf(x, 1.0);
+  // basis.Evaluate(x);
+  assert(N == y.Size());
+  for (int i = 0; i < N; ++i) {
+    y[i] = 0;
+  }
 
-    //basis.Evaluate(x);
-    assert(N == y.Size());
-    for (int i=0; i<N; ++i) {
-        y[i] = 0;
-    }
+  OrderedFixedList<KDNode> node_list = kd_tree.FindKNearestNeighbours(x, K);
 
-    OrderedFixedList<KDNode> node_list = kd_tree.FindKNearestNeighbours(x, K);
-    
-    std::list<std::pair<real, KDNode*> >::iterator it;
-    
-    real sum = 0;
-    for (it = node_list.S.begin(); it != node_list.S.end(); ++it) {
-        KDNode* node = it->second;
-        PointPair* point_pair = kd_tree.getObject(node);
-        rbf.center = point_pair->x;
-        real w = rbf.Evaluate(x);
-        y += point_pair->y * w;
-        sum += w;
-    }
-    y/=sum;
-    
+  std::list<std::pair<real, KDNode*> >::iterator it;
+
+  real sum = 0;
+  for (it = node_list.S.begin(); it != node_list.S.end(); ++it) {
+    KDNode* node = it->second;
+    PointPair* point_pair = kd_tree.getObject(node);
+    rbf.center = point_pair->x;
+    real w = rbf.Evaluate(x);
+    y += point_pair->y * w;
+    sum += w;
+  }
+  y /= sum;
 }
-
-
-

@@ -11,21 +11,18 @@
  ***************************************************************************/
 
 #ifdef MAKE_MAIN
-void DiscreteBelief::Update(Observation* observation)
-{
-	dynamic_cast<DiscreteObservation> observation
+void DiscreteBelief::Update(Observation* observation) {
+  dynamic_cast<DiscreteObservation> observation
 }
-Action Policy::Act(Observation* observation)
-{
-	belief->Update(Observation* observation);
-	return belief->Evaluate();
+Action Policy::Act(Observation* observation) {
+  belief->Update(Observation * observation);
+  return belief->Evaluate();
 }
 
-int main()
-{
-	action = policy->Act(observation);
-	environment->PerformAction(action);
-	
-	return 0;
+int main() {
+  action = policy->Act(observation);
+  environment->PerformAction(action);
+
+  return 0;
 }
 #endif

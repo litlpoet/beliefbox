@@ -3,11 +3,10 @@
 #ifndef MWAL_H
 #define MWAL_H
 
-#include "Vector.h"
 #include "Demonstrations.h"
 #include "DiscreteMDP.h"
 #include "DiscretePolicy.h"
-
+#include "Vector.h"
 
 /** Multiplicative weights for apprenticeship learning (MWAL) algorithm.
 
@@ -42,24 +41,25 @@
  mean_policy is a stochastic policy, expressed as a SxA matrix.
  W is the opponent's best response.
 */
-class MWAL
-{
-public:
-    int n_states;
-    int n_actions;
-    real gamma;
-    Vector mu_E; ///< discounted feature counts
-    FixedDiscretePolicy mean_policy; ///< The policy
-    MWAL(int n_states_, int n_actions_, real discount) 
-        : n_states(n_states_), n_actions(n_actions_), gamma(discount),
-          mu_E(n_states), mean_policy(n_states, n_actions)
-    {}
+class MWAL {
+ public:
+  int n_states;
+  int n_actions;
+  real gamma;
+  Vector mu_E;                      ///< discounted feature counts
+  FixedDiscretePolicy mean_policy;  ///< The policy
+  MWAL(int n_states_, int n_actions_, real discount)
+      : n_states(n_states_),
+        n_actions(n_actions_),
+        gamma(discount),
+        mu_E(n_states),
+        mean_policy(n_states, n_actions) {}
 
-    void CalculateFeatureCounts(Demonstrations<int, int>& D);
-    Vector CalculateFeatureExpectation(DiscreteMDP& mdp, 
-                                       FixedDiscretePolicy& policy, 
-                                       real gamma, real epsilon);
-    void Compute(DiscreteMDP& mdp_copy, real gamma, real epsilon, int T = -1);
+  void CalculateFeatureCounts(Demonstrations<int, int>& D);
+  Vector CalculateFeatureExpectation(DiscreteMDP& mdp,
+                                     FixedDiscretePolicy& policy, real gamma,
+                                     real epsilon);
+  void Compute(DiscreteMDP& mdp_copy, real gamma, real epsilon, int T = -1);
 };
 
 #endif

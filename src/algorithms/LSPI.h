@@ -13,48 +13,51 @@
 #ifndef LSPI_H
 #define LSPI_H
 
-#include "real.h"
-#include "Rollout.h"
-#include "Vector.h"
-#include "Matrix.h"
+#include <vector>
 #include "BasisSet.h"
 #include "ContinuousPolicy.h"
+#include "Matrix.h"
 #include "RandomPolicy.h"
-#include <vector>
+#include "Rollout.h"
+#include "Vector.h"
+#include "real.h"
 
+class LSPI {
+ protected:
+  real gamma;
+  real Delta;
+  int n_dimension;
+  int n_actions;
+  int n_basis;
+  int max_iteration;
+  int algorithm;
+  Matrix A;
+  Vector b;
+  Vector w;
+  RBFBasisSet* bfs;
+  Rollout<Vector, int, AbstractPolicy<Vector, int> >* Samples;
+  FixedContinuousPolicy policy;
 
-class LSPI{
-protected:
-	real gamma;
-	real Delta;
-	int n_dimension;
-	int n_actions;
-	int n_basis;
-	int max_iteration;
-	int algorithm;
-	Matrix A;
-	Vector b;
-	Vector w;
-	RBFBasisSet* bfs;
-	Rollout<Vector,int,AbstractPolicy<Vector, int> >* Samples;
-	FixedContinuousPolicy policy;
-public:	
-	LSPI(real gamma_, real Delta_, int n_dimension_, int n_actions_, int max_iteration_, RBFBasisSet* bfs_, Rollout<Vector,int,AbstractPolicy<Vector, int> >* Samples_);
-	LSPI(real gamma_, real Delta_, int n_dimension_, int n_actions_, int max_iteration_, int algorithm_, RBFBasisSet* bfs_, Rollout<Vector,int,AbstractPolicy<Vector, int> >* Samples_);
-	~LSPI();
-	
-	Vector BasisFunction(const Vector& state, int action);
-	void LSTDQ();
-	void LSTDQ(const Vector& state, const int& action, const real& reward, const Vector& state_, const int& action_, const bool& endsim, const bool& update = true);
-	void LSTDQ_OPT();
-	void PolicyIteration();
-	void Reset();
-	void Update();
-	real getValue(const Vector& state, int action);
-	FixedContinuousPolicy& ReturnPolicy()
-	{
-		return policy;
-	}
+ public:
+  LSPI(real gamma_, real Delta_, int n_dimension_, int n_actions_,
+       int max_iteration_, RBFBasisSet* bfs_,
+       Rollout<Vector, int, AbstractPolicy<Vector, int> >* Samples_);
+  LSPI(real gamma_, real Delta_, int n_dimension_, int n_actions_,
+       int max_iteration_, int algorithm_, RBFBasisSet* bfs_,
+       Rollout<Vector, int, AbstractPolicy<Vector, int> >* Samples_);
+  ~LSPI();
+
+  Vector BasisFunction(const Vector& state, int action);
+  void LSTDQ();
+  void LSTDQ(const Vector& state, const int& action, const real& reward,
+             const Vector& state_, const int& action_, const bool& endsim,
+             const bool& update = true);
+  void LSTDQ_OPT();
+  void PolicyIteration();
+  void Reset();
+  void Update();
+  real getValue(const Vector& state, int action);
+  FixedContinuousPolicy& ReturnPolicy() { return policy; }
 };
 
 #endif

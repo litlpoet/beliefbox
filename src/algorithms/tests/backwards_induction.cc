@@ -14,16 +14,13 @@
 
 #include "BackwardsInduction.h"
 
-
-int main (int argc, char** argv)
-{
-    int n_nodes = 10;
-    Vector V;
-    SparseGraph G(n_nodes, true);
-    MaxInduction J;
-    BackwardsInduction<Vector, SparseGraph, MaxInduction> induction(V, G, J);
-    return 0;
+int main(int argc, char** argv) {
+  int n_nodes = 10;
+  Vector V;
+  SparseGraph G(n_nodes, true);
+  MaxInduction J;
+  BackwardsInduction<Vector, SparseGraph, MaxInduction> induction(V, G, J);
+  return 0;
 }
-
 
 #endif

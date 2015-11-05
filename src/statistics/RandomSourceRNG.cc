@@ -12,46 +12,42 @@
 #include "RandomSourceRNG.h"
 #include <stdexcept>
 
-RandomSourceRNG::RandomSourceRNG(bool blocking)
-{
- 	if (blocking) {
-		rand_device = fopen ("/dev/random", "r");
-	} else {
-		rand_device = fopen ("/dev/urandom", "r");
-	}
-    if (!rand_device) {
-        throw std::runtime_error ("Could not open random device\n");
-    }
+RandomSourceRNG::RandomSourceRNG(bool blocking) {
+  if (blocking) {
+    rand_device = fopen("/dev/random", "r");
+  } else {
+    rand_device = fopen("/dev/urandom", "r");
+  }
+  if (!rand_device) {
+    throw std::runtime_error("Could not open random device\n");
+  }
 }
 
-RandomSourceRNG::~RandomSourceRNG()
-{
-    if (rand_device) {
-        fclose(rand_device);
-    }
+RandomSourceRNG::~RandomSourceRNG() {
+  if (rand_device) {
+    fclose(rand_device);
+  }
 }
 /// Generates a uniform 32 bits integer.
-unsigned long RandomSourceRNG::random()
-{
- 	unsigned long x;
-    size_t t = fread(&x, sizeof(unsigned long), 1, rand_device);
-    if (t != 1) {
-        Serror("Could not read item\n");
-    }
-    return x;
+unsigned long RandomSourceRNG::random() {
+  unsigned long x;
+  size_t t = fread(&x, sizeof(unsigned long), 1, rand_device);
+  if (t != 1) {
+    Serror("Could not read item\n");
+  }
+  return x;
 }
 
 /// Generates a uniform random number in [0,1[.
-real RandomSourceRNG::uniform()
-{	
-    real x;
-	do {
-        unsigned int i;
-        size_t t = fread(&i, sizeof(unsigned int), 1, rand_device);
-        if (t != 1) {
-            Serror("Could not read item\n");
-        }
-        x = ((double) i / (double) std::numeric_limits<int>::max());
-    } while (x>=1.0);
-    return x;
+real RandomSourceRNG::uniform() {
+  real x;
+  do {
+    unsigned int i;
+    size_t t = fread(&i, sizeof(unsigned int), 1, rand_device);
+    if (t != 1) {
+      Serror("Could not read item\n");
+    }
+    x = ((double)i / (double)std::numeric_limits<int>::max());
+  } while (x >= 1.0);
+  return x;
 }

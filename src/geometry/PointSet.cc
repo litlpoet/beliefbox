@@ -12,6 +12,4 @@
 
 #include "PointSet.h"
 
-PointSet::~PointSet()
-{
-}
+PointSet::~PointSet() {}

@@ -16,22 +16,12 @@
 #include <set>
 
 /// A container for states
-class DiscreteStateAggregate
-{
-public:
-    std::set<int> S;
-    void add(int state)
-    {
-        S.insert(state);
-    }
-    bool contains(int state) const
-    {
-        return (S.find(state) != S.end());
-    }
-    int size() const
-    {
-        return S.size();
-    }
+class DiscreteStateAggregate {
+ public:
+  std::set<int> S;
+  void add(int state) { S.insert(state); }
+  bool contains(int state) const { return (S.find(state) != S.end()); }
+  int size() const { return S.size(); }
 };
 
 #endif

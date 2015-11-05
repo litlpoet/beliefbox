@@ -18,8 +18,6 @@
  */
 /*@{*/
 
-
-
 /** A tree hierarchy of factored Markov Chains.
 
     This class uses a context tree to define a probability distribution
@@ -29,20 +27,19 @@
     @see BPSRModel
     @see BayesianPredictiveStateRepresentation
  */
-class BayesianPredictiveStateRepresentationCTW : public BayesianPredictiveStateRepresentation
-{
-public:
-    BayesianPredictiveStateRepresentationCTW (int n_obs, int n_actions, int n_models, float prior);
+class BayesianPredictiveStateRepresentationCTW
+    : public BayesianPredictiveStateRepresentation {
+ public:
+  BayesianPredictiveStateRepresentationCTW(int n_obs, int n_actions,
+                                           int n_models, float prior);
 
-    virtual ~BayesianPredictiveStateRepresentationCTW();
+  virtual ~BayesianPredictiveStateRepresentationCTW();
 
-    
-    /* Training and generation */
-    virtual real Observe(int observation);
-    virtual real Observe(int action, int observation);
-    virtual real ObservationProbability (int action, int observation);
-    virtual int predict(int a);
-
+  /* Training and generation */
+  virtual real Observe(int observation);
+  virtual real Observe(int action, int observation);
+  virtual real ObservationProbability(int action, int observation);
+  virtual int predict(int a);
 };
 /*@}*/
 #endif

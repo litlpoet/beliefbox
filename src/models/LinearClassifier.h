@@ -9,14 +9,12 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifndef LINEAR_CLASSIFIER_H
 #define LINEAR_CLASSIFIER_H
 
-#include "real.h"
-#include "Vector.h"
 #include "Matrix.h"
-
+#include "Vector.h"
+#include "real.h"
 
 /** A linear classifier.
 
@@ -27,31 +25,23 @@
     \f]
     where \f$h : R \to [0,1]$\f is the soft-max function with temperature 1.
  */
-class LinearClassifier
-{
-public:
-    const int n_inputs;
-    const int n_classes;
-    Matrix params;
-    Vector bias;
-    Vector hidden;
-    Vector output;
-    Vector dc_dg;
-    Vector dg_df;
-    real alpha;
-    LinearClassifier(int n_inputs_, int n_classes_);
-    int Classify(const Vector& x)
-    {
-        return ArgMax(Output(x));
-    }
-    Vector& Output(const Vector& x);
-    void Observe(const Vector& x, int label);
-    void Show();
-    void setStepSize(real step_size) {
-        alpha = step_size;
-    }
+class LinearClassifier {
+ public:
+  const int n_inputs;
+  const int n_classes;
+  Matrix params;
+  Vector bias;
+  Vector hidden;
+  Vector output;
+  Vector dc_dg;
+  Vector dg_df;
+  real alpha;
+  LinearClassifier(int n_inputs_, int n_classes_);
+  int Classify(const Vector& x) { return ArgMax(Output(x)); }
+  Vector& Output(const Vector& x);
+  void Observe(const Vector& x, int label);
+  void Show();
+  void setStepSize(real step_size) { alpha = step_size; }
 };
-
-
 
 #endif

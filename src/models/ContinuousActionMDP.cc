@@ -12,8 +12,7 @@
 
 #include "ContinuousActionMDP.h"
 
-ContinuousBanditMDP::ContinuousBanditMDP(ContinuousActionTransitionDistribution& transition_distribution_, ContinuousActionRewardDistribution& reward_distribution_) : ContinuousActionMDP (transition_distribution_, reward_distribution_)
-{
-
-}
-
+ContinuousBanditMDP::ContinuousBanditMDP(
+    ContinuousActionTransitionDistribution& transition_distribution_,
+    ContinuousActionRewardDistribution& reward_distribution_)
+    : ContinuousActionMDP(transition_distribution_, reward_distribution_) {}

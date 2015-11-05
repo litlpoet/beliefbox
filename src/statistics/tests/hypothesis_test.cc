@@ -12,52 +12,45 @@
 #ifdef MAKE_MAIN
 #include "Random.h"
 #include <vector>
+#include "BetaDistribution.h"
 #include "EasyClock.h"
 #include "NormalDistribution.h"
 #include "SingularDistribution.h"
-#include "BetaDistribution.h"
 
+void TestData(std::vector<real>& data, ConjugatePrior& prior);
 
-void TestData(std::vector<real>& data,
-                    ConjugatePrior& prior);
+int main(int argc, char** argv) {
+  BetaDistribution beta;
+  NormalUnknownMeanPrecision normal;
+  UnknownSingularDistribution fixed;
 
-int main (int argc, char** argv)
-{
-    BetaDistribution beta;
-    NormalUnknownMeanPrecision normal;
-    UnknownSingularDistribution fixed;
+  int N = 16;
 
-    int N = 16;
-
-    std::vector<real> data(N);
-    for (int i=0; i<N; ++i) {
-        data[i] = 1.0;
-    }
-    printf ("Beta\n");
-    TestData(data, beta);
-    printf ("Normal\n");
-    TestData(data, normal);
-    printf ("Fixed\n");
-    TestData(data, fixed);
+  std::vector<real> data(N);
+  for (int i = 0; i < N; ++i) {
+    data[i] = 1.0;
+  }
+  printf("Beta\n");
+  TestData(data, beta);
+  printf("Normal\n");
+  TestData(data, normal);
+  printf("Fixed\n");
+  TestData(data, fixed);
 };
 
+void TestData(std::vector<real>& data, ConjugatePrior& prior) {
+  int N = data.size();
+  real log_p = 0;
+  for (int i = 0; i < N; ++i) {
+    log_p += log(prior.Observe(data[i]));
+  }
 
-void TestData(std::vector<real>& data,
-              ConjugatePrior& prior)
-{
-    int N = data.size();
-    real log_p = 0;
-    for (int i=0; i<N; ++i) {
-        log_p += log(prior.Observe(data[i]));
-    }
-    
-    printf("%f # log likelihood\n", log_p);
+  printf("%f # log likelihood\n", log_p);
 
-    for (int i=0; i<8; ++i) {
-        printf ("%f ", prior.generate());
-    }
-    printf ("# generated data\n");
+  for (int i = 0; i < 8; ++i) {
+    printf("%f ", prior.generate());
+  }
+  printf("# generated data\n");
 }
 
 #endif
-

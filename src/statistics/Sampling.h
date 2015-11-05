@@ -17,12 +17,8 @@
 #include <vector>
 #include "real.h"
 
+inline real UniformSample() { return drand48(); }
 
-inline real UniformSample()
-{
-    return drand48();
-}
-
-int PropSample (std::vector<real>& w);
+int PropSample(std::vector<real>& w);
 
 #endif

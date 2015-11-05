@@ -15,18 +15,16 @@
 
     The grid is merely a mid-point subdivision of the n-dimensional space.
  */
-GridTree::GridTree(Vector& lower_bound, Vector& upper_bound)
-{
-    assert(lower_bound.Size() == upper_bound.Size());
-    root = new Node(lower_bound, upper_bound, 0);
+GridTree::GridTree(Vector& lower_bound, Vector& upper_bound) {
+  assert(lower_bound.Size() == upper_bound.Size());
+  root = new Node(lower_bound, upper_bound, 0);
 }
 
 /** Get the index of the interval containing x.
-    
+
     TODO
  */
-std::vector<int> GridTree::getInterval(Vector& x)
-{
-    std::vector<int> tmp;
-    return tmp;
+std::vector<int> GridTree::getInterval(Vector& x) {
+  std::vector<int> tmp;
+  return tmp;
 }

@@ -1,5 +1,6 @@
 /* -*- Mode: C++; -*- */
-/* VER: $Id: test_particle_filter.c,v 1.2 2006/10/21 20:03:01 olethros Exp cdimitrakakis $*/
+/* VER: $Id: test_particle_filter.c,v 1.2 2006/10/21 20:03:01 olethros Exp
+ * cdimitrakakis $*/
 // copyright (c) 2004 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
@@ -12,12 +13,10 @@
 #ifdef MAKE_MAIN
 
 #include "ParticleFilter.h"
-#include "ActionValueEstimate.h"
-#include "SingularDistribution.h"
 #include <cstdio>
 #include <cstdlib>
-
-
+#include "ActionValueEstimate.h"
+#include "SingularDistribution.h"
 
 #if 0
 int main (void)
@@ -51,43 +50,41 @@ int main (void)
 }
 #else
 
-int main (void)
-{
-    int N = 16;
-    real EX=urandom();
-    SingularDistribution actual_transitions(0.0f);
-    BernoulliDistribution actual_observations(EX);
-    UniformDistribution transitions(-0.1f, 0.1f);
-    BernoulliDistribution observations;
-    UniformDistribution prior(0.0f, 1.0f);
-                                            
-        
-    BernoulliGridParticleFilter pf(N, &prior, &transitions, &observations);
+int main(void) {
+  int N = 16;
+  real EX = urandom();
+  SingularDistribution actual_transitions(0.0f);
+  BernoulliDistribution actual_observations(EX);
+  UniformDistribution transitions(-0.1f, 0.1f);
+  BernoulliDistribution observations;
+  UniformDistribution prior(0.0f, 1.0f);
 
-    int T = 1000;
-    FILE* f = fopen("pf_test","w");
-    FILE* values = fopen("pf_values","w");
+  BernoulliGridParticleFilter pf(N, &prior, &transitions, &observations);
 
-    if (!f || !values) {
-        fprintf(stderr, "Could not open file\n");
-        exit(-1);
+  int T = 1000;
+  FILE* f = fopen("pf_test", "w");
+  FILE* values = fopen("pf_values", "w");
+
+  if (!f || !values) {
+    fprintf(stderr, "Could not open file\n");
+    exit(-1);
+  }
+
+  for (int t = 0; t < T; t++) {
+    real X = actual_observations.generate();
+    pf.Observe(X);
+    fprintf(f, "%f %f %f\n", EX, pf.GetMean(), pf.GetVar());
+    for (int n = 0; n < N; n++) {
+      fprintf(values, "%f ", pf.y[n]);
     }
-
-    for (int t=0; t<T; t++) {
-        real X = actual_observations.generate();
-        pf.Observe(X);
-        fprintf(f, "%f %f %f\n", EX, pf.GetMean(), pf.GetVar());
-        for (int n=0; n<N; n++) {
-            fprintf (values, "%f ", pf.y[n]);
-        }
-        for (int n=0; n<N; n++) {
-            fprintf (values, "%f ", pf.w[n]);
-        }
-        fprintf (values, "\n");
+    for (int n = 0; n < N; n++) {
+      fprintf(values, "%f ", pf.w[n]);
     }
-    fclose (values); 
-    fclose(f);
-    return 0;
+    fprintf(values, "\n");
+  }
+  fclose(values);
+  fclose(f);
+  return 0;
 }
 
 #endif

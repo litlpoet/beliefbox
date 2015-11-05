@@ -12,9 +12,9 @@
 #define SPARSE_MARKOVCHAIN_H
 
 #include <vector>
-#include "real.h"
 #include "MarkovChain.h"
 #include "Vector.h"
+#include "real.h"
 
 #include "SparseTransitions.h"
 
@@ -25,36 +25,35 @@
 
 /** A sparse implementation of a Markov chain
  */
-class SparseMarkovChain : public MarkovChain
-{
-protected:
-    int n_transitions; ///< total number of transitions
-	SparseTransitions transitions; ///< history-wide transition table
+class SparseMarkovChain : public MarkovChain {
+ protected:
+  int n_transitions;              ///< total number of transitions
+  SparseTransitions transitions;  ///< history-wide transition table
 
-    real threshold;
-public:
-    SparseMarkovChain (int n_states, int mem_size);
-    virtual ~SparseMarkovChain ();
+  real threshold;
 
-    /* probabilities */
-    virtual real getTransition (MCState src, int dst);
-    virtual real getProbability (MCState src, int dst);
-    virtual void getProbabilities(MCState src, std::vector<real>& p);
-    virtual void getNextStateProbabilities(std::vector<real>& p);
-    virtual real pdf(MCState src, Vector q);
-    virtual void setTransition (MCState src, int dst, real value);
-    virtual void setThreshold (real threshold);
+ public:
+  SparseMarkovChain(int n_states, int mem_size);
+  virtual ~SparseMarkovChain();
 
+  /* probabilities */
+  virtual real getTransition(MCState src, int dst);
+  virtual real getProbability(MCState src, int dst);
+  virtual void getProbabilities(MCState src, std::vector<real>& p);
+  virtual void getNextStateProbabilities(std::vector<real>& p);
+  virtual real pdf(MCState src, Vector q);
+  virtual void setTransition(MCState src, int dst, real value);
+  virtual void setThreshold(real threshold);
 
-    /* Training and generation */
-    virtual real ObserveNextState (int state);
-    virtual real NextStateProbability (int state);
-    virtual void Reset();
-    virtual int GenerateStatic ();
-    virtual int generate ();
-    
-    /* Debug functions */
-    virtual int ShowTransitions ();
+  /* Training and generation */
+  virtual real ObserveNextState(int state);
+  virtual real NextStateProbability(int state);
+  virtual void Reset();
+  virtual int GenerateStatic();
+  virtual int generate();
+
+  /* Debug functions */
+  virtual int ShowTransitions();
 };
 /*@}*/
 #endif

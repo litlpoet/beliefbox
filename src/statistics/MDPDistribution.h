@@ -13,27 +13,26 @@
 #ifndef MDP_DISTRIBUTION_H
 #define MDP_DISTRIBUTION_H
 
-#include "Object.h"
-#include "MDP.h"
-#include "Vector.h"
 #include <vector>
+#include "MDP.h"
+#include "Object.h"
+#include "Vector.h"
 
 /** A distribution over MDPs - these are observable MDPs, so the
-	templatisation is over the observed variables: state and action.
-	Rewards are always real numbers.
+        templatisation is over the observed variables: state and action.
+        Rewards are always real numbers.
  */
 template <typename StateType, typename ActionType>
-class MDPDistribution : public Object
-{
-public:
-	/// Destroy the MDP Distribution
-	virtual ~MDPDistribution() {}
+class MDPDistribution : public Object {
+ public:
+  /// Destroy the MDP Distribution
+  virtual ~MDPDistribution() {}
 
-	/// Generate a sample from the distribution.
-	virtual MDP<StateType, ActionType> generate() = 0;
+  /// Generate a sample from the distribution.
+  virtual MDP<StateType, ActionType> generate() = 0;
 
-	/// Register an observation, thus changing the distribution.
-	virtual void observe (StateType s, ActionType a, real r, StateType s2) = 0;
+  /// Register an observation, thus changing the distribution.
+  virtual void observe(StateType s, ActionType a, real r, StateType s2) = 0;
 };
 
 /// Specialisation for distributions over discrete MDPs
@@ -47,6 +46,5 @@ typedef MDPDistribution<int, Vector> ContinuousActionMDPDistribution;
 
 /// Specialisation for distributions over continuous MDPs
 typedef MDPDistribution<Vector, Vector> ContinuousMDPDistribution;
-
 
 #endif

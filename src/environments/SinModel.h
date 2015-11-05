@@ -13,19 +13,18 @@
 #define SINMODEL_H
 
 #include "Environment.h"
+#include "NormalDistribution.h"
 #include "Vector.h"
 #include "real.h"
-#include "NormalDistribution.h"
 
 /** Just produce a next from a sin + normal distribution
  */
-class SinModel : public Environment<Vector, int>
-{
-protected:
+class SinModel : public Environment<Vector, int> {
+ protected:
   struct Parameters {
-    real U_POS;         ///< Upper bound on position
-    real L_POS;         ///< Lower bound on position
-    real MCNOISE;       ///< input noise        
+    real U_POS;    ///< Upper bound on position
+    real L_POS;    ///< Lower bound on position
+    real MCNOISE;  ///< input noise
   };
   static Parameters default_parameters;
   Parameters parameters;
@@ -35,70 +34,45 @@ protected:
   Vector action_lower_bound;
   void Simulate();
   NormalDistribution noise;
-public:
+
+ public:
   SinModel(bool random_parameters = false);
   virtual ~SinModel();
   virtual void Reset();
   virtual bool Act(const int& action);
   virtual void Simulate(const int action);
-	
-  const Vector& StateActionUpperBound() const
-  {
+
+  const Vector& StateActionUpperBound() const {
     return state_action_upper_bound;
   }
-  const Vector& StateActionLowerBound() const
-  {
+  const Vector& StateActionLowerBound() const {
     return state_action_lower_bound;
   }
-  const Vector& ActionUpperBound() const
-  {
-    return action_upper_bound;
-  }
-  const Vector& ActionLowerBound() const
-  {
-    return action_lower_bound;
-  }
-	
-  virtual void setRandomness(real randomness)
-  {
+  const Vector& ActionUpperBound() const { return action_upper_bound; }
+  const Vector& ActionLowerBound() const { return action_lower_bound; }
+
+  virtual void setRandomness(real randomness) {
     parameters.MCNOISE = randomness;
   }
-	
-  virtual const char* Name() const
-  {
-    return "SinModel";
+
+  virtual const char* Name() const { return "SinModel"; }
+
+  void Show() {
+    printf("%f %f # params (SinModel)\n", parameters.U_POS, parameters.L_POS);
   }
-	
-  void Show()
-  {
-    printf("%f %f # params (SinModel)\n",
-	   parameters.U_POS,
-	   parameters.L_POS);
-  }
-  virtual real getTransitionProbability(const Vector& state, const int& action, const Vector& next_state) const
-  {
+  virtual real getTransitionProbability(const Vector& state, const int& action,
+                                        const Vector& next_state) const {
     return 1.0;
   }
-	
-  virtual real getExpectedReward(const Vector& state, const int& action) const
-  {
+
+  virtual real getExpectedReward(const Vector& state, const int& action) const {
     return 0.0;
   }
 };
 
-class SinModelGenerator
-{
-public:
-  SinModel Generate(bool random=true)
-  {
-    return SinModel(random);
-  }
+class SinModelGenerator {
+ public:
+  SinModel Generate(bool random = true) { return SinModel(random); }
 };
-
-
-
-
-
-
 
 #endif

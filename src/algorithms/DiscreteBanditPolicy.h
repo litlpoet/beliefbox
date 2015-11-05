@@ -1,6 +1,7 @@
 /* -*- Mode: C++; -*- */
 /* VER: $Id: Policy.h,v 1.8 2006/10/23 08:33:24 olethros Exp cdimitrakakis $*/
-// copyright (c) 2006-2007 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
+// copyright (c) 2006-2007 by Christos Dimitrakakis
+// <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -13,88 +14,79 @@
 #ifndef DISCRETE_BANDIT_POLICY_H
 #define DISCRETE_BANDIT_POLICY_H
 
-#include <vector>
-#include <cstdlib>
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <vector>
 
-#include "SampleEstimator.h"
 #include "ActionValueEstimate.h"
 #include "PFActionValueEstimate.h"
+#include "SampleEstimator.h"
 
 /** A general policy
  */
-class DiscreteBanditPolicy 
-{
-public:
-    /// Destructor
-    virtual ~DiscreteBanditPolicy() {}
-    /// Select an action according to this policy
-    virtual int SelectAction() = 0;
-    virtual void Reset() = 0;
-    virtual void Observe(int a, real r) = 0;
+class DiscreteBanditPolicy {
+ public:
+  /// Destructor
+  virtual ~DiscreteBanditPolicy() {}
+  /// Select an action according to this policy
+  virtual int SelectAction() = 0;
+  virtual void Reset() = 0;
+  virtual void Observe(int a, real r) = 0;
 };
-
-
 
 /** A greedy policy
  */
-class EpsilonGreedyPolicy : public DiscreteBanditPolicy
-{
-public:
-    int n_actions;
-    real epsilon;
-    ActionValueEstimate* estimator;
-    EpsilonGreedyPolicy(int n_actions, real epsilon, ActionValueEstimate* estimator);
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual ~EpsilonGreedyPolicy();
-    virtual int SelectAction();
+class EpsilonGreedyPolicy : public DiscreteBanditPolicy {
+ public:
+  int n_actions;
+  real epsilon;
+  ActionValueEstimate* estimator;
+  EpsilonGreedyPolicy(int n_actions, real epsilon,
+                      ActionValueEstimate* estimator);
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual ~EpsilonGreedyPolicy();
+  virtual int SelectAction();
 };
-
 
 /** An optimal policy.
 
 This policy is optimistically optimal.
 */
-class PopulationOptimalPolicy : public DiscreteBanditPolicy
-{
+class PopulationOptimalPolicy : public DiscreteBanditPolicy {
  public:
-    int n_actions;
-    ActionValueEstimate* estimator;
-    real gamma;
-    int n_samples;
-    PopulationOptimalPolicy(int n_actions, ActionValueEstimate* estimator, real gamma, int n_samples);
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual ~PopulationOptimalPolicy();
-    virtual int SelectAction();
+  int n_actions;
+  ActionValueEstimate* estimator;
+  real gamma;
+  int n_samples;
+  PopulationOptimalPolicy(int n_actions, ActionValueEstimate* estimator,
+                          real gamma, int n_samples);
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual ~PopulationOptimalPolicy();
+  virtual int SelectAction();
 };
-
-
 
 /** A sampling optimal policy.
 
 This policy is asymptoticall optimal.
 */
-class PopulationSamplePolicy : public DiscreteBanditPolicy
-{
+class PopulationSamplePolicy : public DiscreteBanditPolicy {
  public:
-    int n_actions;
-    ActionValueEstimate* estimator;
-    real gamma;
-    PopulationSamplePolicy(int n_actions, ActionValueEstimate* estimator, real gamma);
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual ~PopulationSamplePolicy();
-    virtual int SelectAction();
+  int n_actions;
+  ActionValueEstimate* estimator;
+  real gamma;
+  PopulationSamplePolicy(int n_actions, ActionValueEstimate* estimator,
+                         real gamma);
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual ~PopulationSamplePolicy();
+  virtual int SelectAction();
 };
 
-
-
-
 /** A naive version of the E3 algorithm
-    
+
  We have an MDP \f$M\f$ with states \f$\{1, .., N\}\f$ and action
  \f$\{a_i\}_{i=1}^k\f$.
 
@@ -120,7 +112,9 @@ where the sum is over all T-paths p in M that start at i.
 
 - The maximum possible T-step return is \f$R_{max}\f$.
 
-- The \f$\epsilon\f$-return mixing time of \f$\pi\f$ is the smallest \f$T\f$ such that for all \f$T' \geq T, |U_M^\pi(i,T') - U_M^\pi| \leq \epsilon\f$ for all \f$i\f$.
+- The \f$\epsilon\f$-return mixing time of \f$\pi\f$ is the smallest \f$T\f$
+such that for all \f$T' \geq T, |U_M^\pi(i,T') - U_M^\pi| \leq \epsilon\f$ for
+all \f$i\f$.
 
 
 
@@ -128,45 +122,42 @@ where the sum is over all T-paths p in M that start at i.
 \f$\epsilon, \delta, N, T, opt(\Pi_M^{T,\epsilon})\f$, such that if
 the total number of actions and computation time taken by A exceeds a
 polynomial in \f$1/\epsilon, 1/\delta, N, T, R_{max}\f$, then with
-probability at least \f$1-\delta\f$, the total undescounted return of \f$A\f$ will exceed \f$opt(\Pi_M^{T,\epsilon}) - \epsilon\f$.
+probability at least \f$1-\delta\f$, the total undescounted return of \f$A\f$
+will exceed \f$opt(\Pi_M^{T,\epsilon}) - \epsilon\f$.
 
  */
-class NaiveE3Policy: public DiscreteBanditPolicy
-{
-public:
-    int n_actions;
-    real epsilon;
-    real gamma;
-    real T;
-    ActionValueE3Estimate* estimator;
+class NaiveE3Policy : public DiscreteBanditPolicy {
+ public:
+  int n_actions;
+  real epsilon;
+  real gamma;
+  real T;
+  ActionValueE3Estimate* estimator;
 
-    /// Create a new e-greedy policy
-    NaiveE3Policy(int n_actions, real epsilon, real gamma);
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual ~NaiveE3Policy();
-    virtual int SelectAction();
+  /// Create a new e-greedy policy
+  NaiveE3Policy(int n_actions, real epsilon, real gamma);
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual ~NaiveE3Policy();
+  virtual int SelectAction();
 };
-
-
 
 /** A VPI policy for population estimates.
 
 This policy is optimal according to the VPI criterion.
 It is specialised to a population estimate.
 */
-class PopulationVPIPolicy : public DiscreteBanditPolicy
-{
+class PopulationVPIPolicy : public DiscreteBanditPolicy {
  public:
-    int n_actions;
-    PopulationEstimate* estimator;
-    real gamma;
+  int n_actions;
+  PopulationEstimate* estimator;
+  real gamma;
 
-    PopulationVPIPolicy(int n_actions, PopulationEstimate* estimator, real gamma);
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual ~PopulationVPIPolicy();
-    virtual int SelectAction();
+  PopulationVPIPolicy(int n_actions, PopulationEstimate* estimator, real gamma);
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual ~PopulationVPIPolicy();
+  virtual int SelectAction();
 };
 
 /** A VPI policy.
@@ -174,54 +165,49 @@ class PopulationVPIPolicy : public DiscreteBanditPolicy
 This policy is optimal according to the VPI criterion.
 It is not specialised for a particular estimate.
 */
-class VPIPolicy : public DiscreteBanditPolicy
-{
+class VPIPolicy : public DiscreteBanditPolicy {
  public:
-    int n_actions;
-    ActionValueEstimate* estimator;
-    real gamma;
-    int n_samples;
-    VPIPolicy(int n_actions, ActionValueEstimate* estimator, real gamma, int n_samples);
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual ~VPIPolicy();
-    virtual int SelectAction();
+  int n_actions;
+  ActionValueEstimate* estimator;
+  real gamma;
+  int n_samples;
+  VPIPolicy(int n_actions, ActionValueEstimate* estimator, real gamma,
+            int n_samples);
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual ~VPIPolicy();
+  virtual int SelectAction();
 };
-
 
 /** A VPI policy for particle filter estimates.
 
 This policy is optimal according to the VPI criterion.
 It is specialised for a particle filter estimate.
 */
-class PFVPIPolicy : public DiscreteBanditPolicy
-{
+class PFVPIPolicy : public DiscreteBanditPolicy {
  public:
-    int n_actions;
-    PFActionValueEstimate* estimator;
-    real gamma;
-    int n_samples;
-    PFVPIPolicy(int n_actions, PFActionValueEstimate* estimator, real gamma, int n_samples);
-    /// Reset
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual ~PFVPIPolicy();
-    virtual int SelectAction();
+  int n_actions;
+  PFActionValueEstimate* estimator;
+  real gamma;
+  int n_samples;
+  PFVPIPolicy(int n_actions, PFActionValueEstimate* estimator, real gamma,
+              int n_samples);
+  /// Reset
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual ~PFVPIPolicy();
+  virtual int SelectAction();
 };
 
-
-class OptimalInfinitePolicy : public DiscreteBanditPolicy
-{
-public:
-    int n_actions;
-    CountingBernoulliEstimate* estimate;
-    OptimalInfinitePolicy(int n_actions);
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual ~OptimalInfinitePolicy();
-    virtual int SelectAction();
+class OptimalInfinitePolicy : public DiscreteBanditPolicy {
+ public:
+  int n_actions;
+  CountingBernoulliEstimate* estimate;
+  OptimalInfinitePolicy(int n_actions);
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual ~OptimalInfinitePolicy();
+  virtual int SelectAction();
 };
-
-
 
 #endif

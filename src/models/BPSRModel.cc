@@ -10,46 +10,49 @@
  ***************************************************************************/
 
 #include "BPSRModel.h"
-#include "FactoredMarkovChain.h"
 #include "BayesianPredictiveStateRepresentation.h"
 #include "BayesianPredictiveStateRepresentationCTW.h"
+#include "FactoredMarkovChain.h"
 
+BPSRModel::BPSRModel(int n_obs_, int n_actions_, std::vector<real> rewards_,
+                     int tree_depth, ModelType model_type)
+    : n_obs(n_obs_), n_actions(n_actions_), rewards(rewards_) {
+  mdp_dbg(
+      "Creating BPSRModel with %d observations, %d actions and %d rewards. "
+      "Tree depth %d\n",
+      n_obs, n_actions, rewards.size(), tree_depth);
+  n_rewards = rewards.size();
+  std::vector<int> sizes(2);
+  sizes[0] = n_obs;
+  sizes[1] = n_rewards;
+  Z = new DiscreteVector(sizes);
+  printf(
+      "Making new BPSR with %d observations, %d rewards, %d compound "
+      "observations, %d actions\n",
+      n_obs, n_rewards, Z->getNCombinations(), n_actions);
 
-BPSRModel::BPSRModel  (int n_obs_, int n_actions_, std::vector<real> rewards_, int tree_depth, ModelType model_type)
-    : n_obs(n_obs_),
-      n_actions(n_actions_),
-      rewards(rewards_)
-{
-    mdp_dbg("Creating BPSRModel with %d observations, %d actions and %d rewards. Tree depth %d\n",  n_obs, n_actions, rewards.size(), tree_depth);
-    n_rewards = rewards.size();
-    std::vector<int> sizes(2);
-    sizes[0] = n_obs;
-    sizes[1] = n_rewards;
-    Z = new DiscreteVector(sizes);
-	printf("Making new BPSR with %d observations, %d rewards, %d compound observations, %d actions\n",
-		   n_obs, n_rewards, Z->getNCombinations(), n_actions);
-
-	  switch(model_type) {
-	  case FACTORED_CHAIN:
-        predictor = new FactoredMarkovChain(n_actions, Z->getNCombinations(), tree_depth);
-		break;
-	  case CTW:
-        predictor = new BayesianPredictiveStateRepresentationCTW(Z->getNCombinations(), n_actions, tree_depth, 0.5);
-		break;
-	  case BVMM:
-        predictor = new BayesianPredictiveStateRepresentation(Z->getNCombinations(), n_actions, tree_depth, 0.5);
-		break;
-	  default:
-		Serror("Undefined choice for model type %d\n", model_type);
-    }
+  switch (model_type) {
+    case FACTORED_CHAIN:
+      predictor =
+          new FactoredMarkovChain(n_actions, Z->getNCombinations(), tree_depth);
+      break;
+    case CTW:
+      predictor = new BayesianPredictiveStateRepresentationCTW(
+          Z->getNCombinations(), n_actions, tree_depth, 0.5);
+      break;
+    case BVMM:
+      predictor = new BayesianPredictiveStateRepresentation(
+          Z->getNCombinations(), n_actions, tree_depth, 0.5);
+      break;
+    default:
+      Serror("Undefined choice for model type %d\n", model_type);
+  }
 }
 
-BPSRModel::~BPSRModel()
-{
-    delete predictor;
-    delete Z;
+BPSRModel::~BPSRModel() {
+  delete predictor;
+  delete Z;
 }
-
 
 /** Observe the initial observation and reward.
 
@@ -58,10 +61,9 @@ BPSRModel::~BPSRModel()
     The result is passed to the BPSR model by discretising the
     $x_{t+1}, r_{t+1}$ vector.
  */
-real BPSRModel::Observe(int x, real r)
-{
-    std::vector<int> z = getIndexVector(x, r);
-    return predictor->Observe(Z->getIndex(z));
+real BPSRModel::Observe(int x, real r) {
+  std::vector<int> z = getIndexVector(x, r);
+  return predictor->Observe(Z->getIndex(z));
 }
 
 /** Observe action taken at time t, and the resulting observation and
@@ -72,14 +74,13 @@ real BPSRModel::Observe(int x, real r)
     The result is passed to the BPSR model by discretising the
     $x_{t+1}, r_{t+1}$ vector.
  */
-real BPSRModel::Observe(int a, int x, real r)
-{
-    std::vector<int> z = getIndexVector(x, r);
-    return predictor->Observe(a, Z->getIndex(z));
+real BPSRModel::Observe(int a, int x, real r) {
+  std::vector<int> z = getIndexVector(x, r);
+  return predictor->Observe(a, Z->getIndex(z));
 }
 
-
-//real BPSRModel::getTransitionProbability(std::vector<int> history, int a, int x, real r) const
+// real BPSRModel::getTransitionProbability(std::vector<int> history, int a, int
+// x, real r) const
 //{
 //
 //}
@@ -92,12 +93,11 @@ real BPSRModel::Observe(int a, int x, real r)
     This is performed by discretising the $x_{t+1}, r_{t+1}$ vector
     and passing it to the BPSR model.
  */
-real BPSRModel::getTransitionProbability(int a, int x, real r) const
-{
-    std::vector<int> z = getIndexVector(x, r);
-    real p = predictor->ObservationProbability(a, Z->getIndex(z));
-    //printf ("%f\n", p);
-    return p;
+real BPSRModel::getTransitionProbability(int a, int x, real r) const {
+  std::vector<int> z = getIndexVector(x, r);
+  real p = predictor->ObservationProbability(a, Z->getIndex(z));
+  // printf ("%f\n", p);
+  return p;
 }
 
 /** Obtain the probability of a particular observation and reward at
@@ -108,21 +108,15 @@ real BPSRModel::getTransitionProbability(int a, int x, real r) const
     This is performed by discretising the $x_{t+1}, r_{t+1}$ vector
     and passing it to the BPSR model.
  */
-real BPSRModel::getExpectedReward (int a) const
-{
-    real Er = 0;
-    for (int x=0; x<n_obs; ++x) {
-        for (uint i=0; i<rewards.size(); ++i) {
-            real P = getTransitionProbability(a, x, rewards[i]);
-            Er += P * rewards[i];
-        }
+real BPSRModel::getExpectedReward(int a) const {
+  real Er = 0;
+  for (int x = 0; x < n_obs; ++x) {
+    for (uint i = 0; i < rewards.size(); ++i) {
+      real P = getTransitionProbability(a, x, rewards[i]);
+      Er += P * rewards[i];
     }
-    return Er;
+  }
+  return Er;
 }
 
-void BPSRModel::Reset()
-{
-    predictor->Reset();
-}
-
-
+void BPSRModel::Reset() { predictor->Reset(); }

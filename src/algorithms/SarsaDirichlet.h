@@ -15,25 +15,18 @@
 
 #include "Sarsa.h"
 
-class SarsaDirichlet : public Sarsa
-{
-protected:
-    Matrix C; ///< counts
-public:
-    SarsaDirichlet(int n_states_,
-          int n_actions_,
-          real gamma_,
-          real lambda_,
-          real alpha_,
-          VFExplorationPolicy* exploration_policy_,
-          real initial_value_= 0.0,
-          real baseline_ = 0.0);
-    virtual ~SarsaDirichlet();
-    /// Partial SARSA observation (can be used with eligibility traces)
-    virtual real Observe (real reward, int next_state, int next_action);
-    /// Get an action using the current exploration policy.
-    virtual int Act(real reward, int next_state);
+class SarsaDirichlet : public Sarsa {
+ protected:
+  Matrix C;  ///< counts
+ public:
+  SarsaDirichlet(int n_states_, int n_actions_, real gamma_, real lambda_,
+                 real alpha_, VFExplorationPolicy* exploration_policy_,
+                 real initial_value_ = 0.0, real baseline_ = 0.0);
+  virtual ~SarsaDirichlet();
+  /// Partial SARSA observation (can be used with eligibility traces)
+  virtual real Observe(real reward, int next_state, int next_action);
+  /// Get an action using the current exploration policy.
+  virtual int Act(real reward, int next_state);
 };
 
 #endif
-

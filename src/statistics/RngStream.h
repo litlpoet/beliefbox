@@ -1,79 +1,52 @@
 
- 
+
 #ifndef RNGSTREAM_H
 #define RNGSTREAM_H
- 
+
 #include <string>
 
-class RngStream
-{
-public:
+class RngStream {
+ public:
+  RngStream(const char *name = "");
 
-RngStream (const char *name = "");
+  static bool SetPackageSeed(const unsigned long seed[6]);
 
+  void ResetStartStream();
 
-static bool SetPackageSeed (const unsigned long seed[6]);
+  void ResetStartSubstream();
 
+  void ResetNextSubstream();
 
-void ResetStartStream ();
+  void SetAntithetic(bool a);
 
+  void IncreasedPrecis(bool incp);
 
-void ResetStartSubstream ();
+  bool SetSeed(const unsigned long seed[6]);
 
+  void AdvanceState(long e, long c);
 
-void ResetNextSubstream ();
+  void GetState(unsigned long seed[6]) const;
 
+  void WriteState() const;
 
-void SetAntithetic (bool a);
+  void WriteStateFull() const;
 
+  double RandU01();
 
-void IncreasedPrecis (bool incp);
+  int RandInt(int i, int j);
 
+ private:
+  double Cg[6], Bg[6], Ig[6];
 
-bool SetSeed (const unsigned long seed[6]);
+  bool anti, incPrec;
 
+  std::string name;
 
-void AdvanceState (long e, long c);
+  static double nextSeed[6];
 
+  double U01();
 
-void GetState (unsigned long seed[6]) const;
-
-
-void WriteState () const;
-
-
-void WriteStateFull () const;
-
-
-double RandU01 ();
-
-
-int RandInt (int i, int j);
-
-
-
-private:
-
-double Cg[6], Bg[6], Ig[6];
-
-
-bool anti, incPrec;
-
-
-std::string name;
-
-
-static double nextSeed[6];
-
-
-double U01 ();
-
-
-double U01d ();
-
-
+  double U01d();
 };
- 
-#endif
- 
 
+#endif

@@ -11,27 +11,21 @@
 #ifndef HIDDEN_MARKOV_MODEL_H
 #define HIDDEN_MARKOV_MODEL_H
 
-
 /**
    \ingroup StatisticsGroup
  */
 /*@{*/
 
-
 /// A generic hidden Markov model
 template <typename S, typename X>
-class HiddenMarkovModel
-{
-protected:
-public:
-    virtual ~HiddenMarkovModel ();
-    virtual S getCurrentState();
-    virtual X generate();
-    virtual X generate_static();
+class HiddenMarkovModel {
+ protected:
+ public:
+  virtual ~HiddenMarkovModel();
+  virtual S getCurrentState();
+  virtual X generate();
+  virtual X generate_static();
 };
-
-
-
 
 /*@}*/
 #endif

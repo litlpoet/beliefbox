@@ -1,12 +1,12 @@
 // -*- Mode: c++ -*-
-/** \file Defines the real type. 
-    
+/** \file Defines the real type.
+
     It defaults to single precision.
 
     There is a possibility to use double precision via USE_DOUBLE.
 
     The USE_FIXED flag, that uses fixed point, is unimplemented.
-    
+
     Possibly we could look at http://gmplib.org/ for a variable
     precision implementation.
 
@@ -14,15 +14,15 @@
 #ifndef REAL_H
 #define REAL_H
 
-#include <limits>
 #include <cmath>
+#include <limits>
 
 #ifdef real
 
-#error "Real already defined in another header! Binaries might not link properly!"
+#error \
+    "Real already defined in another header! Binaries might not link properly!"
 
 #endif /* real */
-
 
 #ifdef USE_FIXED_POINT
 typedef fixed real;
@@ -45,8 +45,6 @@ typedef float real;
 #define LOG_2_PI 1.83787706640934548355
 #define LOG_ZERO -INF
 
-
-
 #ifndef uint
 typedef unsigned int uint;
 #endif
@@ -54,6 +52,5 @@ typedef unsigned int uint;
 #ifndef ulong
 typedef unsigned long ulong;
 #endif
-
 
 #endif /* REAL_H */

@@ -11,42 +11,33 @@
 
 #ifdef MAKE_MAIN
 #include "Random.h"
-#include "RandomNumberFile.h"
 #include <cstdlib>
+#include "RandomNumberFile.h"
 
-int main()
-{
-    fprintf (stderr,
-             "sizes - real: %ld, float: %ld, double: %ld, int: %ld, ulong: %ld\n",
-            sizeof(real),
-            sizeof(float),
-            sizeof(double),
-            sizeof(int),
-            sizeof(ulong));
+int main() {
+  fprintf(stderr,
+          "sizes - real: %ld, float: %ld, double: %ld, int: %ld, ulong: %ld\n",
+          sizeof(real), sizeof(float), sizeof(double), sizeof(int),
+          sizeof(ulong));
 
-    fprintf (stderr, "INT_MAX: %ld\n", INT_MAX);
-    const ulong LONG_INT_MAX = (ulong) INT_MAX * (ulong) INT_MAX;
-    fprintf (stderr, "LONG_INT_MAX: %ld\n", LONG_INT_MAX);
-    fprintf (stderr, "ULONG_INT_MAX: %ld\n", 2*LONG_INT_MAX - 1);
+  fprintf(stderr, "INT_MAX: %ld\n", INT_MAX);
+  const ulong LONG_INT_MAX = (ulong)INT_MAX * (ulong)INT_MAX;
+  fprintf(stderr, "LONG_INT_MAX: %ld\n", LONG_INT_MAX);
+  fprintf(stderr, "ULONG_INT_MAX: %ld\n", 2 * LONG_INT_MAX - 1);
 
-    RandomNumberFile rng("/home/olethros/dev_random.bin");
-    fprintf (stderr, "Rand int: %ld\n", rng.random());
-    fprintf (stderr, "Rand real: %f\n", rng.uniform());
-    //ulong max_long = 0;
-    for (int i=0; i<rng.pool_size(); i++) {
-        //ulong x = rng.random();
-        //if (x > max_long) {
-        //    max_long = x;
-        // }
-        printf ("%f\n", rng.uniform());
-    }
-    //fprintf (stderr, "%lu\n", max_long);
-    return 0;
+  RandomNumberFile rng("/home/olethros/dev_random.bin");
+  fprintf(stderr, "Rand int: %ld\n", rng.random());
+  fprintf(stderr, "Rand real: %f\n", rng.uniform());
+  // ulong max_long = 0;
+  for (int i = 0; i < rng.pool_size(); i++) {
+    // ulong x = rng.random();
+    // if (x > max_long) {
+    //    max_long = x;
+    // }
+    printf("%f\n", rng.uniform());
+  }
+  // fprintf (stderr, "%lu\n", max_long);
+  return 0;
 }
 
-
 #endif
-
-
-
-

@@ -15,11 +15,9 @@
 
 #include "Object.h"
 
-class Observation : public Object
-{
+class Observation : public Object {
  public:
-	virtual ~Observation() {}
+  virtual ~Observation() {}
 };
-
 
 #enidf

@@ -1,5 +1,6 @@
 /* -*- Mode: c++ -*- */
-/* VER: $Id: MathFunctions.h,v 1.2 2006/11/06 15:48:53 cdimitrakakis Exp cdimitrakakis $ */
+/* VER: $Id: MathFunctions.h,v 1.2 2006/11/06 15:48:53 cdimitrakakis Exp
+ * cdimitrakakis $ */
 // copyright (c) 2004 by Christos Dimitrakakis <dimitrak@idiap.ch>
 /***************************************************************************
  *                                                                         *
@@ -12,41 +13,28 @@
 #ifndef SPECIAL_FUNCTIONS_H
 #define SPECIAL_FUNCTIONS_H
 
+#include <cmath>
 #include "Object.h"
 #include "Vector.h"
 #include "real.h"
-#include <cmath>
 
 /** The gamma function.
-    
+
     \f$Gamma(x) = \int_0^\infty t^{x-1} e^{-t} \, dt\f$.
  */
-inline float Gamma(float x)
-{
-    return tgammaf(x);
-}
+inline float Gamma(float x) { return tgammaf(x); }
 
 /** The gamma function, double version.
  */
-inline double Gamma(double x)
-{
-    return tgamma(x);
-}
-
+inline double Gamma(double x) { return tgamma(x); }
 
 /** The log gamma function.
  */
-inline float logGamma(float x)
-{
-    return lgammaf(x);
-}
+inline float logGamma(float x) { return lgammaf(x); }
 
 /** The log gamma function, double version.
  */
-inline double logGamma(double x)
-{
-    return lgamma(x);
-}
+inline double logGamma(double x) { return lgamma(x); }
 
 /** The log two-variable Beta function */
 real logBeta(real x, real y);
@@ -61,7 +49,6 @@ real Beta(const Vector& x);
 float betacf(float a, float b, float x);
 float BetaInc(float x, float a, float b);
 
-unsigned long binomial (int n, int k);
-
+unsigned long binomial(int n, int k);
 
 #endif

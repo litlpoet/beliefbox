@@ -14,75 +14,70 @@
 #define UCB_POLICY_H
 
 #include <vector>
-#include "real.h"
 #include "DiscreteBanditPolicy.h"
+#include "real.h"
 
-class UCBPolicy : public DiscreteBanditPolicy
-{
-public:
-    virtual ~UCBPolicy()
-    {
-    }
-    virtual void Reset() = 0;
-    virtual void Observe(int a, real r) = 0;
-    virtual int SelectAction() = 0;
-    virtual void SetTimes(int a, int times_) = 0;
-    virtual void SetReward(int a, real reward) = 0;
+class UCBPolicy : public DiscreteBanditPolicy {
+ public:
+  virtual ~UCBPolicy() {}
+  virtual void Reset() = 0;
+  virtual void Observe(int a, real r) = 0;
+  virtual int SelectAction() = 0;
+  virtual void SetTimes(int a, int times_) = 0;
+  virtual void SetReward(int a, real reward) = 0;
 };
 
-class UCB1Policy : public UCBPolicy
-{
-protected:
-    std::vector<long> times;
-    std::vector<real> Er;
-    std::vector<real> U;
-    long t;
-    int n_actions;
-public:
-    UCB1Policy (int n_actions_);
-    virtual ~UCB1Policy();
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual int SelectAction();
-    virtual void SetTimes(int a, int times_);
-    virtual void SetReward(int a, real reward);
+class UCB1Policy : public UCBPolicy {
+ protected:
+  std::vector<long> times;
+  std::vector<real> Er;
+  std::vector<real> U;
+  long t;
+  int n_actions;
+
+ public:
+  UCB1Policy(int n_actions_);
+  virtual ~UCB1Policy();
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual int SelectAction();
+  virtual void SetTimes(int a, int times_);
+  virtual void SetReward(int a, real reward);
 };
 
-class UCBgPolicy : public UCBPolicy
-{
-protected:
-    std::vector<int> times;
-    std::vector<real> Er;
-    std::vector<real> U;
-    int t;
-    int n_actions;
-    real gamma;
-public:
-    UCBgPolicy (int n_actions_, real gamma_);
-    virtual ~UCBgPolicy();
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual int SelectAction();
-    virtual void SetTimes(int a, int times_);
-    virtual void SetReward(int a, real reward);
+class UCBgPolicy : public UCBPolicy {
+ protected:
+  std::vector<int> times;
+  std::vector<real> Er;
+  std::vector<real> U;
+  int t;
+  int n_actions;
+  real gamma;
+
+ public:
+  UCBgPolicy(int n_actions_, real gamma_);
+  virtual ~UCBgPolicy();
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual int SelectAction();
+  virtual void SetTimes(int a, int times_);
+  virtual void SetReward(int a, real reward);
 };
 
-class UCB2Policy : public DiscreteBanditPolicy
-{
-protected:
-    std::vector<int> times;
-    std::vector<real> Er;
-    std::vector<real> U;
-    int t;
-    int n_actions;
-public:
-    UCB2Policy (int n_actions_);
-    virtual ~UCB2Policy();
-    virtual void Reset();
-    virtual void Observe(int a, real r);
-    virtual int SelectAction();
+class UCB2Policy : public DiscreteBanditPolicy {
+ protected:
+  std::vector<int> times;
+  std::vector<real> Er;
+  std::vector<real> U;
+  int t;
+  int n_actions;
+
+ public:
+  UCB2Policy(int n_actions_);
+  virtual ~UCB2Policy();
+  virtual void Reset();
+  virtual void Observe(int a, real r);
+  virtual int SelectAction();
 };
-
-
 
 #endif

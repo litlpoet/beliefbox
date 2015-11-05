@@ -18,29 +18,18 @@
  */
 /*@{*/
 
-template <typename Model, typename X> 
-class ExpectationMaximisation
-{
-public:
-    Model& model;
-    std::vector<X> observations;
-    ExpectationMaximisation(Model& model_) : model(model_)
-    {
-        model.Reset();
-    }
-    
-    void Observe(X x)
-    {
-        observations.push_back(x);
-    }
-    real Iterate(int n_iterations) {
-        return model.ExpectationMaximisation(observations, n_iterations);
-    }
-    void Reset()
-    {
-        observations.resize(0);
-    }
+template <typename Model, typename X>
+class ExpectationMaximisation {
+ public:
+  Model& model;
+  std::vector<X> observations;
+  ExpectationMaximisation(Model& model_) : model(model_) { model.Reset(); }
 
+  void Observe(X x) { observations.push_back(x); }
+  real Iterate(int n_iterations) {
+    return model.ExpectationMaximisation(observations, n_iterations);
+  }
+  void Reset() { observations.resize(0); }
 };
 
 /*@}*/

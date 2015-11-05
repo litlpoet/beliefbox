@@ -16,12 +16,10 @@
 #include "Object.h"
 
 template <typename X, typename Y>
-class Model : public Object
-{
-public:
-    virtual ~Model() {};
-	virtual Y Get(X x) = 0;
+class Model : public Object {
+ public:
+  virtual ~Model(){};
+  virtual Y Get(X x) = 0;
 };
-
 
 #endif

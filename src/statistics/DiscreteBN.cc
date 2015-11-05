@@ -15,7 +15,7 @@
 #include <stdexcept>
 
 /** Discrete Bayesian Network
-    
+
     Arguments:
     _values: the specification of the discrete variable vector
     _graph: the dependencies between variables
@@ -30,56 +30,53 @@
     connect \f$Y\f$ to that.  So we added one graph node and removed
     three parameters.
 */
-DiscreteBN::DiscreteBN(DiscreteVector _values, SparseGraph& _graph) : graph(_graph), values(_values)
-{
-    if (graph.hasCycles()) {
-        throw std::domain_error("A Bayesian network can not have cycles");
-    }
-    n_variables = graph.n_nodes();
-    assert(n_variables == values.size());
-    Pr.resize(n_variables);
+DiscreteBN::DiscreteBN(DiscreteVector _values, SparseGraph& _graph)
+    : graph(_graph), values(_values) {
+  if (graph.hasCycles()) {
+    throw std::domain_error("A Bayesian network can not have cycles");
+  }
+  n_variables = graph.n_nodes();
+  assert(n_variables == values.size());
+  Pr.resize(n_variables);
 
-    // find the parents of each node in the graph
-    for (int n=0; n<n_variables; ++n) {
-        HalfEdgeListIterator e = graph.getFirstParent(n);
-        // how many values can our conditioned variable take?
-        int permutations = 1;
-        // how many permutations from the conditioning variables?
-        for (int p=0; p<graph.n_parents(n); ++p, ++e) {
-            permutations *= values.size(e->node);
-        }
-
-        Pr[n].Resize(permutations, values.size(n));
-        printf ("Making CPT for %d of size %d x %d\n", n, permutations, values.size(n));
-        for (int i=0; i<permutations; ++i) {
-            for (int j=0; j<values.size(n); ++j) {
-                Pr[n](i,j) = 1.0 / (real) values.size(n);
-            }
-        }
+  // find the parents of each node in the graph
+  for (int n = 0; n < n_variables; ++n) {
+    HalfEdgeListIterator e = graph.getFirstParent(n);
+    // how many values can our conditioned variable take?
+    int permutations = 1;
+    // how many permutations from the conditioning variables?
+    for (int p = 0; p < graph.n_parents(n); ++p, ++e) {
+      permutations *= values.size(e->node);
     }
-    _calculate_depth();
+
+    Pr[n].Resize(permutations, values.size(n));
+    printf("Making CPT for %d of size %d x %d\n", n, permutations,
+           values.size(n));
+    for (int i = 0; i < permutations; ++i) {
+      for (int j = 0; j < values.size(n); ++j) {
+        Pr[n](i, j) = 1.0 / (real)values.size(n);
+      }
+    }
+  }
+  _calculate_depth();
 }
 
-Matrix& DiscreteBN::getProbabilityMatrix(int n)
-{
-    assert(n >= 0 && n < graph.n_nodes());
-    return Pr[n];
-    
+Matrix& DiscreteBN::getProbabilityMatrix(int n) {
+  assert(n >= 0 && n < graph.n_nodes());
+  return Pr[n];
 }
-void DiscreteBN::setProbabilityMatrix(int n, Matrix& P)
-{
-    assert(n >= 0 && n < graph.n_nodes());
-    assert(P.Columns() == Pr[n].Columns() && P.Rows() == Pr[n].Rows());
-    Pr[n] = P;
+void DiscreteBN::setProbabilityMatrix(int n, Matrix& P) {
+  assert(n >= 0 && n < graph.n_nodes());
+  assert(P.Columns() == Pr[n].Columns() && P.Rows() == Pr[n].Rows());
+  Pr[n] = P;
 }
 
-void DiscreteBN::dotFile(const char* fname)
-{
-    FILE* fout = fopen(fname, "w");
-    if (!fout) {
-        fprintf(stderr, "Could not open file name %s for writing\n", fname);
-        return;
-    }
+void DiscreteBN::dotFile(const char* fname) {
+  FILE* fout = fopen(fname, "w");
+  if (!fout) {
+    fprintf(stderr, "Could not open file name %s for writing\n", fname);
+    return;
+  }
 
 #if 0
    const char* colour[] ={
@@ -92,82 +89,71 @@ void DiscreteBN::dotFile(const char* fname)
         "black"};
 #endif
 
-    fprintf (fout, "digraph DBN {\n");
-    fprintf (fout, "ranksep=2; rankdir=LR; \n");
+  fprintf(fout, "digraph DBN {\n");
+  fprintf(fout, "ranksep=2; rankdir=LR; \n");
 
-    for (int n=0; n<n_variables; n++) {
-        HalfEdgeListIterator e = graph.getFirstParent(n);
-        if (graph.n_parents(n)) {
-            for (int p=0; p<graph.n_parents(n); ++p, ++e) {
-                fprintf (fout,
-                         "x%d -> x%d\n",
-                         e->node, n);
-            }
-        } else {
-            fprintf (fout,
-                     "x%d\n",
-                     n);
-            
-        }
+  for (int n = 0; n < n_variables; n++) {
+    HalfEdgeListIterator e = graph.getFirstParent(n);
+    if (graph.n_parents(n)) {
+      for (int p = 0; p < graph.n_parents(n); ++p, ++e) {
+        fprintf(fout, "x%d -> x%d\n", e->node, n);
+      }
+    } else {
+      fprintf(fout, "x%d\n", n);
     }
-    fprintf (fout, "}\n");
-    fclose(fout);
+  }
+  fprintf(fout, "}\n");
+  fclose(fout);
 }
-
 
 /** Generate a vector of samples
-    
+
     Iterate through all depths, generating values for each one.
  */
-void  DiscreteBN::generate(std::vector<int>& x)
-{
-    for (uint depth=0; depth<depth_list.size(); ++depth) {
-        for (uint i=0; i<depth_list[depth].size(); ++i) {
-            int node = depth_list[depth][i];
-            HalfEdgeListIterator e = graph.getFirstParent(node);
-            int index = 0;
-            int permutations = 1;
-            // how many permutations from the conditioning variables?
-            for (int p=0; p<graph.n_parents(node); ++p, ++e) {
-                int val = (int) x[e->node];
-                index += permutations * val;
-                permutations *= values.size(e->node);
-            }
-            MultinomialDistribution p(Pr[node].getRow(index));
-            x[node] = p.generateInt();
-        }
+void DiscreteBN::generate(std::vector<int>& x) {
+  for (uint depth = 0; depth < depth_list.size(); ++depth) {
+    for (uint i = 0; i < depth_list[depth].size(); ++i) {
+      int node = depth_list[depth][i];
+      HalfEdgeListIterator e = graph.getFirstParent(node);
+      int index = 0;
+      int permutations = 1;
+      // how many permutations from the conditioning variables?
+      for (int p = 0; p < graph.n_parents(node); ++p, ++e) {
+        int val = (int)x[e->node];
+        index += permutations * val;
+        permutations *= values.size(e->node);
+      }
+      MultinomialDistribution p(Pr[node].getRow(index));
+      x[node] = p.generateInt();
     }
+  }
 }
-
 
 /** The probability of the vector of variables obtaining a particular value.
 
  */
-real DiscreteBN::getLogProbability(std::vector<int>& x)
-{
-    assert((int) x.size() == graph.n_nodes());
-    real log_p = 0;
-    for (uint depth=0; depth<depth_list.size(); ++depth) {
-        for (uint i=0; i<depth_list[depth].size(); ++i) {
-            int node = depth_list[depth][i];
-            HalfEdgeListIterator e = graph.getFirstParent(node);
-            int index = 0;
-            int permutations = 1;
+real DiscreteBN::getLogProbability(std::vector<int>& x) {
+  assert((int)x.size() == graph.n_nodes());
+  real log_p = 0;
+  for (uint depth = 0; depth < depth_list.size(); ++depth) {
+    for (uint i = 0; i < depth_list[depth].size(); ++i) {
+      int node = depth_list[depth][i];
+      HalfEdgeListIterator e = graph.getFirstParent(node);
+      int index = 0;
+      int permutations = 1;
 
-            // how many permutations from the conditioning variables?
-            for (int p=0; p<graph.n_parents(node); ++p, ++e) {
-                int val = (int) x[e->node];
-                index += permutations * val;
-                permutations *= values.size(e->node);
-            }
+      // how many permutations from the conditioning variables?
+      for (int p = 0; p < graph.n_parents(node); ++p, ++e) {
+        int val = (int)x[e->node];
+        index += permutations * val;
+        permutations *= values.size(e->node);
+      }
 
-            log_p += log(Pr[node](index, x[node]));
-        }
+      log_p += log(Pr[node](index, x[node]));
     }
-    return log_p;
+  }
+  return log_p;
 }
-
-
 
 /** Obtain the full joint distribution
 
@@ -176,71 +162,67 @@ real DiscreteBN::getLogProbability(std::vector<int>& x)
     variabels and the last column is the probability of the variables
     obtaining those values jointly.
  */
-Matrix DiscreteBN::getJointDistribution()
-{  
-    std::vector<int> x(n_variables);
-    int permutations = 1;
-    for (int i=0; i<n_variables; ++i) {
-        x[i] = 0;
-        permutations *= values.size(i);
+Matrix DiscreteBN::getJointDistribution() {
+  std::vector<int> x(n_variables);
+  int permutations = 1;
+  for (int i = 0; i < n_variables; ++i) {
+    x[i] = 0;
+    permutations *= values.size(i);
+  }
+  Matrix P(permutations, n_variables + 1);
+  bool flag = false;
+  int r = 0;
+  while (!flag) {
+    for (int i = 0; i < n_variables; i++) {
+      P(r, i) = x[i];
     }
-    Matrix P(permutations, n_variables + 1);
-    bool flag = false;
-    int r = 0;
-    while(!flag) {
-        for (int i=0; i<n_variables; i++) {
-            P(r, i) = x[i];
+    P(r, n_variables) = getProbability(x);
+    flag = values.permute(x);
+    r++;
+  }
 
-        }
-        P(r, n_variables) = getProbability(x);
-        flag = values.permute(x);
-        r++;
-    }
-    
-    return P;
+  return P;
 }
 
-void DiscreteBN::_calculate_depth_rec(std::vector<uint>& depth, int node, uint d)
-{
-    if (d >= depth[node]) { 
-        return;
-    }
-    depth[node] = d;
-    HalfEdgeListIterator c = graph.getFirstChild(node);
-    for (int i=0; i<graph.n_children(node); ++i, ++c) {
-        _calculate_depth_rec(depth, c->node, depth[node] + 1);
-    }
+void DiscreteBN::_calculate_depth_rec(std::vector<uint>& depth, int node,
+                                      uint d) {
+  if (d >= depth[node]) {
+    return;
+  }
+  depth[node] = d;
+  HalfEdgeListIterator c = graph.getFirstChild(node);
+  for (int i = 0; i < graph.n_children(node); ++i, ++c) {
+    _calculate_depth_rec(depth, c->node, depth[node] + 1);
+  }
 }
 
-void DiscreteBN::_calculate_depth()
-{
-    std::vector<uint> depth(n_variables);
-    for (int n=0; n<n_variables; n++) {
-        depth[n] = n_variables;
+void DiscreteBN::_calculate_depth() {
+  std::vector<uint> depth(n_variables);
+  for (int n = 0; n < n_variables; n++) {
+    depth[n] = n_variables;
+  }
+  for (int n = 0; n < n_variables; n++) {
+    // HalfEdgeListIterator e = graph.getFirstParent(n);
+    if (graph.n_parents(n) == 0) {
+      depth[n] = 0;
+      HalfEdgeListIterator c = graph.getFirstChild(n);
+      for (int i = 0; i < graph.n_children(n); ++i, ++c) {
+        _calculate_depth_rec(depth, c->node, depth[n] + 1);
+      }
     }
-    for (int n=0; n<n_variables; n++) {
-      //HalfEdgeListIterator e = graph.getFirstParent(n);
-        if (graph.n_parents(n) == 0) {
-            depth[n] = 0;
-            HalfEdgeListIterator c = graph.getFirstChild(n);
-            for (int i=0; i<graph.n_children(n); ++i, ++c) {
-                _calculate_depth_rec(depth, c->node, depth[n] + 1);
-            }
-        }
-    }
+  }
 
-    int max_depth = (int) ceil(Max(depth));
-    depth_list.resize(max_depth + 1);
-    for (uint d=0; d<depth_list.size(); ++d) {
-        //depth_list[d].resize(0);
-        printf ("Depth %d: ", d);
-        for (int n=0; n<n_variables; ++n) {
-            if (depth[n] == d) {
-                depth_list[d].push_back(n);
-                printf ("%d ", n);
-            }
-        }
-        printf("\n");
+  int max_depth = (int)ceil(Max(depth));
+  depth_list.resize(max_depth + 1);
+  for (uint d = 0; d < depth_list.size(); ++d) {
+    // depth_list[d].resize(0);
+    printf("Depth %d: ", d);
+    for (int n = 0; n < n_variables; ++n) {
+      if (depth[n] == d) {
+        depth_list[d].push_back(n);
+        printf("%d ", n);
+      }
     }
-
+    printf("\n");
+  }
 }

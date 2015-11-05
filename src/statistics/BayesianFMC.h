@@ -11,18 +11,16 @@
 #ifndef BAYESIAN_FMC_H
 #define BAYESIAN_FMC_H
 
-#include <vector>
 #include <map>
-#include "Vector.h"
-#include "Matrix.h"
+#include <vector>
 #include "FactoredMarkovChain.h"
+#include "Matrix.h"
+#include "Vector.h"
 
 /**
    \ingroup StatisticsGroup
  */
 /*@{*/
-
-
 
 /** A mixture of factored Markov Chains.
 
@@ -30,30 +28,27 @@
     @see BPSRModel
 
  */
-class BayesianFMC : public FactoredPredictor
-{
-protected:
-	int n_obs;
-	int n_actions;
-	int n_models;
-	real prior;
-    std::vector<FactoredMarkovChain*> mc;
-    Vector Pr; ///< model probabilities
-    Vector logPr; ///< model log probabilities
-    Vector Pr_next; ///< observation probabilities
-public:
-    BayesianFMC (int n_obs_, int n_actions_, int n_models_, real prior_);
+class BayesianFMC : public FactoredPredictor {
+ protected:
+  int n_obs;
+  int n_actions;
+  int n_models;
+  real prior;
+  std::vector<FactoredMarkovChain*> mc;
+  Vector Pr;       ///< model probabilities
+  Vector logPr;    ///< model log probabilities
+  Vector Pr_next;  ///< observation probabilities
+ public:
+  BayesianFMC(int n_obs_, int n_actions_, int n_models_, real prior_);
 
-    virtual ~BayesianFMC();
+  virtual ~BayesianFMC();
 
-    
-    /* Training and generation */
-    virtual real Observe(int observation);
-    virtual real Observe(int action, int observation);
-    virtual real ObservationProbability (int action, int observation);
-    virtual void Reset();
-    virtual int predict(int a);
-    
+  /* Training and generation */
+  virtual real Observe(int observation);
+  virtual real Observe(int action, int observation);
+  virtual real ObservationProbability(int action, int observation);
+  virtual void Reset();
+  virtual int predict(int a);
 };
 /*@}*/
 #endif

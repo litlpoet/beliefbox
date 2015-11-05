@@ -13,9 +13,9 @@
 #ifndef ENVIRONMENT_H
 #define ENVIRONMENT_H
 
+#include <cstdlib>
 #include "MDP.h"
 #include "Vector.h"
-#include <cstdlib>
 /**
    \defgroup EnvironmentGroup Environments
  */
@@ -25,129 +25,84 @@
 /*@{*/
 /// Template for environments
 template <typename S, typename A>
-class Environment
-{
-protected:
-    S state; ///< The current state
-    real reward; ///< The current reward
-	bool endsim; ///< Absorbing state
-    uint n_states; ///< The state dimension
-    uint n_actions; ///< The action dimension
-    S state_lower_bound; ///< lower bound on the states
-    S state_upper_bound; ///< upper bound on the states
-public:
-    Environment() : n_states(1), n_actions(1)
-    {
-        state_lower_bound = 0;
-        state_upper_bound = 0;
-        reward = 0.0;
-		endsim = false;
-    }
+class Environment {
+ protected:
+  S state;              ///< The current state
+  real reward;          ///< The current reward
+  bool endsim;          ///< Absorbing state
+  uint n_states;        ///< The state dimension
+  uint n_actions;       ///< The action dimension
+  S state_lower_bound;  ///< lower bound on the states
+  S state_upper_bound;  ///< upper bound on the states
+ public:
+  Environment() : n_states(1), n_actions(1) {
+    state_lower_bound = 0;
+    state_upper_bound = 0;
+    reward = 0.0;
+    endsim = false;
+  }
 
-    Environment(int n_states_, int n_actions_)
-  : n_states(n_states_), n_actions(n_actions_)
-    {
-        state_lower_bound = 0;
-        state_upper_bound = n_states;
-        reward = 0.0;
-		endsim = false;
-    }
+  Environment(int n_states_, int n_actions_)
+      : n_states(n_states_), n_actions(n_actions_) {
+    state_lower_bound = 0;
+    state_upper_bound = n_states;
+    reward = 0.0;
+    endsim = false;
+  }
 
-    virtual ~Environment() 
-    {
-    }
+  virtual ~Environment() {}
 
-    /// put the environment in its "natural: state
-    virtual void Reset() 
-    {
-        Serror("Not implemented\n");
-        exit(-1);
-    }
-	
-    /// returns true if the action succeeds, false if it does not.
-    ///
-    /// The usual of false is that the environment is in a terminal
-    /// absorbing state.
-    virtual bool Act(const A& action) 
-    {
-        Serror("Not implemented\n");
-        exit(-1);
-        return false;
-    }
-    
-    /// Return a full MDP model of the environment.  This may not be
-    /// possible for some environments.  The MDP is required to be
-    /// freed by the user!
-    virtual MDP<S, A>* getMDP() const
-    {
-        return NULL;
-    }
-    virtual const char* Name() const
-    {
-        return "Undefined environment name";
-    }
-	// --- The following functions are not supposed to be overwritten.. -- //
-    /// returns a (reference to) the current state
-    const S& getState() const
-    {
-        return state;
-    }
-	///  sets the current state
-	void setState(const S& s_next)
-	{
-		state = s_next;
-	}
-    /// returns the current reward
-    real getReward() const
-    {
-        return reward;
-    }
-	/// indicates if the current state is absorbing or not
-	bool getEndsim() const
-	{
-		return endsim;
-	}
-	
-	void setEndsim(const bool& esim_)
-	{
-		endsim = esim_;
-	}
-    /// returns the number of state dimensions
-    uint getNStates() const
-    {
-        return n_states;
-    }
-    uint getNActions() const
-    {
-        return n_actions;
-    }
-    /// Set the overall randomness of the environment
-    virtual void setRandomness(real randomness)
-    {
-        
-    }
-    const S& StateUpperBound() const
-    {
-        return state_upper_bound;
-    }
-    const S& StateLowerBound() const
-    {
-        return state_lower_bound;
-    }
-	virtual real getTransitionProbability(const S& state, const A& action, const S& next_state) const
-    {
-            Serror("Should be implemented\n");
-            exit(-1);
-            return 1.0;
-    }
-    
+  /// put the environment in its "natural: state
+  virtual void Reset() {
+    Serror("Not implemented\n");
+    exit(-1);
+  }
 
-    virtual real getExpectedReward(const S& state, const A& action) const
-    {
-      Serror("Should be implemented\n");
-      exit(-1);
-      return 0.0;
-    }
+  /// returns true if the action succeeds, false if it does not.
+  ///
+  /// The usual of false is that the environment is in a terminal
+  /// absorbing state.
+  virtual bool Act(const A& action) {
+    Serror("Not implemented\n");
+    exit(-1);
+    return false;
+  }
+
+  /// Return a full MDP model of the environment.  This may not be
+  /// possible for some environments.  The MDP is required to be
+  /// freed by the user!
+  virtual MDP<S, A>* getMDP() const { return NULL; }
+  virtual const char* Name() const { return "Undefined environment name"; }
+  // --- The following functions are not supposed to be overwritten.. -- //
+  /// returns a (reference to) the current state
+  const S& getState() const { return state; }
+  ///  sets the current state
+  void setState(const S& s_next) { state = s_next; }
+  /// returns the current reward
+  real getReward() const { return reward; }
+  /// indicates if the current state is absorbing or not
+  bool getEndsim() const { return endsim; }
+
+  void setEndsim(const bool& esim_) { endsim = esim_; }
+  /// returns the number of state dimensions
+  uint getNStates() const { return n_states; }
+  uint getNActions() const { return n_actions; }
+  /// Set the overall randomness of the environment
+  virtual void setRandomness(real randomness) {}
+  const S& StateUpperBound() const { return state_upper_bound; }
+  const S& StateLowerBound() const { return state_lower_bound; }
+  virtual real getTransitionProbability(const S& state, const A& action,
+                                        const S& next_state) const {
+    Serror("Should be implemented\n");
+    exit(-1);
+    return 1.0;
+  }
+
+  virtual real getExpectedReward(const S& state, const A& action) const {
+    Serror("Should be implemented\n");
+    exit(-1);
+    return 0.0;
+  }
 };
 
 /// Default type for discrete environments
@@ -161,15 +116,11 @@ typedef Environment<Vector, Vector> ContinuousEnvironment;
 
 /// Template for environment generators
 template <typename S, typename A>
-class EnvironmentGenerator
-{
-public:
+class EnvironmentGenerator {
+ public:
   virtual Environment<S, A>* Generate(bool random = true) = 0;
-  virtual ~EnvironmentGenerator()
-  {
-  }
+  virtual ~EnvironmentGenerator() {}
 };
-
 
 /*@}*/
 

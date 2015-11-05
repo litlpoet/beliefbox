@@ -15,15 +15,12 @@
 
 #include "PolicyEvaluation.h"
 
-class AveragePolicyEvaluation : public PolicyEvaluation
-{
-public:
-    AveragePolicyEvaluation(FixedDiscretePolicy* policy_,
-                            const DiscreteMDP* mdp_,
-                            real baseline_ = 0.0);
-    virtual ~AveragePolicyEvaluation();
-    virtual void ComputeStateValues(real threshold, int max_iter=-1);
+class AveragePolicyEvaluation : public PolicyEvaluation {
+ public:
+  AveragePolicyEvaluation(FixedDiscretePolicy* policy_, const DiscreteMDP* mdp_,
+                          real baseline_ = 0.0);
+  virtual ~AveragePolicyEvaluation();
+  virtual void ComputeStateValues(real threshold, int max_iter = -1);
 };
 
 #endif
-

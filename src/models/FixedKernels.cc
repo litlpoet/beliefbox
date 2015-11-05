@@ -12,27 +12,23 @@
 #include "FixedKernels.h"
 #include <cmath>
 
-TriangularKernel::TriangularKernel(real m_, real w_) : m(m_), w(w_)
-{
+TriangularKernel::TriangularKernel(real m_, real w_) : m(m_), w(w_) {}
+
+real TriangularKernel::Get(real x) {
+  real d = w - fabs(m - x);
+
+  if (d < 0) {
+    return 0.0;
+  }
+  return d;
 }
 
-
-real TriangularKernel::Get(real x)
-{
-	real d = w - fabs(m-x);
-
-	if (d < 0) {
-		return 0.0;
-	}
-	return d;
-}
-
-TriangularKernelSet::TriangularKernelSet(int n_, real width, real lo, real hi) : n(n_)
-{
-	real d = (hi - lo) / (real) (n + 1);
-	real x = lo;
-	for (int i=0; i<n; ++i) {
-		x+= d;
-		k.push_back(TriangularKernel(x, width));
-	}
+TriangularKernelSet::TriangularKernelSet(int n_, real width, real lo, real hi)
+    : n(n_) {
+  real d = (hi - lo) / (real)(n + 1);
+  real x = lo;
+  for (int i = 0; i < n; ++i) {
+    x += d;
+    k.push_back(TriangularKernel(x, width));
+  }
 }

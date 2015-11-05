@@ -1,5 +1,6 @@
 /* -*- Mode: C++; -*- */
-/* VER: $Id: Distribution.h,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp cdimitrakakis $*/
+/* VER: $Id: Distribution.h,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp
+ * cdimitrakakis $*/
 // copyright (c) 2006 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
@@ -14,11 +15,6 @@
 #include "DiscreteDBN.h"
 #include "Dirichlet.h"
 
-int main (void)
-{
-    DiscreteDBN dbn;
-    
-    
-}
+int main(void) { DiscreteDBN dbn; }
 
 #endif

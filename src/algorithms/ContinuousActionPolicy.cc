@@ -12,12 +12,8 @@
 
 #include "ContinuousActionPolicy.h"
 
-SamplingContinuousActionPolicy::SamplingContinuousActionPolicy(ContinuousActionMDPDistribution& belief_) : belief(belief_)
-{
-}
+SamplingContinuousActionPolicy::SamplingContinuousActionPolicy(
+    ContinuousActionMDPDistribution& belief_)
+    : belief(belief_) {}
 
-
-Action SamplingContinuousActionPolicy::SelectAction()
-{
-    return Action();
-}
+Action SamplingContinuousActionPolicy::SelectAction() { return Action(); }

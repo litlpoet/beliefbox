@@ -16,47 +16,40 @@
 #include "Environment.h"
 #include "Grid.h"
 
-template<class T>
+template <class T>
 class DiscretisedEnvironment : public DiscreteEnvironment {
-public:
-    T& environment;
-    int K;
-    EvenGrid grid;
-    DiscretisedEnvironment(T& environment_, int K_)
-        : environment(environment_),
-          K(K_),
-          grid(environment.StateLowerBound(), environment.StateUpperBound(), K)
-    {
-        n_actions = environment.getNActions();
-        n_states = grid.getNIntervals();
-        environment.Reset();
-        logmsg("Creating discretised environment with %d states, %d actions\n", n_states, n_actions);
-    }
+ public:
+  T& environment;
+  int K;
+  EvenGrid grid;
+  DiscretisedEnvironment(T& environment_, int K_)
+      : environment(environment_),
+        K(K_),
+        grid(environment.StateLowerBound(), environment.StateUpperBound(), K) {
+    n_actions = environment.getNActions();
+    n_states = grid.getNIntervals();
+    environment.Reset();
+    logmsg("Creating discretised environment with %d states, %d actions\n",
+           n_states, n_actions);
+  }
 
-    virtual ~DiscretisedEnvironment()
-    {
-    }
+  virtual ~DiscretisedEnvironment() {}
 
-    virtual void Reset() {
-        environment.Reset();
-        state = grid.getInterval(environment.getState());
-    }
+  virtual void Reset() {
+    environment.Reset();
+    state = grid.getInterval(environment.getState());
+  }
 
-    virtual bool Act(const int& action) {
-        bool flag = environment.Act(action);
-	endsim = environment.getEndsim();
-        state = grid.getInterval(environment.getState());
-        reward = environment.getReward();
-        //printf("# s: %d, a: %d, r:%f\n", state, action, reward);
-        return flag;
-    }
+  virtual bool Act(const int& action) {
+    bool flag = environment.Act(action);
+    endsim = environment.getEndsim();
+    state = grid.getInterval(environment.getState());
+    reward = environment.getReward();
+    // printf("# s: %d, a: %d, r:%f\n", state, action, reward);
+    return flag;
+  }
 
-    virtual const char* Name()
-    {
-        return "Discretised environment";
-    }
-
-
+  virtual const char* Name() { return "Discretised environment"; }
 };
 
 #endif

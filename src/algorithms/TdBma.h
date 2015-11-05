@@ -12,7 +12,6 @@
 #ifndef TDA_BMA_H
 #define TDA_BMA_H
 
-
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,67 +25,59 @@
 #include "NormalDistribution.h"
 #include "OnlineAlgorithm.h"
 
-
 using namespace std;
 
+class TdBma : public OnlineAlgorithm<int, int> {
+ protected:
+  const int N_STATES;   ///< number of states
+  const int N_ACTIONS;  ///< number
 
-class TdBma : public OnlineAlgorithm<int, int>
-{
+  const real ALPHA;  ///< learning rate
+  const real GAMMA;  ///< discount factor
+  real lambda;       ///< eligibility trace decay rate
 
-protected:
-	const int N_STATES; ///< number of states
-	const int N_ACTIONS; ///< number 
+  VFExplorationPolicy* exploration_policy;  ///< exploration policy
+  const real INITIAL_VALUE;                 ///< initial value for Q values
+  const real BASELINE;                      ///< baseline reward
 
-	const real ALPHA; ///< learning rate 
-	const real GAMMA; ///< discount factor
-	real lambda; ///< eligibility trace decay rate
+  Matrix Q;
 
-	VFExplorationPolicy* exploration_policy; ///< exploration policy
-	const real INITIAL_VALUE; ///< initial value for Q values
-	const real BASELINE; ///< baseline reward
+  Matrix N;
+  Matrix Means;
+  Matrix Variances;
+  Matrix Deviations;
 
-	Matrix Q;
+  int t, T;
+  vector<pair<pair<int, int>, double> >
+      episode;  ///< vector of ((state, action), reward)
 
-	Matrix N;
-	Matrix Means;
-	Matrix Variances;
-	Matrix Deviations;
+  int state;   ///< current state
+  int action;  ///< current action
 
-	int t, T;
-	vector< pair< pair< int, int >, double > > episode; ///< vector of ((state, action), reward)
+ public:
+  TdBma(const int n_states_, const int n_actions_, const real gamma_,
+        const real lambda_, const real alpha_,
+        VFExplorationPolicy* exploration_policy_,
+        const real initial_value_ = 0.0, const real baseline_ = 0.0);
+  virtual ~TdBma();
 
-	int state; ///< current state
-	int action; ///< current action
+  virtual void Reset();
 
+  /// Full TD-BMA observation (no eligibility traces)
+  virtual real Observe(const int state, const int action, const real reward,
+                       const int next_state, const int next_action);
 
-public:
-	TdBma(const int n_states_,
-		const int n_actions_,
-		const real gamma_,
-		const real lambda_,
-		const real alpha_,
-		VFExplorationPolicy* exploration_policy_,
-		const real initial_value_ = 0.0,
-		const real baseline_ = 0.0);
-	virtual ~TdBma();
+  /// Partial TD-BMA observation (can be used with eligibility traces)
+  virtual real Observe(const real reward, const int next_state,
+                       const int next_action);
 
-	virtual void Reset();
+  /// Get an action using the current exploration policy.
+  /// It calls Observe as a side-effect.
+  virtual int Act(const real reward, const int next_state);
 
-	/// Full TD-BMA observation (no eligibility traces)
-	virtual real Observe(const int state, const int action, const real reward, const int next_state, const int next_action);
-
-	/// Partial TD-BMA observation (can be used with eligibility traces)
-	virtual real Observe(const real reward, const int next_state, const int next_action);
-
-	/// Get an action using the current exploration policy.
-	/// It calls Observe as a side-effect.
-	virtual int Act(const real reward, const int next_state);
-
-	virtual real getValue(const int state, const int action)
-	{
-		return Q(state, action);
-	}
+  virtual real getValue(const int state, const int action) {
+    return Q(state, action);
+  }
 };
 
-
-#endif	/* TD_BMA_H */
+#endif /* TD_BMA_H */

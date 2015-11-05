@@ -12,26 +12,20 @@
 #ifdef MAKE_MAIN
 
 #include "Vector.h"
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 #include <exception>
 #include <stdexcept>
 
-real euclidean_metric(Vector& x, Vector& y)
-{
-	return EuclideanNorm(&x, &y);
-}
+real euclidean_metric(Vector& x, Vector& y) { return EuclideanNorm(&x, &y); }
 
-int main()
-{
-	Vector x(2);
-	Vector y(2);
-	x[0] = 0.1;
-	x[1] = 0.2;
-	y[0] = 1;
-	y[1]= 2;
-	
-	
+int main() {
+  Vector x(2);
+  Vector y(2);
+  x[0] = 0.1;
+  x[1] = 0.2;
+  y[0] = 1;
+  y[1] = 2;
 }
 
 #endif

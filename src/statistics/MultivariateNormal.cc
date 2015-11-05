@@ -14,72 +14,62 @@
 //----------------------- Multivariate -----------------------------------//
 
 MultivariateNormal::MultivariateNormal(const int n_dim_)
-    : n_dim(n_dim_),
-      mean(n_dim),
-      accuracy(n_dim, n_dim)
-{
-    mean.Clear();  
-	accuracy.Clear();
-    for (int i=0; i<n_dim; ++i) {
-        accuracy(i,i) = 1;
-    }
-    determinant = 1;
+    : n_dim(n_dim_), mean(n_dim), accuracy(n_dim, n_dim) {
+  mean.Clear();
+  accuracy.Clear();
+  for (int i = 0; i < n_dim; ++i) {
+    accuracy(i, i) = 1;
+  }
+  determinant = 1;
 }
 
-MultivariateNormal::MultivariateNormal(const Vector& mean_, const Matrix& accuracy_)
-    :  n_dim(mean_.Size()), mean(mean_), accuracy(accuracy_)
-{
-    accuracy.LUDecomposition(determinant);
+MultivariateNormal::MultivariateNormal(const Vector& mean_,
+                                       const Matrix& accuracy_)
+    : n_dim(mean_.Size()), mean(mean_), accuracy(accuracy_) {
+  accuracy.LUDecomposition(determinant);
 }
 
 /// In-place multivariate Gaussian generation
-void MultivariateNormal::generate(Vector& x) const
-{
-	x = generate();
-}
+void MultivariateNormal::generate(Vector& x) const { x = generate(); }
 
 /** Multivariate Gaussian generation.
     Uses the Cholesky decomposition.
  */
-Vector MultivariateNormal::generate() const
-{	
-    Matrix Sigma = accuracy;
-    Sigma = Sigma.Inverse();
-    Matrix A = Sigma.Cholesky();
-    NormalDistribution normal;
-	Vector v(n_dim);
-    for (int i=0; i<n_dim; ++i) {
-        v(i) = normal.generate();
-    }
+Vector MultivariateNormal::generate() const {
+  Matrix Sigma = accuracy;
+  Sigma = Sigma.Inverse();
+  Matrix A = Sigma.Cholesky();
+  NormalDistribution normal;
+  Vector v(n_dim);
+  for (int i = 0; i < n_dim; ++i) {
+    v(i) = normal.generate();
+  }
 
-    const Matrix Ar = Transpose(A);
-    return mean + Ar*v;
+  const Matrix Ar = Transpose(A);
+  return mean + Ar * v;
 }
 
 /** Multivariate Gaussian density.
 
     For a gaussian with mean and precision \f$\mu, T\f$, the pdf is given by
     \f[
-    f(x \mid \mu, T) = (2\pi)^{-k/2} |T|^{1/2} 
+    f(x \mid \mu, T) = (2\pi)^{-k/2} |T|^{1/2}
     \f]
  */
-real MultivariateNormal::log_pdf(const Vector& x) const
-{
-	assert (x.Size()==mean.Size());
-	real n = (real) x.Size();
-    Vector diff = x - mean;
-	real d = Mahalanobis2(diff, accuracy.Inverse(), diff);
-    assert(d >= 0);
-	real log_pdf = 0.5 * (log(determinant) - d - n * log(2*M_PI));
-    return log_pdf;
+real MultivariateNormal::log_pdf(const Vector& x) const {
+  assert(x.Size() == mean.Size());
+  real n = (real)x.Size();
+  Vector diff = x - mean;
+  real d = Mahalanobis2(diff, accuracy.Inverse(), diff);
+  assert(d >= 0);
+  real log_pdf = 0.5 * (log(determinant) - d - n * log(2 * M_PI));
+  return log_pdf;
 }
 
-
-void MultivariateNormal::Show()  const
-{
-    printf("MultivariateNormal - ");
-    printf("Mean: ");
-    mean.print(stdout);
-    printf("Accuracy:\n");
-    accuracy.print(stdout);
+void MultivariateNormal::Show() const {
+  printf("MultivariateNormal - ");
+  printf("Mean: ");
+  mean.print(stdout);
+  printf("Accuracy:\n");
+  accuracy.print(stdout);
 }

@@ -11,70 +11,57 @@
 #ifndef FACTORED_PREDICTOR_H
 #define FACTORED_PREDICTOR_H
 
-#include "real.h"
-#include "debug.h"
 #include <cstdio>
+#include "debug.h"
+#include "real.h"
 
 /// Abstract class for prediction with actios
-class FactoredPredictor
-{
-public:
-  virtual ~FactoredPredictor()
-  {}
-    
+class FactoredPredictor {
+ public:
+  virtual ~FactoredPredictor() {}
+
   /* Training and generation */
-  virtual real Observe (int prd) = 0;
-  virtual real Observe (int act, int prd) = 0;
-  virtual real ObservationProbability (int act, int x) = 0;
-  //virtual real ObservationProbability (int x) = 0;
+  virtual real Observe(int prd) = 0;
+  virtual real Observe(int act, int prd) = 0;
+  virtual real ObservationProbability(int act, int x) = 0;
+  // virtual real ObservationProbability (int x) = 0;
   virtual void Reset() = 0;
-    
-}; 
+};
 
 template <class T>
-class TFactoredPredictor : public FactoredPredictor
-{
-protected:
-    int n_actions; ///< the number of actions
-    int n_obs; ///< the number of distinct observations
-    T tree; ///< the context tree
-    int current_obs; ///< the current observation
-public:
-    TFactoredPredictor(int n_actions_, int n_obs_, int depth)
-        : n_actions(n_actions_),
-          n_obs(n_obs_),
-          tree(n_obs * n_actions, n_obs, depth),
-          current_obs(0)
-    {        
-    }
+class TFactoredPredictor : public FactoredPredictor {
+ protected:
+  int n_actions;    ///< the number of actions
+  int n_obs;        ///< the number of distinct observations
+  T tree;           ///< the context tree
+  int current_obs;  ///< the current observation
+ public:
+  TFactoredPredictor(int n_actions_, int n_obs_, int depth)
+      : n_actions(n_actions_),
+        n_obs(n_obs_),
+        tree(n_obs * n_actions, n_obs, depth),
+        current_obs(0) {}
 
-    virtual ~TFactoredPredictor()
-    {
-    }
-    /* Training and generation */
-    /// Observe the (first?) observation.
-    virtual real Observe (int prd) 
-    {
-        current_obs = prd;
-        return 1.0 / (real) n_obs;
-    }
-    /// Observe current action and next observation
-    virtual real Observe (int act, int prd) 
-    {
-        int x = act * n_obs + current_obs;
-        current_obs = prd;
-        return tree.Observe(x, prd);
-    }
+  virtual ~TFactoredPredictor() {}
+  /* Training and generation */
+  /// Observe the (first?) observation.
+  virtual real Observe(int prd) {
+    current_obs = prd;
+    return 1.0 / (real)n_obs;
+  }
+  /// Observe current action and next observation
+  virtual real Observe(int act, int prd) {
+    int x = act * n_obs + current_obs;
+    current_obs = prd;
+    return tree.Observe(x, prd);
+  }
 
-    virtual real ObservationProbability (int act, int x) 
-    {
-        Serror("Not implemented\n");
-        return -1;
-    }
+  virtual real ObservationProbability(int act, int x) {
+    Serror("Not implemented\n");
+    return -1;
+  }
 
-    virtual void Reset()
-    {
-    }
+  virtual void Reset() {}
 };
 
 #endif

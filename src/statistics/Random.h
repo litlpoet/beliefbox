@@ -1,6 +1,8 @@
 /* -*- Mode: C++; -*- */
-/* VER: $Id: Distribution.h,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp cdimitrakakis $*/
-// copyright (c) 2004-2006 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
+/* VER: $Id: Distribution.h,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp
+ * cdimitrakakis $*/
+// copyright (c) 2004-2006 by Christos Dimitrakakis
+// <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -13,13 +15,12 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
-#include "real.h"
 #include <cmath>
 #include <iostream>
+#include "MathFunctions.h"
 #include "Object.h"
 #include "Vector.h"
-#include "MathFunctions.h"
-
+#include "real.h"
 
 /**
    \defgroup StatisticsGroup Statistics and probability
@@ -36,9 +37,9 @@ Vector urandom(const Vector& min, const Vector& max);
 /// Give a true random number
 /// When blocking is true, then that takes 2-3 s per number.
 /// When blocking is false, then that takse 12 us per number
-real true_random(bool blocking=true);
+real true_random(bool blocking = true);
 
-unsigned long true_random_bits(bool blocking=true);
+unsigned long true_random_bits(bool blocking = true);
 /*@}*/
 
 #endif

@@ -13,11 +13,9 @@
 #ifndef TUPLE_H
 #define TUPLE_H
 
-class Distribution
-{
+class Distribution {
  public:
-	Number* sample;
-	
+  Number* sample;
 };
 
 #endif

@@ -1,5 +1,6 @@
 /* -*- Mode: C++; -*- */
-/* VER: $Id: Distribution.h,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp cdimitrakakis $*/
+/* VER: $Id: Distribution.h,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp
+ * cdimitrakakis $*/
 // copyright (c) 2006 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
@@ -14,17 +15,17 @@
 // ------------ Environments -------------
 // MDPs
 #include "RandomMDP.h"
+#include "ContextBandit.h"
 #include "Gridworld.h"
 #include "InventoryManagement.h"
-#include "ContextBandit.h"
 // POMDPs
+#include "DiscretisedContinuousChain.h"
+#include "DiscretisedEnvironment.h"
+#include "MountainCar.h"
 #include "OneDMaze.h"
 #include "POMDPGridworld.h"
-#include "DiscretisedContinuousChain.h"
-#include "MountainCar.h"
-#include "Pendulum.h"
-#include "DiscretisedEnvironment.h"
 #include "POMDPWrapper.h"
+#include "Pendulum.h"
 
 //-----------------------------------------
 
@@ -33,366 +34,302 @@
 //-----------------------------------------
 
 //------------- Algorithms ----------------
-#include "PolicyEvaluation.h"
-#include "PolicyIteration.h"
-#include "ValueIteration.h"
+#include "BVMM_QLearning.h"
+#include "ContextBanditCollection.h"
+#include "ContextBanditGaussian.h"
+#include "DiscreteMDPCollection.h"
+#include "DiscreteMDPCounts.h"
 #include "DiscretePolicy.h"
 #include "Environment.h"
 #include "ExplorationPolicy.h"
-#include "Sarsa.h"
-#include "QLearning.h"
 #include "HQLearning.h"
-#include "QLearningDirichlet.h"
-#include "DiscreteMDPCounts.h"
 #include "ModelBasedRL.h"
-#include "SampleBasedRL.h"
 #include "ModelCollectionRL.h"
-#include "ContextBanditGaussian.h"
-#include "DiscreteMDPCollection.h"
-#include "ContextBanditCollection.h"
-#include "BVMM_QLearning.h"
+#include "PolicyEvaluation.h"
+#include "PolicyIteration.h"
+#include "QLearning.h"
+#include "QLearningDirichlet.h"
+#include "SampleBasedRL.h"
+#include "Sarsa.h"
+#include "ValueIteration.h"
 //-------------------------------------------
 
-#include "RandomNumberFile.h"
-#include "MersenneTwister.h"
 #include <cstring>
+#include "MersenneTwister.h"
+#include "RandomNumberFile.h"
 
-struct EpisodeStatistics
-{
-    real total_reward;
-    real discounted_reward;
-    int steps;
-    real mse;
-    EpisodeStatistics()
-        : total_reward(0.0),
-          discounted_reward(0.0),
-          steps(0),
-          mse(0)
-    {
-
-    }
+struct EpisodeStatistics {
+  real total_reward;
+  real discounted_reward;
+  int steps;
+  real mse;
+  EpisodeStatistics()
+      : total_reward(0.0), discounted_reward(0.0), steps(0), mse(0) {}
 };
 
-struct Statistics
-{
-    std::vector<EpisodeStatistics> ep_stats;
-    std::vector<real> reward;
+struct Statistics {
+  std::vector<EpisodeStatistics> ep_stats;
+  std::vector<real> reward;
 };
 
-Statistics EvaluateAlgorithm(uint n_steps,
-                             uint n_episodes,
-                             OnlineAlgorithm<int,int>* algorithm,
-                             DiscreteEnvironment* environment,
-                             real gamma);
+Statistics EvaluateAlgorithm(uint n_steps, uint n_episodes,
+                             OnlineAlgorithm<int, int>* algorithm,
+                             DiscreteEnvironment* environment, real gamma);
 
 Statistics EvaluateAlgorithmContinuous(uint n_steps,
-                                       OnlineAlgorithm<int,int>* algorithm,
+                                       OnlineAlgorithm<int, int>* algorithm,
                                        DiscreteEnvironment* environment,
                                        real gamma);
 
-int main (int argc, char** argv)
-{
-    int n_actions = 4;
-    int n_original_states = 4;
-    real gamma = 0.9;
-    real lambda = 0.9;
-    real alpha = 0.01;
-    real randomness = 0.01;
-    real pit_value = -1.0;
-    real goal_value = 1.0;
-    real step_value = -1.0;
-    real epsilon = 0.01;
-    uint n_runs = 1000;
-    uint n_episodes = 1000;
-    uint n_steps = 100;
-    int depth = 1;
-    enum DiscreteMDPCounts::RewardFamily reward_prior = DiscreteMDPCounts::NORMAL;                        
+int main(int argc, char** argv) {
+  int n_actions = 4;
+  int n_original_states = 4;
+  real gamma = 0.9;
+  real lambda = 0.9;
+  real alpha = 0.01;
+  real randomness = 0.01;
+  real pit_value = -1.0;
+  real goal_value = 1.0;
+  real step_value = -1.0;
+  real epsilon = 0.01;
+  uint n_runs = 1000;
+  uint n_episodes = 1000;
+  uint n_steps = 100;
+  int depth = 1;
+  enum DiscreteMDPCounts::RewardFamily reward_prior = DiscreteMDPCounts::NORMAL;
 
-
-    if (argc < 11) {
-        for (int i=0; i<argc; ++i) {
-            printf("arg %d: %s\n", i, argv[i]);
-        }
-        std::cerr << "Usage: online_algorithms n_states n_actions gamma lambda randomness n_runs n_episodes n_steps algorithm environment [optional args]"
-				  << std::endl
-				  << "environments: Gridworld, POMDPGridworld, ContextBandit, OneDMaze, DiscretisedContinuousChain, MountainCar, Pendulum"
-				  << std::endl
-				  << "algorithms: Sarsa, QLearning, HQLearning, QLearningDirichlet, Model, ContextBanditGaussian, Aggregate, Collection, ContextBanditCollection, BVMM"
-				  << std::endl;
-
-        return -1;
+  if (argc < 11) {
+    for (int i = 0; i < argc; ++i) {
+      printf("arg %d: %s\n", i, argv[i]);
     }
-    n_original_states = atoi(argv[1]);
-    assert (n_original_states > 0);
+    std::cerr << "Usage: online_algorithms n_states n_actions gamma lambda "
+                 "randomness n_runs n_episodes n_steps algorithm environment "
+                 "[optional args]"
+              << std::endl
+              << "environments: Gridworld, POMDPGridworld, ContextBandit, "
+                 "OneDMaze, DiscretisedContinuousChain, MountainCar, Pendulum"
+              << std::endl
+              << "algorithms: Sarsa, QLearning, HQLearning, "
+                 "QLearningDirichlet, Model, ContextBanditGaussian, Aggregate, "
+                 "Collection, ContextBanditCollection, BVMM"
+              << std::endl;
 
-    n_actions = atoi(argv[2]);
-    assert (n_actions > 0);
+    return -1;
+  }
+  n_original_states = atoi(argv[1]);
+  assert(n_original_states > 0);
 
-    gamma = atof(argv[3]);
-    assert (gamma >= 0 && gamma <= 1);
+  n_actions = atoi(argv[2]);
+  assert(n_actions > 0);
 
-    lambda = atof(argv[4]);
-    assert (lambda >= 0 && lambda <= 1);
+  gamma = atof(argv[3]);
+  assert(gamma >= 0 && gamma <= 1);
 
-    epsilon = atof(argv[5]);
-    assert (epsilon >= 0 && epsilon <= 1);
-    
-    n_runs = atoi(argv[6]);
-    assert (n_runs > 0);
+  lambda = atof(argv[4]);
+  assert(lambda >= 0 && lambda <= 1);
 
-    n_episodes = atoi(argv[7]);
-    assert (n_episodes > 0);
+  epsilon = atof(argv[5]);
+  assert(epsilon >= 0 && epsilon <= 1);
 
-    n_steps = atoi(argv[8]);
-    assert (n_steps > 0);
+  n_runs = atoi(argv[6]);
+  assert(n_runs > 0);
 
-    char* algorithm_name = argv[9];
-    char* environment_name = argv[10];
+  n_episodes = atoi(argv[7]);
+  assert(n_episodes > 0);
 
-    if (argc >= 12) {
-        depth = atoi(argv[11]);
+  n_steps = atoi(argv[8]);
+  assert(n_steps > 0);
+
+  char* algorithm_name = argv[9];
+  char* environment_name = argv[10];
+
+  if (argc >= 12) {
+    depth = atoi(argv[11]);
+  }
+
+  srand48(34987235);
+  srand(34987235);
+  setRandomSeed(34987235);
+
+  DiscreteMDPCounts* discrete_mdp = NULL;
+
+  RandomNumberGenerator* rng;
+
+  // RandomNumberFile
+  // random_file("/home/olethros/projects/beliefbox/dat/r1e7.bin");
+  // rng = (RandomNumberGenerator*) &random_file;
+  MersenneTwisterRNG mersenne_twister;
+  rng = (RandomNumberGenerator*)&mersenne_twister;
+
+  std::cout << "Starting test program" << std::endl;
+
+  std::cout << "Starting evaluation" << std::endl;
+  // remember to use n_runs
+  Statistics statistics;
+  statistics.ep_stats.resize(n_episodes);
+  statistics.reward.resize(n_steps);
+  for (uint t = 0; t < n_steps; ++t) {
+    statistics.reward[t] = 0;
+  }
+  for (uint i = 0; i < statistics.ep_stats.size(); ++i) {
+    statistics.ep_stats[i].total_reward = 0.0;
+    statistics.ep_stats[i].discounted_reward = 0.0;
+    statistics.ep_stats[i].steps = 0;
+    statistics.ep_stats[i].mse = 0;
+  }
+
+  for (uint run = 0; run < n_runs; ++run) {
+    std::cout << "Run: " << run << " - Creating environment.. "
+              << environment_name << std::endl;
+    std::cerr << "Run: " << run << " - Creating environment.."
+              << environment_name << std::endl;
+    DiscreteEnvironment* environment = NULL;
+
+    RandomMDP* random_mdp = NULL;
+    OneDMaze* one_d_maze = NULL;
+    DiscretisedContinuousChain* discretised_chain = NULL;
+    MountainCar continuous_mountain_car;
+    DiscretisedEnvironment<MountainCar>* mountain_car = NULL;
+    Pendulum continuous_pendulum;
+    DiscretisedEnvironment<Pendulum>* pendulum = NULL;
+    Gridworld* gridworld = NULL;
+    POMDPGridworld* pomdp_gridworld = NULL;
+    POMDPWrapper<int, int, POMDPGridworld>* pomdp_wrapper = NULL;
+    ContextBandit* context_bandit = NULL;
+    if (!strcmp(environment_name, "RandomMDP")) {
+      random_mdp = new RandomMDP(n_actions, n_original_states, randomness,
+                                 step_value, pit_value, goal_value, rng, false);
+      environment = random_mdp;
+    } else if (!strcmp(environment_name, "Gridworld")) {
+      gridworld =
+          new Gridworld("/home/olethros/projects/beliefbox/dat/maze3", 16, 16);
+      environment = gridworld;
+    } else if (!strcmp(environment_name, "POMDPGridworld")) {
+      pomdp_gridworld =
+          new POMDPGridworld(rng, "/home/olethros/projects/beliefbox/dat/maze6",
+                             32, randomness, pit_value, goal_value, step_value);
+      pomdp_wrapper =
+          new POMDPWrapper<int, int, POMDPGridworld>(*pomdp_gridworld);
+      environment = pomdp_wrapper;
+    } else if (!strcmp(environment_name, "ContextBandit")) {
+      context_bandit = new ContextBandit(2, n_actions, rng);
+      environment = context_bandit;
+    } else if (!strcmp(environment_name, "OneDMaze")) {
+      one_d_maze = new OneDMaze(n_original_states, rng);
+      environment = one_d_maze;
+    } else if (!strcmp(environment_name, "DiscretisedContinuousChain")) {
+      discretised_chain = new DiscretisedContinuousChain(n_original_states);
+      environment = discretised_chain;
+    } else if (!strcmp(environment_name, "MountainCar")) {
+      mountain_car = new DiscretisedEnvironment<MountainCar>(
+          continuous_mountain_car, n_original_states);
+      environment = mountain_car;
+    } else if (!strcmp(environment_name, "Pendulum")) {
+      pendulum = new DiscretisedEnvironment<Pendulum>(continuous_pendulum,
+                                                      n_original_states);
+      environment = pendulum;
+    } else {
+      fprintf(stderr, "Uknown environment %s\n", environment_name);
     }
 
+    // making sure the number of states & actions is correct
+    int n_states = environment->getNStates();
+    n_actions = environment->getNActions();
 
-    srand48(34987235);
-    srand(34987235);
-    setRandomSeed(34987235);
+    std::cout << "Creating environment: " << environment_name << " with "
+              << n_states << "states, " << n_actions << " actions.\n";
 
-    DiscreteMDPCounts* discrete_mdp = NULL;
-    
-    RandomNumberGenerator* rng;
-    
-    //RandomNumberFile random_file("/home/olethros/projects/beliefbox/dat/r1e7.bin");
-    //rng = (RandomNumberGenerator*) &random_file;
-    MersenneTwisterRNG mersenne_twister;
-    rng = (RandomNumberGenerator*) &mersenne_twister;
+    std::cerr << "Creating environment: " << environment_name << " with "
+              << n_states << "states, " << n_actions << " actions.\n";
 
-    std::cout << "Starting test program" << std::endl;
-    
-    std::cout << "Starting evaluation" << std::endl;
-    // remember to use n_runs
-    Statistics statistics;
-    statistics.ep_stats.resize(n_episodes);
-    statistics.reward.resize(n_steps);
-    for (uint t=0; t<n_steps; ++t) {
-        statistics.reward[t] = 0;
+    // std::cout << "Creating exploration policy" << std::endl;
+    VFExplorationPolicy* exploration_policy = NULL;
+    exploration_policy = new EpsilonGreedy(n_actions, epsilon);
+    exploration_policy->setGeometricSchedule(1.0, 1.0);
+
+    // std::cout << "Creating online algorithm" << std::endl;
+    OnlineAlgorithm<int, int>* algorithm = NULL;
+    MDPModel* model = NULL;
+    // Gridworld* g2 = gridworld;
+    if (!strcmp(algorithm_name, "Sarsa")) {
+      algorithm = new Sarsa(n_states, n_actions, gamma, lambda, alpha,
+                            exploration_policy);
+    } else if (!strcmp(algorithm_name, "QLearning")) {
+      algorithm = new QLearning(n_states, n_actions, gamma, lambda, alpha,
+                                exploration_policy);
+    } else if (!strcmp(algorithm_name, "HQLearning")) {
+      algorithm = new HQLearning(depth, n_states, n_actions, gamma, lambda,
+                                 alpha, epsilon, 1.0);
+    } else if (!strcmp(algorithm_name, "QLearningDirichlet")) {
+      algorithm = new QLearningDirichlet(n_states, n_actions, gamma, lambda,
+                                         alpha, exploration_policy);
+    } else if (!strcmp(algorithm_name, "Model")) {
+      discrete_mdp = new DiscreteMDPCounts(n_states, n_actions);
+      model = (MDPModel*)discrete_mdp;
+
+      algorithm =
+          new ModelBasedRL(n_states, n_actions, gamma, epsilon, model, rng);
+    } else if (!strcmp(algorithm_name, "USampling")) {
+      discrete_mdp =
+          new DiscreteMDPCounts(n_states, n_actions, 1.0, reward_prior);
+      model = (MDPModel*)discrete_mdp;
+      SampleBasedRL* sampling =
+          new SampleBasedRL(n_states, n_actions, gamma, epsilon, model, rng,
+                            1,  // max_samples
+                            true);
+      algorithm = sampling;
+    } else if (!strcmp(algorithm_name, "ContextBanditGaussian")) {
+      model = (MDPModel*)new ContextBanditGaussian(n_states, n_actions, 0.5,
+                                                   0.0, 1.0);
+      algorithm = new ModelBasedRL(n_states, n_actions, gamma, epsilon, model,
+                                   rng, false);
+    } else if (!strcmp(algorithm_name, "Aggregate")) {
+      model = (MDPModel*)new ContextBanditAggregate(false, 3, 2, n_states, 4,
+                                                    n_actions, 0.5, 0.0, 1.0);
+      algorithm = new ModelBasedRL(n_states, n_actions, gamma, epsilon, model,
+                                   rng, false);
+    } else if (!strcmp(algorithm_name, "Collection")) {
+      DiscreteMDPCollection* collection =
+          new DiscreteMDPCollection(*gridworld, 8, n_states, n_actions);
+      model = (MDPModel*)collection;
+
+      algorithm = new ModelCollectionRL(n_states, n_actions, gamma, epsilon,
+                                        collection, rng, true);
+    } else if (!strcmp(algorithm_name, "ContextBanditCollection")) {
+      ContextBanditCollection* collection =
+          new ContextBanditCollection(8, n_states, n_actions, 0.5, 0.0, 1.0);
+      model = (MDPModel*)collection;
+
+      algorithm = new ModelBasedRL(n_states, n_actions, gamma, epsilon,
+                                   collection, rng, false);
+    } else if (!strcmp(algorithm_name, "BVMM")) {
+      BVMM_QLearning<ContextTreeRL>* bvmm = new BVMM_QLearning<ContextTreeRL>(
+          n_actions, n_states, depth + 1, epsilon, alpha, gamma);
+      algorithm = bvmm;
+    } else {
+      Serror("Unknown algorithm: %s\n", algorithm_name);
     }
-    for (uint i=0; i<statistics.ep_stats.size(); ++i) {
-        statistics.ep_stats[i].total_reward = 0.0;
-        statistics.ep_stats[i].discounted_reward = 0.0;
-        statistics.ep_stats[i].steps = 0;
-        statistics.ep_stats[i].mse = 0;
+
+    // std::cerr << "run : " << run << std::endl;
+    // Statistics run_statistics = EvaluateAlgorithm(n_steps, n_episodes,
+    // algorithm, environment, gamma);
+    Statistics run_statistics =
+        EvaluateAlgorithmContinuous(n_steps, algorithm, environment, gamma);
+    if (0) {
+      for (uint i = 0; i < statistics.ep_stats.size(); ++i) {
+        statistics.ep_stats[i].total_reward +=
+            run_statistics.ep_stats[i].total_reward;
+        statistics.ep_stats[i].discounted_reward +=
+            run_statistics.ep_stats[i].discounted_reward;
+        statistics.ep_stats[i].steps += run_statistics.ep_stats[i].steps;
+        statistics.ep_stats[i].mse += run_statistics.ep_stats[i].mse;
+      }
+    }
+    for (uint i = 0; i < statistics.reward.size(); ++i) {
+      statistics.reward[i] += run_statistics.reward[i];
     }
 
-    for (uint run=0; run<n_runs; ++run) {
-        std::cout << "Run: " << run << " - Creating environment.. " << environment_name << std::endl;
-        std::cerr << "Run: " << run << " - Creating environment.." << environment_name << std::endl;
-        DiscreteEnvironment* environment = NULL;
-
-        RandomMDP* random_mdp = NULL;
-        OneDMaze* one_d_maze = NULL; 
-        DiscretisedContinuousChain* discretised_chain = NULL; 
-        MountainCar continuous_mountain_car;
-        DiscretisedEnvironment<MountainCar>* mountain_car = NULL;
-        Pendulum continuous_pendulum;
-        DiscretisedEnvironment<Pendulum>* pendulum = NULL;
-        Gridworld* gridworld = NULL;
-        POMDPGridworld* pomdp_gridworld = NULL;
-        POMDPWrapper<int, int, POMDPGridworld>* pomdp_wrapper = NULL;
-        ContextBandit* context_bandit = NULL;
-        if (!strcmp(environment_name, "RandomMDP")) { 
-            random_mdp = new RandomMDP (n_actions,
-                                        n_original_states,
-                                        randomness,
-                                        step_value,
-                                        pit_value,
-                                        goal_value,
-                                        rng,
-                                        false);
-            environment = random_mdp;
-        } else if (!strcmp(environment_name, "Gridworld")) { 
-            gridworld = new Gridworld("/home/olethros/projects/beliefbox/dat/maze3",  16, 16);
-            environment = gridworld;
-        } else if (!strcmp(environment_name, "POMDPGridworld")) { 
-            pomdp_gridworld = new POMDPGridworld(rng, "/home/olethros/projects/beliefbox/dat/maze6", 32, randomness,
-                                                 pit_value, goal_value, step_value);
-            pomdp_wrapper = new POMDPWrapper<int, int, POMDPGridworld>(*pomdp_gridworld);
-            environment = pomdp_wrapper;
-        } else if (!strcmp(environment_name, "ContextBandit")) { 
-            context_bandit = new ContextBandit(2, n_actions, rng);
-            environment = context_bandit;
-        } else if (!strcmp(environment_name, "OneDMaze")) { 
-            one_d_maze = new OneDMaze(n_original_states, rng);
-            environment = one_d_maze;
-        } else if (!strcmp(environment_name, "DiscretisedContinuousChain")) { 
-            discretised_chain = new DiscretisedContinuousChain(n_original_states);
-            environment = discretised_chain;
-        } else if (!strcmp(environment_name, "MountainCar")) { 
-            mountain_car = new DiscretisedEnvironment<MountainCar>(continuous_mountain_car, n_original_states);
-            environment = mountain_car;
-        } else if (!strcmp(environment_name, "Pendulum")) { 
-            pendulum = new DiscretisedEnvironment<Pendulum>(continuous_pendulum, n_original_states);
-            environment = pendulum;
-        } else {
-            fprintf(stderr, "Uknown environment %s\n", environment_name);
-        }
-
-
-        // making sure the number of states & actions is correct
-        int n_states = environment->getNStates();
-        n_actions = environment->getNActions();
-        
-        std::cout <<  "Creating environment: " << environment_name
-                  << " with " << n_states << "states, "
-                  << n_actions << " actions.\n";
-
-        std::cerr <<  "Creating environment: " << environment_name
-                  << " with " << n_states << "states, "
-                  << n_actions << " actions.\n";
-
-        //std::cout << "Creating exploration policy" << std::endl;
-        VFExplorationPolicy* exploration_policy = NULL;
-        exploration_policy = new EpsilonGreedy(n_actions, epsilon);
-        exploration_policy->setGeometricSchedule(1.0, 1.0);
-    
-        //std::cout << "Creating online algorithm" << std::endl;
-        OnlineAlgorithm<int, int>* algorithm = NULL;
-        MDPModel* model = NULL;
-        //Gridworld* g2 = gridworld;
-        if (!strcmp(algorithm_name, "Sarsa")) { 
-            algorithm = new Sarsa(n_states,
-                                  n_actions,
-                                  gamma,
-                                  lambda,
-                                  alpha,
-                                  exploration_policy);
-        } else if (!strcmp(algorithm_name, "QLearning")) { 
-            algorithm = new QLearning(n_states,
-                                      n_actions,
-                                      gamma,
-                                      lambda,
-                                      alpha,
-                                      exploration_policy);
-        } else if (!strcmp(algorithm_name, "HQLearning")) { 
-            algorithm = new HQLearning(
-									   depth,
-									   n_states,
-									   n_actions,
-									   gamma,
-									   lambda,
-									   alpha,
-									   epsilon, 
-									   1.0);
-        } else if (!strcmp(algorithm_name, "QLearningDirichlet")) { 
-            algorithm = new QLearningDirichlet(n_states,
-                                               n_actions,
-                                               gamma,
-                                               lambda,
-                                               alpha,
-                                               exploration_policy);
-        } else if (!strcmp(algorithm_name, "Model")) {
-            discrete_mdp =  new DiscreteMDPCounts(n_states, n_actions);
-            model= (MDPModel*) discrete_mdp;
-
-            algorithm = new ModelBasedRL(n_states,
-                                         n_actions,
-                                         gamma,
-                                         epsilon,
-                                         model,
-										 rng);
-        } else if (!strcmp(algorithm_name, "USampling")) {
-            discrete_mdp =  new DiscreteMDPCounts(n_states, n_actions,
-                                                  1.0,
-                                                  reward_prior);
-            model= (MDPModel*) discrete_mdp;
-            SampleBasedRL* sampling = new SampleBasedRL(n_states,
-                                                        n_actions,
-                                                        gamma,
-                                                        epsilon,
-                                                        model,
-                                                        rng,
-                                                        1, //max_samples
-                                                        true);
-            algorithm = sampling;
-        } else if (!strcmp(algorithm_name, "ContextBanditGaussian")) {
-            model= (MDPModel*)
-                new ContextBanditGaussian(n_states,
-                                          n_actions,
-                                          0.5, 0.0, 1.0);
-            algorithm = new ModelBasedRL(n_states,
-                                         n_actions,
-                                         gamma,
-                                         epsilon,
-                                         model,
-                                         rng,
-                                         false);
-        } else if (!strcmp(algorithm_name, "Aggregate")) {
-            model= (MDPModel*)
-                new ContextBanditAggregate(false, 3, 2,
-                                           n_states, 4,
-                                           n_actions,
-                                           0.5, 0.0, 1.0);
-            algorithm = new ModelBasedRL(n_states,
-                                         n_actions,
-                                         gamma,
-                                         epsilon,
-                                         model,
-                                         rng,
-                                         false);
-        } else if (!strcmp(algorithm_name, "Collection")) {
-            DiscreteMDPCollection* collection = 
-                new DiscreteMDPCollection(*gridworld, 
-                                          8,
-                                          n_states,
-                                          n_actions);
-            model= (MDPModel*) collection;
-
-            algorithm = new ModelCollectionRL(n_states,
-                                              n_actions,
-                                              gamma,
-                                              epsilon,
-                                              collection,
-											  rng,
-                                              true);
-        } else if (!strcmp(algorithm_name, "ContextBanditCollection")) {
-            ContextBanditCollection* collection = 
-                new ContextBanditCollection(8,
-                                            n_states,
-                                            n_actions,
-                                            0.5, 0.0, 1.0);
-            model= (MDPModel*) collection;
-
-            algorithm = new ModelBasedRL(n_states,
-                                         n_actions,
-                                         gamma,
-                                         epsilon,
-                                         collection,
-                                         rng,
-                                         false);
-        } else if  (!strcmp(algorithm_name, "BVMM")){
-            BVMM_QLearning<ContextTreeRL>* bvmm = new BVMM_QLearning<ContextTreeRL>(n_actions, n_states, depth + 1, epsilon, alpha, gamma);
-            algorithm = bvmm;
-        } else {
-            Serror("Unknown algorithm: %s\n", algorithm_name);
-        }
-
-        
-        //std::cerr << "run : " << run << std::endl;
-        //Statistics run_statistics = EvaluateAlgorithm(n_steps, n_episodes, algorithm, environment, gamma);
-        Statistics run_statistics = EvaluateAlgorithmContinuous(n_steps, algorithm, environment, gamma);
-        if (0) {
-        for (uint i=0; i<statistics.ep_stats.size(); ++i) {
-            statistics.ep_stats[i].total_reward += run_statistics.ep_stats[i].total_reward;
-            statistics.ep_stats[i].discounted_reward += run_statistics.ep_stats[i].discounted_reward;
-            statistics.ep_stats[i].steps += run_statistics.ep_stats[i].steps;
-            statistics.ep_stats[i].mse += run_statistics.ep_stats[i].mse;
-        }
-        }
-        for (uint i=0; i<statistics.reward.size(); ++i) {
-            statistics.reward[i] += run_statistics.reward[i];
-        }
-
-        if (model) {
+    if (model) {
 #if 0
             if (discrete_mdp) {
                 real threshold = 10e-6; //0;
@@ -441,155 +378,143 @@ int main (int argc, char** argv)
 
             }
 #endif
-            delete model;
-            model = NULL;
-        }
-        //delete environment;
-        delete mountain_car;
-		delete pendulum;
-        delete gridworld;
-        delete pomdp_gridworld;
-        delete one_d_maze;
-        delete discretised_chain;
-        delete random_mdp;
-        delete context_bandit;
-        delete algorithm;
-        delete exploration_policy;
+      delete model;
+      model = NULL;
     }
-    
+    // delete environment;
+    delete mountain_car;
+    delete pendulum;
+    delete gridworld;
+    delete pomdp_gridworld;
+    delete one_d_maze;
+    delete discretised_chain;
+    delete random_mdp;
+    delete context_bandit;
+    delete algorithm;
+    delete exploration_policy;
+  }
 
-    for (uint i=0; i<statistics.ep_stats.size(); ++i) {
-        statistics.ep_stats[i].total_reward /= (float) n_runs;
-        statistics.ep_stats[i].discounted_reward /= (float) n_runs;
-        statistics.ep_stats[i].steps /= n_runs;
-        statistics.ep_stats[i].mse /= n_runs;
-        std::cout << i << "i" << std::endl;
+  for (uint i = 0; i < statistics.ep_stats.size(); ++i) {
+    statistics.ep_stats[i].total_reward /= (float)n_runs;
+    statistics.ep_stats[i].discounted_reward /= (float)n_runs;
+    statistics.ep_stats[i].steps /= n_runs;
+    statistics.ep_stats[i].mse /= n_runs;
+    std::cout << i << "i" << std::endl;
 
-        std::cout << statistics.ep_stats[i].total_reward << " "
-                  << statistics.ep_stats[i].discounted_reward << "# REWARD"
-                  << std::endl;
-        std::cout << statistics.ep_stats[i].steps << " "
-                  << statistics.ep_stats[i].mse << "# MSE"
-                  << std::endl;
-    }
+    std::cout << statistics.ep_stats[i].total_reward << " "
+              << statistics.ep_stats[i].discounted_reward << "# REWARD"
+              << std::endl;
+    std::cout << statistics.ep_stats[i].steps << " "
+              << statistics.ep_stats[i].mse << "# MSE" << std::endl;
+  }
 
-    for (uint i=0; i<statistics.reward.size(); ++i) {
-            statistics.reward[i] /= (float) n_runs;
-            std::cout << statistics.reward[i] << " # INST_PAYOFF"
-                      << std::endl;
-    }
+  for (uint i = 0; i < statistics.reward.size(); ++i) {
+    statistics.reward[i] /= (float)n_runs;
+    std::cout << statistics.reward[i] << " # INST_PAYOFF" << std::endl;
+  }
 
-    std::cout << "Done" << std::endl;
+  std::cout << "Done" << std::endl;
 
-
-    
-    return 0;
+  return 0;
 }
 
-Statistics EvaluateAlgorithm (uint n_steps,
-                             uint n_episodes,
+Statistics EvaluateAlgorithm(uint n_steps, uint n_episodes,
                              OnlineAlgorithm<int, int>* algorithm,
-                             DiscreteEnvironment* environment,
-                             real gamma)
-{
-    std:: cout << "evaluating..." << environment->Name() << std::endl;
-    
-    std:: cout << "(value iteration)" << std::endl;
+                             DiscreteEnvironment* environment, real gamma) {
+  std::cout << "evaluating..." << environment->Name() << std::endl;
 
-    //int n_states = environment->getNStates();
-    //int n_actions = environment->getNActions();
+  std::cout << "(value iteration)" << std::endl;
 
-    Statistics statistics;
-    statistics.ep_stats.resize(n_episodes);
-    //statistics.reward.resize(n_episodes*n_steps);
+  // int n_states = environment->getNStates();
+  // int n_actions = environment->getNActions();
 
-    real discount = 1.0;
-    int current_time = 0;
-    environment->Reset();
-    std::cout << "(running)" << std::endl;
-    int spin_state = 0;
-    //const char* spinner ="|/-\\";
-    const char* spinner ="_,.-'`'-.,_";
-    int max_spin_state = strlen(spinner);
-    for (uint episode = 0; episode < n_episodes; ++episode) {
-        //fprintf(stderr, "\r%c%d", spinner[spin_state], 100*episode/n_episodes);
-        spin_state = (spin_state + 1) % max_spin_state;
-        statistics.ep_stats[episode].total_reward = 0.0;
-        statistics.ep_stats[episode].discounted_reward = 0.0;
-        statistics.ep_stats[episode].steps = 0;
-        discount = 1.0;
-        environment->Reset();
-        algorithm->Reset();
-        uint t;
-        for (t=0; t < n_steps; ++t) {
-            int state = environment->getState();
-            real reward = environment->getReward();
-            //statistics.reward[current_time] = reward;
-            statistics.ep_stats[episode].total_reward += reward;
-            statistics.ep_stats[episode].discounted_reward += discount * reward;
-            discount *= gamma;
-            //std::cout << "Acting!\n";
-            int action = algorithm->Act(reward, state);
-            //std::cout << "s:" << state << " r:" << reward << " a:" << action << std::endl;
-            bool action_ok = environment->Act(action);
-            if (!action_ok) {
-                break;
-            }
-            current_time++;
-        }
-        statistics.ep_stats[episode].steps += t;
-        statistics.ep_stats[episode].mse  = 0;
-    }
-    fprintf(stderr, "\n");
-    std::cout << "(done)" << std::endl;
-    //std::cout << "REAL MODEL\n";
-    //mdp->ShowModel();
-    
-    return statistics;
-}
+  Statistics statistics;
+  statistics.ep_stats.resize(n_episodes);
+  // statistics.reward.resize(n_episodes*n_steps);
 
-
-Statistics EvaluateAlgorithmContinuous (uint n_steps,
-                                        OnlineAlgorithm<int, int>* algorithm,
-                                        DiscreteEnvironment* environment,
-                                        real gamma)
-{
-    Statistics statistics;
-    statistics.reward.resize(n_steps);
-
-    std::cerr << "(running)" << std::endl;
-    int spin_state = 0;
-    const char* spinner ="_,.-'`'-.,_";
-    int max_spin_state = strlen(spinner);
-    
+  real discount = 1.0;
+  int current_time = 0;
+  environment->Reset();
+  std::cout << "(running)" << std::endl;
+  int spin_state = 0;
+  // const char* spinner ="|/-\\";
+  const char* spinner = "_,.-'`'-.,_";
+  int max_spin_state = strlen(spinner);
+  for (uint episode = 0; episode < n_episodes; ++episode) {
+    // fprintf(stderr, "\r%c%d", spinner[spin_state], 100*episode/n_episodes);
     spin_state = (spin_state + 1) % max_spin_state;
+    statistics.ep_stats[episode].total_reward = 0.0;
+    statistics.ep_stats[episode].discounted_reward = 0.0;
+    statistics.ep_stats[episode].steps = 0;
+    discount = 1.0;
     environment->Reset();
     algorithm->Reset();
     uint t;
-    bool action_ok = true;
-    for (t=0; t < n_steps; ++t) {
-        int state = environment->getState();
-        real reward = environment->getReward();
-        statistics.reward[t] = reward;
+    for (t = 0; t < n_steps; ++t) {
+      int state = environment->getState();
+      real reward = environment->getReward();
+      // statistics.reward[current_time] = reward;
+      statistics.ep_stats[episode].total_reward += reward;
+      statistics.ep_stats[episode].discounted_reward += discount * reward;
+      discount *= gamma;
+      // std::cout << "Acting!\n";
+      int action = algorithm->Act(reward, state);
+      // std::cout << "s:" << state << " r:" << reward << " a:" << action <<
+      // std::endl;
+      bool action_ok = environment->Act(action);
+      if (!action_ok) {
+        break;
+      }
+      current_time++;
+    }
+    statistics.ep_stats[episode].steps += t;
+    statistics.ep_stats[episode].mse = 0;
+  }
+  fprintf(stderr, "\n");
+  std::cout << "(done)" << std::endl;
+  // std::cout << "REAL MODEL\n";
+  // mdp->ShowModel();
 
+  return statistics;
+}
 
-        if (!action_ok) {
-            environment->Reset();
-        }
-        int action = algorithm->Act(reward, state);
+Statistics EvaluateAlgorithmContinuous(uint n_steps,
+                                       OnlineAlgorithm<int, int>* algorithm,
+                                       DiscreteEnvironment* environment,
+                                       real gamma) {
+  Statistics statistics;
+  statistics.reward.resize(n_steps);
+
+  std::cerr << "(running)" << std::endl;
+  int spin_state = 0;
+  const char* spinner = "_,.-'`'-.,_";
+  int max_spin_state = strlen(spinner);
+
+  spin_state = (spin_state + 1) % max_spin_state;
+  environment->Reset();
+  algorithm->Reset();
+  uint t;
+  bool action_ok = true;
+  for (t = 0; t < n_steps; ++t) {
+    int state = environment->getState();
+    real reward = environment->getReward();
+    statistics.reward[t] = reward;
+
+    if (!action_ok) {
+      environment->Reset();
+    }
+    int action = algorithm->Act(reward, state);
 #if 0
         for (uint a=0; a<environment->getNActions(); ++a) {
             printf ("%f ", algorithm->getValue(state, a));
         }
         printf(" %d #QVALUE\n", action);
 #endif
-        action_ok = environment->Act(action);
-    }
-    fprintf(stderr, "\n");
-    std::cout << "(done after " << t << " steps)" << std::endl;
-    return statistics;
+    action_ok = environment->Act(action);
+  }
+  fprintf(stderr, "\n");
+  std::cout << "(done after " << t << " steps)" << std::endl;
+  return statistics;
 }
-
-
 
 #endif
