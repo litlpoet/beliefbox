@@ -524,25 +524,25 @@ int main(int argc, char* argv[]) {
       int this_option_optind = optind ? optind : 1;
       int option_index = 0;
       static struct option long_options[] = {
-          {"discount", required_argument, 0, 0},  // 0
-          {"environment", required_argument, 0, 0},  // 1
-          {"threshold", required_argument, 0, 0},  // 2
-          {"n_trajectories", required_argument, 0, 0},  // 3
-          {"n_samples", required_argument, 0, 0},  // 4
-          {"n_training", required_argument, 0, 0},  // 5
-          {"n_testing", required_argument, 0, 0},  // 6
-          {"grid", required_argument, 0, 0},  // 7
-          {"scale", required_argument, 0, 0},  // 8
-          {"seed", required_argument, 0, 0},  // 9
-          {"accuracy", required_argument, 0, 0},  // 10
+          {"discount", required_argument, 0, 0},         // 0
+          {"environment", required_argument, 0, 0},      // 1
+          {"threshold", required_argument, 0, 0},        // 2
+          {"n_trajectories", required_argument, 0, 0},   // 3
+          {"n_samples", required_argument, 0, 0},        // 4
+          {"n_training", required_argument, 0, 0},       // 5
+          {"n_testing", required_argument, 0, 0},        // 6
+          {"grid", required_argument, 0, 0},             // 7
+          {"scale", required_argument, 0, 0},            // 8
+          {"seed", required_argument, 0, 0},             // 9
+          {"accuracy", required_argument, 0, 0},         // 10
           {"lspi_iterations", required_argument, 0, 0},  // 11
-          {"n_evaluations", required_argument, 0, 0},  // 12
-          {"reuse_training_data", no_argument, 0, 0},  // 13
-          {"online", no_argument, 0, 0},  // 14
-          {"sampling", no_argument, 0, 0},  // 15
-          {"seed_file", required_argument, 0, 0},  // 16
-          {"delta", required_argument, 0, 0},  // 17
-          {"Rmax", required_argument, 0, 0},  // 18
+          {"n_evaluations", required_argument, 0, 0},    // 12
+          {"reuse_training_data", no_argument, 0, 0},    // 13
+          {"online", no_argument, 0, 0},                 // 14
+          {"sampling", no_argument, 0, 0},               // 15
+          {"seed_file", required_argument, 0, 0},        // 16
+          {"delta", required_argument, 0, 0},            // 17
+          {"Rmax", required_argument, 0, 0},             // 18
           {0, 0, 0, 0}};
       c = getopt_long(argc, argv, "", long_options, &option_index);
       if (c == -1) break;
@@ -550,10 +550,10 @@ int main(int argc, char* argv[]) {
       switch (c) {
         case 0:
 #if 0
-                printf ("option %s (%d)", long_options[option_index].name, option_index);
-                if (optarg)
-                    printf (" with arg %s", optarg);
-                printf ("\n");
+          printf("option %s (%d)", long_options[option_index].name,
+                 option_index);
+          if (optarg) printf(" with arg %s", optarg);
+          printf("\n");
 #endif
           switch (option_index) {
             case 0:
@@ -619,6 +619,7 @@ int main(int argc, char* argv[]) {
               break;
           }
           break;
+
         case '0':
         case '1':
         case '2':
@@ -627,6 +628,7 @@ int main(int argc, char* argv[]) {
           digit_optind = this_option_optind;
           printf("option %c\n", c);
           break;
+
         default:
           std::cout << help_text;
           exit(-1);

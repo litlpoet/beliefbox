@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include "ActionValueEstimate.h"
+
 #include "MathFunctions.h"
 #include "Random.h"
 

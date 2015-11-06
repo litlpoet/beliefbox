@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2013 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
@@ -9,8 +8,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DIRICHLET_TRANSITION_H
-#define DIRICHLET_TRANSITION_H
+#ifndef SRC_MODELS_DIRICHLETTRANSITIONS_H_
+#define SRC_MODELS_DIRICHLETTRANSITIONS_H_
 
 #include "Dirichlet.h"
 #include "DirichletFiniteOutcomes.h"
@@ -18,10 +17,9 @@
 
 /** Discrete transition distribution that is Dirichlet
 
-        Here the prior mass is distributed uniformly over the state space.
-
-        By default, an unvisited state-action pair has a uniform distribution
-   state. This behaviour may not be ideal.
+    Here the prior mass is distributed uniformly over the state space.
+    By default, an unvisited state-action pair has a uniform distribution
+    state. This behaviour may not be ideal.
  */
 class DirichletTransitions {
  public:
@@ -63,4 +61,5 @@ class DirichletTransitions {
 };
 
 typedef TransitionDistribution<int, int> DiscreteTransitionDistribution;
-#endif
+
+#endif  // SRC_MODELS_DIRICHLETTRANSITIONS_H_

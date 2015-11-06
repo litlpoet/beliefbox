@@ -20,9 +20,12 @@
 
 */
 /* @{ */
+#ifndef SRC_ALGORITHMS_ONLINEALGORITHM_H_
+#define SRC_ALGORITHMS_ONLINEALGORITHM_H_
 
-#ifndef ONLINE_ALGORITHM_H
-#define ONLINE_ALGORITHM_H
+#include "Matrix.h"
+#include "debug.h"
+#include "real.h"
 
 /** Online algorithm template.
 
@@ -37,15 +40,21 @@ template <typename A, typename S>
 class OnlineAlgorithm {
  public:
   OnlineAlgorithm() {}
+
   virtual ~OnlineAlgorithm() {}
+
   /// call this at the end of an episode.
   virtual void Reset() {}
+
   /// Partial SARSA observation (can be used with eligibility traces)
   virtual real Observe(real reward, S next_state, A next_action) = 0;
+
   /// Get an action using the current exploration policy.
   /// it calls Observe as a side-effect.
   virtual A Act(real reward, S next_state) = 0;
+
   virtual real getValue(S state, A action) = 0;
+
   /// Some algorithms may implement a different strategy when the reward matrix
   /// SxA is given. Implementation is not obligatory.
   virtual void setFixedRewards(const Matrix& rewards) {
@@ -55,4 +64,4 @@ class OnlineAlgorithm {
 
 /// @}
 
-#endif
+#endif  // SRC_ALGORITHMS_ONLINEALGORITHM_H_

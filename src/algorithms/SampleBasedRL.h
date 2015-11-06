@@ -10,19 +10,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef SAMPLE_BASED_RL_H
-#define SAMPLE_BASED_RL_H
+#ifndef SRC_ALGORITHMS_SAMPLEBASEDRL_H_
+#define SRC_ALGORITHMS_SAMPLEBASEDRL_H_
 
 #include <vector>
 #include "DiscreteMDP.h"
 #include "DiscretePolicy.h"
 #include "ExplorationPolicy.h"
 #include "MDPModel.h"
-#include "Matrix.h"
 #include "MultiMDPValueIteration.h"
 #include "OnlineAlgorithm.h"
 #include "ValueIteration.h"
-#include "real.h"
 
 /// \ingroup ReinforcementLearning
 /// @{
@@ -66,14 +64,19 @@ class SampleBasedRL : public OnlineAlgorithm<int, int> {
  public:
   std::vector<const DiscreteMDP*> mdp_list;  ///< list of sampled models
   Vector weights;                            ///< probability vector of MDPs
+
   SampleBasedRL(int n_states_, int n_actions_, real gamma_, real epsilon_,
                 MDPModel* model_, RandomNumberGenerator* rng_,
                 int max_samples_ = 1, bool use_upper_bound_ = false);
+
   virtual ~SampleBasedRL();
+
   virtual void Reset();
+
   /// Full observation
   virtual real Observe(int state, int action, real reward, int next_state,
                        int next_action);
+
   /// Partial observation
   virtual real Observe(real reward, int next_state, int next_action);
 
@@ -85,11 +88,10 @@ class SampleBasedRL : public OnlineAlgorithm<int, int> {
   virtual int Act(real reward, int next_state);
 
   virtual real getValue(int state, int action) {
-    if (use_upper_bound) {
+    if (use_upper_bound)
       return UpperBound(state, action);
-    } else {
+    else
       return LowerBound(state, action);
-    }
   }
 
   void CalculateUpperBound(real accuracy, int iterations);
@@ -98,17 +100,13 @@ class SampleBasedRL : public OnlineAlgorithm<int, int> {
 
   inline real UpperBound(int state) {
     Vector Q(n_actions);
-    for (int i = 0; i < n_actions; ++i) {
-      Q(i) = UpperBound(state, i);
-    }
+    for (int i = 0; i < n_actions; ++i) Q(i) = UpperBound(state, i);
     return Max(Q);
   }
 
   inline real LowerBound(int state) {
     Vector Q(n_actions);
-    for (int i = 0; i < n_actions; ++i) {
-      Q(i) = LowerBound(state, i);
-    }
+    for (int i = 0; i < n_actions; ++i) Q(i) = LowerBound(state, i);
     return Max(Q);
   }
 
@@ -138,4 +136,4 @@ class SampleBasedRL : public OnlineAlgorithm<int, int> {
 };
 
 /// @}
-#endif
+#endif  // SRC_ALGORITHMS_SAMPLEBASEDRL_H_

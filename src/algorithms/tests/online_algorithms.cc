@@ -70,6 +70,7 @@ struct EpisodeStatistics {
   int steps;
   real mse;
   int n_runs;
+
   EpisodeStatistics()
       : total_reward(0.0),
         discounted_reward(0.0),
@@ -111,11 +112,10 @@ static const char* const help_text =
     --reward_prior: {Beta, Fixed, *Normal}\n\
     --max_samples:  maximum number of samples (*1) for Sampling\n\
     --initial_reward: [0]\n\
-    --seed:                  seed all the RNGs with this\n\
-    --seed_file:             select a binary file to choose seeds from (use in conjunction with --seed to select the n-th seed in the file)\n\
+    --seed:         seed all the RNGs with this\n\
+    --seed_file:    select a binary file to choose seeds from (use in conjunction with --seed to select the n-th seed in the file)\n\
     \n\
-    * denotes default parameter\n\
-\n";
+    * denotes default parameter\n\\n";
 
 int main(int argc, char** argv) {
   ulong seed = time(NULL);
@@ -185,16 +185,17 @@ int main(int argc, char** argv) {
           {"seed_file", required_argument, 0, 0},           // 24
           {"n_iterations", required_argument, 0, 0},        // 25
           {0, 0, 0, 0}};
+
       c = getopt_long(argc, argv, "", long_options, &option_index);
       if (c == -1) break;
 
       switch (c) {
         case 0:
 #if 0
-                printf ("option %s (%d)", long_options[option_index].name, option_index);
-                if (optarg)
-                    printf (" with arg %s", optarg);
-                printf ("\n");
+          printf("option %s (%d)", long_options[option_index].name,
+                 option_index);
+          if (optarg) printf(" with arg %s", optarg);
+          printf("\n");
 #endif
           switch (option_index) {
             case 0:
@@ -293,6 +294,7 @@ int main(int argc, char** argv) {
               break;
           }
           break;
+
         case '0':
         case '1':
         case '2':
@@ -301,6 +303,7 @@ int main(int argc, char** argv) {
           digit_optind = this_option_optind;
           printf("option %c\n", c);
           break;
+
         default:
           std::cout << help_text;
           exit(-1);
@@ -511,20 +514,17 @@ int main(int argc, char** argv) {
       model = (MDPModel*)discrete_mdp;
       SampleBasedRL* sampling = new SampleBasedRL(
           n_states, n_actions, gamma, epsilon, model, rng, max_samples, false);
-      if (use_sampling_threshold) {
+      if (use_sampling_threshold)
         sampling->setSamplingThreshold(sampling_threshold);
-      }
       algorithm = sampling;
-
     } else if (!strcmp(algorithm_name, "USampling")) {
       discrete_mdp = new DiscreteMDPCounts(n_states, n_actions, dirichlet_mass,
                                            reward_prior);
       model = (MDPModel*)discrete_mdp;
       SampleBasedRL* sampling = new SampleBasedRL(
           n_states, n_actions, gamma, epsilon, model, rng, max_samples, true);
-      if (use_sampling_threshold) {
+      if (use_sampling_threshold)
         sampling->setSamplingThreshold(sampling_threshold);
-      }
       algorithm = sampling;
     } else if (!strcmp(algorithm_name, "ABC")) {
       DiscreteABCRL* abc = new DiscreteABCRL(
@@ -532,21 +532,12 @@ int main(int argc, char** argv) {
           max_samples, n_iterations, true);
       algorithm = abc;
 #if 0
-        } else if (!strcmp(algorithm_name, "BMCSampling")) {
-            MDPModelClassPriors* mcp_mdp = new MDPModelClassPriors(n_states,
-                                            n_actions,
-                                            gamma,
-                                            dirichlet_mass,
-                                            reward_prior);
-            model = (MDPModel*) mcp_mdp;
-            algorithm = new SampleBasedRL(n_states,
-                                        n_actions,
-                                        gamma,
-                                        epsilon,
-                                        model,
-                                        rng,
-                                        max_samples,
-                                        false);
+    } else if (!strcmp(algorithm_name, "BMCSampling")) {
+      MDPModelClassPriors* mcp_mdp = new MDPModelClassPriors(
+          n_states, n_actions, gamma, dirichlet_mass, reward_prior);
+      model = (MDPModel*)mcp_mdp;
+      algorithm = new SampleBasedRL(n_states, n_actions, gamma, epsilon, model,
+                                    rng, max_samples, false);
 #endif
     } else if (!strcmp(algorithm_name, "ContextBanditGaussian")) {
       model = (MDPModel*)new ContextBanditGaussian(n_states, n_actions, 0.5,
@@ -562,17 +553,14 @@ int main(int argc, char** argv) {
       DiscreteMDPCollection* collection = NULL;
       collection = new DiscreteMDPCollection(2, n_states, n_actions);
       model = (MDPModel*)collection;
-
       algorithm = new ModelCollectionRL(n_states, n_actions, gamma, epsilon,
                                         collection, rng, true);
     } else if (!strcmp(algorithm_name, "ContextBanditCollection")) {
       ContextBanditCollection* collection =
           new ContextBanditCollection(8, n_states, n_actions, 0.5, 0.0, 1.0);
       model = (MDPModel*)collection;
-
       algorithm = new ModelBasedRL(n_states, n_actions, gamma, epsilon,
                                    collection, rng, false);
-
     } else if (!strcmp(algorithm_name, "TdBma")) {
       algorithm = new TdBma(n_states, n_actions, gamma, lambda, alpha,
                             exploration_policy);
@@ -584,9 +572,9 @@ int main(int argc, char** argv) {
     // std::cerr << "run : " << run << std::endl;
     Statistics run_statistics = EvaluateAlgorithm(
         episode_steps, n_episodes, n_steps, algorithm, environment, gamma);
-    if (statistics.ep_stats.size() < run_statistics.ep_stats.size()) {
+
+    if (statistics.ep_stats.size() < run_statistics.ep_stats.size())
       statistics.ep_stats.resize(run_statistics.ep_stats.size());
-    }
 
     for (uint i = 0; i < run_statistics.ep_stats.size(); ++i) {
       statistics.ep_stats[i].total_reward +=
@@ -740,8 +728,8 @@ int main(int argc, char** argv) {
 
 /*** Evaluate an algorithm
 
-     episode_steps: maximum number of steps per episode. If negative, then
-   ignore
+     episode_steps: maximum number of steps per episode.
+     If negative, then ignore
      n_steps: maximun number of total steps. If negative, then ignore.
      n_episodes: maximum number of episodes. Cannot be negative.
 */
@@ -752,12 +740,11 @@ Statistics EvaluateAlgorithm(int episode_steps, int n_episodes, uint n_steps,
   std::cout << "# evaluating..." << environment->Name() << std::endl;
 
   Statistics statistics;
-  if (n_episodes > 0) {
-    statistics.ep_stats.reserve(n_episodes);
-  }
+  if (n_episodes > 0) statistics.ep_stats.reserve(n_episodes);
   statistics.reward.reserve(n_steps);
 
   FixedDiscretePolicy* oracle_policy = NULL;
+
   if (!algorithm) {
     const DiscreteMDP* mdp = environment->getMDP();
     ValueIteration value_iteration(mdp, gamma);
@@ -784,44 +771,44 @@ Statistics EvaluateAlgorithm(int episode_steps, int n_episodes, uint n_steps,
   for (uint step = 0; step < n_steps; ++step) {
     if (episode_steps > 0 && current_time >= episode_steps) {
       action_ok = false;
-      if (algorithm) {
-        algorithm->Reset();
-      }
+      if (algorithm) algorithm->Reset();
       environment->Reset();
     }
+
     if (!action_ok) {
       int state = environment->getState();
       real reward = environment->getReward();
-      if (algorithm) {
+
+      if (algorithm)
         algorithm->Act(reward, state);
-      } else {
+      else
         oracle_policy->Reset(state);
-      }
+
       statistics.reward.resize(step + 1);
       statistics.reward[step] = reward;
+
       if (episode >= 0) {
         statistics.ep_stats[episode].steps++;
         statistics.ep_stats[episode].total_reward += reward;
         statistics.ep_stats[episode].discounted_reward += discount * reward;
       }
+
       total_reward += reward;
       discounted_reward += discount * reward;
-
       discount *= gamma;
-
       episode++;
       statistics.ep_stats.resize(episode + 1);
       statistics.ep_stats[episode].total_reward = 0.0;
       statistics.ep_stats[episode].discounted_reward = 0.0;
       statistics.ep_stats[episode].steps = 0;
+
       discount = 1.0;
       environment->Reset();
-      if (algorithm) {
-        algorithm->Reset();
-      }
+      if (algorithm) algorithm->Reset();
       action_ok = true;
       current_time = 0;
       // printf ("# episode %d complete\n", episode);
+
       if (n_episodes > 0 && episode >= n_episodes) {
         logmsg(" Breaking after %d episodes,  %d steps\n", episode, step);
         break;
@@ -854,18 +841,20 @@ Statistics EvaluateAlgorithm(int episode_steps, int n_episodes, uint n_steps,
       oracle_policy->Observe(reward, state);
       action = oracle_policy->SelectAction();
     }
-    if (0) {
+
+    if (0)
       printf("%d %d %d %f # t-state-action-reward\n", step, state, action,
              reward);
-    }
+
     action_ok = environment->Act(action);
     current_time++;
   }
   printf(" %f %f # RUN_REWARD\n", total_reward, discounted_reward);
   fflush(stdout);
-  if ((int)statistics.ep_stats.size() != n_episodes) {
+
+  if ((int)statistics.ep_stats.size() != n_episodes)
     statistics.ep_stats.resize(statistics.ep_stats.size() - 1);
-  }
+
   printf("# Exiting after %d episodes, %d steps\n", episode, n_steps);
 
   delete oracle_policy;

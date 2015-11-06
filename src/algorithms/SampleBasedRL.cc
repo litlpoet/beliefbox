@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2010 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 // $Revision$
 /***************************************************************************
@@ -35,9 +34,9 @@ SampleBasedRL::SampleBasedRL(int n_states_, int n_actions_, real gamma_,
       use_sampling_threshold(false),
       sampling_threshold(0.1),
       weights(max_samples) {
-  if (gamma < 1.0 && update_interval > 1.0 / (1.0 - gamma)) {
+  if (gamma < 1.0 && update_interval > 1.0 / (1.0 - gamma))
     update_interval = 1.0 / (1.0 - gamma);
-  }
+
   printf(
       "# Starting Sample-Based-RL with %d states, %d actions, %d samples, "
       "update interval %d\n",
@@ -48,6 +47,7 @@ SampleBasedRL::SampleBasedRL(int n_states_, int n_actions_, real gamma_,
   real w_i = 1.0 / (real)max_samples;
   mdp_list.resize(max_samples);
   value_iteration.resize(max_samples);
+
   printf("# Generating mean MDP\n");
   // mdp_list[0] = model->getMeanMDP();
   for (int i = 0; i < max_samples; ++i) {
@@ -59,6 +59,7 @@ SampleBasedRL::SampleBasedRL(int n_states_, int n_actions_, real gamma_,
 
   printf("# Setting up MultiMPDValueIteration\n");
   multi_value_iteration = new MultiMDPValueIteration(weights, mdp_list, gamma);
+
   printf("# Testing MultiMPDValueIteration\n");
   multi_value_iteration->ComputeStateActionValues(0, 1);
 }
@@ -94,6 +95,7 @@ SampleBasedRL::~SampleBasedRL() {
   }
   delete multi_value_iteration;
 }
+
 void SampleBasedRL::Reset() {
   current_state = -1;
   next_update = T;
@@ -104,9 +106,7 @@ void SampleBasedRL::Reset() {
 /// Full observation
 real SampleBasedRL::Observe(int state, int action, real reward, int next_state,
                             int next_action) {
-  if (state >= 0) {
-    model->AddTransition(state, action, reward, next_state);
-  }
+  if (state >= 0) model->AddTransition(state, action, reward, next_state);
   current_state = next_state;
   current_action = next_action;
   return 0.0;
@@ -114,9 +114,8 @@ real SampleBasedRL::Observe(int state, int action, real reward, int next_state,
 
 /// Partial observation
 real SampleBasedRL::Observe(real reward, int next_state, int next_action) {
-  if (current_state >= 0) {
+  if (current_state >= 0)
     model->AddTransition(current_state, current_action, reward, next_state);
-  }
   current_state = next_state;
   current_action = next_action;
   return 0.0;
@@ -153,6 +152,7 @@ void SampleBasedRL::CalculateUpperBound(real accuracy, int iterations) {
       }
     }
   }
+
   QU *= Z;
   for (int s = 0; s < n_states; ++s) {
 #if 1
@@ -173,6 +173,7 @@ void SampleBasedRL::CalculateLowerBound(real accuracy, int iterations) {
       QL(s, a) = multi_value_iteration->getValue(s, a);
     }
   }
+
   for (int s = 0; s < n_states; ++s) {
     VL(s) = QL(s, 0);
     for (int a = 1; a < n_actions; ++a) {
@@ -188,15 +189,13 @@ int SampleBasedRL::Act(real reward, int next_state) {
   T++;
 
   // update the model
-  if (current_state >= 0) {
+  if (current_state >= 0)
     model->AddTransition(current_state, current_action, reward, next_state);
-  }
   current_state = next_state;
 
   // Update MDPs
   // mdp_list[0] = model->getMeanMDP();
   // Do note waste much time generating MDPs
-
   bool do_update = false;
   if (use_sampling_threshold) {
     for (int i = 0; i < max_samples; ++i) {
@@ -214,21 +213,19 @@ int SampleBasedRL::Act(real reward, int next_state) {
       }
     }
   } else {
-    if (T >= next_update) {
-      do_update = true;
-    }
+    if (T >= next_update) do_update = true;
   }
+
   if (do_update) {
     printf("# update: %d\n", T);
     // model->ShowModel();
-    update_interval += 1;  //(int) (ceil)(1.01*(double) T);
+    update_interval += 1;  // (int) (ceil)(1.01*(double) T);
     next_update = T + update_interval;
     Resample();
-    if (use_upper_bound) {
+    if (use_upper_bound)
       CalculateUpperBound(1e-3, 1e3);
-    } else {
+    else
       CalculateLowerBound(1e-3, 1e3);
-    }
   }
 
   // update values

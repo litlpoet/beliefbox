@@ -10,8 +10,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ABSTRACT_POLICY_H
-#define ABSTRACT_POLICY_H
+#ifndef SRC_ALGORITHMS_ABSTRACTPOLICY_H_
+#define SRC_ALGORITHMS_ABSTRACTPOLICY_H_
 
 #include <vector>
 #include "MDPDistribution.h"
@@ -21,7 +21,7 @@ template <typename StateType, typename ActionType>
 class AbstractPolicy {
  public:
   StateType state;
-  virtual ~AbstractPolicy(){};
+  virtual ~AbstractPolicy() {}
   virtual ActionType SelectAction() = 0;
   virtual void Observe(const StateType& previous_state,
                        const ActionType& action, real r,
@@ -35,4 +35,4 @@ class AbstractPolicy {
   }
 };
 
-#endif
+#endif  // SRC_ALGORITHMS_ABSTRACTPOLICY_H_

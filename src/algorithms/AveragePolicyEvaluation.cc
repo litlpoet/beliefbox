@@ -12,6 +12,7 @@
  ***************************************************************************/
 
 #include "AveragePolicyEvaluation.h"
+
 #include <cassert>
 #include <cmath>
 #include "MathFunctions.h"

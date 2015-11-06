@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2009 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 // $Revision$
 /***************************************************************************
@@ -11,6 +10,7 @@
  ***************************************************************************/
 
 #include "QLearningDirichlet.h"
+
 #include <limits>
 
 QLearningDirichlet::QLearningDirichlet(int n_states_, int n_actions_,
@@ -43,10 +43,11 @@ QLearningDirichlet::QLearningDirichlet(int n_states_, int n_actions_,
   exploration_policy->setValueMatrix(&Q);
   Reset();
 }
+
 real QLearningDirichlet::Observe(int action, int next_state, real reward) {
   int a_max = 0;
-
   real Qa_max = Q(next_state, a_max);
+
   // select maximising action
   for (int i = 1; i < n_actions; ++i) {
     if (Q(next_state, i) > Qa_max) {
@@ -57,6 +58,7 @@ real QLearningDirichlet::Observe(int action, int next_state, real reward) {
 
   real n_R = (reward - baseline) + gamma * Qa_max;  // partially observed return
   real TD = 0.0;
+
   if (state >= 0 && action >= 0) {
     real p_R = Q(state, action);  // predicted return
     TD = n_R - p_R;
@@ -77,17 +79,13 @@ real QLearningDirichlet::Observe(int action, int next_state, real reward) {
     }
 
     // update eligibility traces
-    for (int i = 0; i < n_states; ++i) {
-      for (int j = 0; j < n_actions; ++j) {
-        el(i, j) *= lambda_t;
-      }
-    }
+    for (int i = 0; i < n_states; ++i)
+      for (int j = 0; j < n_actions; ++j) el(i, j) *= lambda_t;
+
     el(state, action) = 1;
-    for (int i = 0; i < n_states; ++i) {
-      for (int j = 0; j < n_actions; ++j) {
-        Q(i, j) += el(i, j) * alpha * TD;
-      }
-    }
+
+    for (int i = 0; i < n_states; ++i)
+      for (int j = 0; j < n_actions; ++j) Q(i, j) += el(i, j) * alpha * TD;
   }
   state = next_state;  // fall back next state;
   return TD;

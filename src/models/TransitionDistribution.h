@@ -10,12 +10,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TRANSITION_DISTRIBUTION_H
-#define TRANSITION_DISTRIBUTION_H
+#ifndef SRC_MODELS_TRANSITIONDISTRIBUTION_H_
+#define SRC_MODELS_TRANSITIONDISTRIBUTION_H_
 
 #include <cstdio>
 #include <map>
 #include <unordered_map>
+
 #include "DiscreteStateSet.h"
 #include "HashCombine.h"
 #include "StateAction.h"
@@ -62,12 +63,12 @@ struct hash<DiscreteTransition> {
     return seed;
   }
 };
-}
+}  // namespace std
 
 /** Discrete transition distribution.
 
-        In this model, we employ an unorder map of actual transitions, as well
-   as a map of next states.
+    In this model, we employ an unorder map of actual transitions, as well
+    as a map of next states.
  */
 template <>
 class TransitionDistribution<int, int> {
@@ -75,11 +76,14 @@ class TransitionDistribution<int, int> {
   int n_states;                ///< the maximum number of state
   int n_actions;               ///< the maximum number of actions
   DiscreteStateSet empty_set;  ///< included for convenience
+
   /// The implementation of the discrete transition distribution
-  std::unordered_map<DiscreteTransition, real>
-      P;  ///< gives the actual probabilities
-  std::unordered_map<DiscreteStateAction, DiscreteStateSet>
-      next_states;  ///< next states for quick access
+  ///< gives the actual probabilities
+  std::unordered_map<DiscreteTransition, real> P;
+
+  ///< next states for quick access
+  std::unordered_map<DiscreteStateAction, DiscreteStateSet> next_states;
+
   TransitionDistribution(int n_states_, int n_actions_)
       : n_states(n_states_), n_actions(n_actions_) {}
 
@@ -98,8 +102,10 @@ class TransitionDistribution<int, int> {
 
   /// Generate a next state
   virtual int generate(int state, int action) const;
+
   /// Get the probability of the next state
   virtual real pdf(int state, int action, int next_state) const;
+
   /// Return the set of next states.
   /// In this case, if a state has not been visited before, then we assume that
   /// the next-state set is empty. This means that value iteration will stop
@@ -116,4 +122,5 @@ class TransitionDistribution<int, int> {
 };
 
 typedef TransitionDistribution<int, int> DiscreteTransitionDistribution;
-#endif
+
+#endif  // SRC_MODELS_TRANSITIONDISTRIBUTION_H_

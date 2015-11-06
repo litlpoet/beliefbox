@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2013 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
@@ -10,6 +9,7 @@
  ***************************************************************************/
 
 #include "DirichletTransitions.h"
+
 #include "Distribution.h"
 
 DirichletTransitions::DirichletTransitions(int n_states_, int n_actions_,
@@ -22,14 +22,14 @@ DirichletTransitions::DirichletTransitions(int n_states_, int n_actions_,
 
 DirichletTransitions::~DirichletTransitions() {
 #if 0
-	for (int i=0; i<n_states; ++i) {
-		for (int a=0; a<n_actions; ++a) {
-			int c = getCounts(i, a);
-			if (c > 0) {
-				printf ("# visits: (%d %d) %d\n", i, a, c);
-			}
-		}
-	}
+  for (int i = 0; i < n_states; ++i) {
+    for (int a = 0; a < n_actions; ++a) {
+      int c = getCounts(i, a);
+      if (c > 0) {
+        printf("# visits: (%d %d) %d\n", i, a, c);
+      }
+    }
+  }
 #endif
 }
 

@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2008 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 // $Revision$
 /***************************************************************************
@@ -42,8 +41,8 @@ QLearning::QLearning(int n_states_, int n_actions_, real gamma_, real lambda_,
 
 /** Reset.
 
-        Set the current state/action to invalid values. Clear eligibility
-   traces.
+    Set the current state/action to invalid values. Clear eligibility
+    traces.
 */
 void QLearning::Reset() {
   state = -1;
@@ -64,9 +63,9 @@ void QLearning::ClearTraces() {
     We only need the next reward, state, and action pair, since the previous
     state and action are saved by the algorithm.
 
-        @param reward \f$r_{t+1}\f$
-        @param next_state \f$s_{t+1}\f$
-        @param next_action \f$a_{t+1}\f$
+    @param reward \f$r_{t+1}\f$
+    @param next_state \f$s_{t+1}\f$
+    @param next_action \f$a_{t+1}\f$
 */
 real QLearning::Observe(real reward, int next_state, int next_action) {
   // select maximising action for the next state
@@ -82,6 +81,7 @@ real QLearning::Observe(real reward, int next_state, int next_action) {
   real n_R = (reward - baseline) + gamma * Qa_max;  // partially observed return
   real TD = 0.0;
   real trace_decay = gamma * lambda;
+
   if (state >= 0 && action >= 0) {
     real p_R = Q(state, action);  // predicted return
     TD = n_R - p_R;
@@ -89,18 +89,12 @@ real QLearning::Observe(real reward, int next_state, int next_action) {
 
     el(state, action) = 1;
 
-    for (int i = 0; i < n_states; ++i) {
-      for (int j = 0; j < n_actions; ++j) {
-        Q(i, j) += el(i, j) * delta;
-      }
-    }
+    for (int i = 0; i < n_states; ++i)
+      for (int j = 0; j < n_actions; ++j) Q(i, j) += el(i, j) * delta;
 
     if (a_max == next_action) {
-      for (int i = 0; i < n_states; ++i) {
-        for (int j = 0; j < n_actions; ++j) {
-          el(i, j) *= trace_decay;
-        }
-      }
+      for (int i = 0; i < n_states; ++i)
+        for (int j = 0; j < n_actions; ++j) el(i, j) *= trace_decay;
     } else {
       ClearTraces();
     }

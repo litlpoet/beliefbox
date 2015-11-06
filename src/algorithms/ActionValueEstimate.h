@@ -11,8 +11,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef ACTION_VALUE_ESTIMATE
-#define ACTION_VALUE_ESTIMATE
+#ifndef SRC_ALGORITHMS_ACTIONVALUEESTIMATE_H_
+#define SRC_ALGORITHMS_ACTIONVALUEESTIMATE_H_
 
 #include <cmath>
 #include <vector>
@@ -105,7 +105,7 @@ class AverageEstimate {
   real init;
   int N_init;
   AverageEstimate();
-  AverageEstimate(real init_, int N_ = 0);
+  explicit AverageEstimate(real init_, int N_ = 0);
   void Reset();
   void Observe(real X);
   real GetMean();
@@ -206,7 +206,7 @@ class CountingBernoulliEstimate : public ActionValueEstimate {
  public:
   BernoulliArmObservations* obs;
   int n_actions;
-  CountingBernoulliEstimate(int n_actions);
+  explicit CountingBernoulliEstimate(int n_actions);
   /// Destroy
   virtual ~CountingBernoulliEstimate();
   /// Update estimates when observing reward r after action a is taken
@@ -226,4 +226,4 @@ class CountingBernoulliEstimate : public ActionValueEstimate {
   virtual real GetProbability(int i, int j, real delta);
 };
 
-#endif
+#endif  // SRC_ALGORITHMS_ACTIONVALUEESTIMATE_H_

@@ -1,4 +1,3 @@
-/* -*- Mode: C++; -*- */
 // copyright (c) 2011 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 /***************************************************************************
  *                                                                         *
@@ -10,6 +9,7 @@
  ***************************************************************************/
 
 #include "NormalDistribution.h"
+
 #include "ExponentialDistribution.h"
 #include "Random.h"
 #include "SpecialFunctions.h"
@@ -48,6 +48,7 @@ real NormalDistribution::generate() {
     return normal_rho * sin(2.0 * M_PI * normal_x) * s + m;
   }
 }
+
 /// Normal distribution log-pdf
 real NormalDistribution::log_pdf(real x) const {
   real d = (m - x) / s;

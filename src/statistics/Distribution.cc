@@ -1,4 +1,3 @@
-/* -*- Mode: C++; -*- */
 // VER: $Id: Distribution.c,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp
 // cdimitrakakis $
 // copyright (c) 2004 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
@@ -10,10 +9,11 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-#include <cmath>
+#include "Distribution.h"
+
 #include <cstdio>
 #include <cstdlib>
-#include "Distribution.h"
+
 #include "MersenneTwister.h"
 #include "Random.h"
 #include "SmartAssert.h"

@@ -1,6 +1,7 @@
-// -*- Mode: c++  -*-
-#ifndef STATE_ACTION_H
-#define STATE_ACTION_H
+// Copyright (c) 2005 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
+
+#ifndef SRC_MODELS_STATEACTION_H_
+#define SRC_MODELS_STATEACTION_H_
 
 #include "HashCombine.h"
 
@@ -10,7 +11,9 @@ class StateAction {
  public:
   int state;
   int action;
+
   StateAction(int s, int a) : state(s), action(a) {}
+
   bool operator==(const StateAction& rhs) const {
     if ((rhs.state != state) || (rhs.action != action)) {
       return false;
@@ -32,6 +35,6 @@ struct hash<DiscreteStateAction> {
     return seed;
   }
 };
-}
+}  // namespace std
 
-#endif
+#endif  // SRC_MODELS_STATEACTION_H_

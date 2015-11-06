@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2005-2007 by Christos Dimitrakakis
 // <christos.dimitrakakis@gmail.com>
 // $Revision$
@@ -12,10 +11,11 @@
  ***************************************************************************/
 
 #include "DiscreteMDPCounts.h"
-#include "Random.h"
-#include "SingularDistribution.h"
 
 #include <stdexcept>
+
+#include "Random.h"
+#include "SingularDistribution.h"
 
 /** Create a counting model of an MDP.
 
@@ -67,12 +67,12 @@ DiscreteMDPCounts::~DiscreteMDPCounts() {
 
 #if 0
 /// Copy the mean MDP
-DiscreteMDP* DiscreteMDPCounts::CreateMDP() const
-{
-    mdp_dbg("Making a DiscreteMDP with %d states, %d actions from model\n", n_states, n_actions);
-	DiscreteMDP* mdp = new DiscreteMDP(n_states, n_actions);
-	CopyMeanMDP(mdp);
-    return mdp;
+DiscreteMDP* DiscreteMDPCounts::CreateMDP() const {
+  mdp_dbg("Making a DiscreteMDP with %d states, %d actions from model\n",
+          n_states, n_actions);
+  DiscreteMDP* mdp = new DiscreteMDP(n_states, n_actions);
+  CopyMeanMDP(mdp);
+  return mdp;
 }
 #endif
 
@@ -86,7 +86,7 @@ void DiscreteMDPCounts::setFixedRewards(const Matrix& rewards) {
       ER[ID]->Observe(rewards(s, a));
       mean_mdp.reward_distribution.setFixedReward(s, a, rewards(s, a));
       // printf("R: %d %d %f -> %f\n",
-      //	   s, a, rewards(s,a), ER[ID]->getMean());
+      // s, a, rewards(s,a), ER[ID]->getMean());
     }
   }
 }

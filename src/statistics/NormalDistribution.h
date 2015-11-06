@@ -1,4 +1,3 @@
-/* -*- Mode: C++; -*- */
 /* VER: $Id: Distribution.h,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp
  * cdimitrakakis $*/
 // copyright (c) 2004-2010 by Christos Dimitrakakis
@@ -12,14 +11,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef NORMAL_DISTRIBUTION_H
-#define NORMAL_DISTRIBUTION_H
+#ifndef SRC_STATISTICS_NORMALDISTRIBUTION_H_
+#define SRC_STATISTICS_NORMALDISTRIBUTION_H_
 
 #include "Distribution.h"
-#include "Matrix.h"
-#include "Vector.h"
 
+#include "Matrix.h"
 #include "Student.h"
+#include "Vector.h"
 
 /// Gaussian probability distribution
 class NormalDistribution : public ParametricDistribution {
@@ -30,34 +29,49 @@ class NormalDistribution : public ParametricDistribution {
  public:
   real m;  ///< mean
   real s;  ///< standard deviation
+
   NormalDistribution() {
     m = 0.0;
     s = 1.0;
     cache = false;
   }
+
   /// Normal dist. with given mean and std
   NormalDistribution(real mean, real std) {
     setMean(mean);
     setVariance(std * std);
     cache = false;
   }
+
   virtual Distribution* clone() {
     NormalDistribution* d = new NormalDistribution;
     d->m = m;
     d->s = s;
     return d;
   }
+
   virtual ~NormalDistribution() {}
+
   virtual real generate();
+
   virtual real generate() const;
+
   virtual real log_pdf(real x) const;
+
   virtual real pdf(real x) const;
+
   void setSTD(real std) { s = std; }
+
   virtual void setVariance(real var) { s = sqrt(var); }
+
   virtual void setMean(real mean) { m = mean; }
+
   virtual real getMean() const { return m; }
+
   void Show() const;
+
   real setMaximumLikelihoodParameters(std::vector<real>& x);
+
   real setMaximumLikelihoodParametersLogNormal(std::vector<real>& x);
 };
 
@@ -74,6 +88,7 @@ class NormalDistributionUnknownMean : public ConjugatePrior {
   real tau;    ///< observation accuracy
   int n;
   real sum;
+
   NormalDistributionUnknownMean() {
     mu_n = 0.0;
     tau_n = 1.0;
@@ -85,6 +100,7 @@ class NormalDistributionUnknownMean : public ConjugatePrior {
       : mu_0(mu_0_), tau_0(tau_0_), tau(tau_) {
     Reset();
   }
+
   void Reset() {
     observations.setMean(mu_0);
     observations.setSTD(1.0 / tau);
@@ -95,14 +111,22 @@ class NormalDistributionUnknownMean : public ConjugatePrior {
     tau_n = tau_0;
     mu_n = mu_0 * tau_0;
   }
+
   virtual ~NormalDistributionUnknownMean() {}
+
   virtual real generate();
+
   virtual real generate() const;
+
   /// Note that this the marginal likelihood!
   virtual real pdf(real x) const;
+
   virtual real marginal_pdf(real x) const;
+
   virtual real getMean() const;
+
   virtual void calculatePosterior(real x);
+
   virtual real Observe(real x) {
     real p = pdf(x);
     calculatePosterior(x);
@@ -146,21 +170,36 @@ class NormalUnknownMeanPrecision : public ConjugatePrior {
   real M_2n;  ///< \f$M_{2,n} = \sum_{i=1}^n (x_n - \bar{x})^2\f$.
   int n;
   real sum;
+
   NormalUnknownMeanPrecision();
+
   NormalUnknownMeanPrecision(real mu_0_, real tau_0_);
+
   void Reset();
+
   virtual ~NormalUnknownMeanPrecision();
+
   virtual real LogLikelihood(const std::vector<real>& x, int K) const;
+
   virtual real LogLikelihoodLogNormal(const std::vector<real>& x, int K) const;
+
   virtual real generate();
+
   virtual real generate() const;
+
   virtual real pdf(real mean) const;
+
   virtual real log_pdf(real mean) const;
+
   virtual real marginal_pdf(real x) const;
+
   virtual real getMean() const;
+
   virtual void calculatePosterior(real x);
+
   virtual real Observe(real x);
+
   void Show() const;
 };
 
-#endif
+#endif  // SRC_STATISTICS_NORMALDISTRIBUTION_H_

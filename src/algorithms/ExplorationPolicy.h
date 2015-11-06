@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2008 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 // $Revision$
 /***************************************************************************
@@ -10,10 +9,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef EXPLORATION_POLICY_H
-#define EXPLORATION_POLICY_H
+#ifndef SRC_ALGORITHMS_EXPLORATIONPOLICY_H_
+#define SRC_ALGORITHMS_EXPLORATIONPOLICY_H_
 
 #include <cassert>
+#include "DiscretePolicy.h"
 #include "Distribution.h"
 #include "Matrix.h"
 #include "Random.h"
@@ -27,7 +27,9 @@ class ContinuousStateExplorationPolicy {
                                                      const int&)) {
     getValue = getValue_;
   }
+
   virtual ~ContinuousStateExplorationPolicy() {}
+
   virtual int SelectAction() = 0;
 };
 
@@ -38,6 +40,7 @@ class ContinuousStateEpsilonGreedy : public ContinuousStateExplorationPolicy {
   real epsilon;
   Vector Q;
   Vector state;
+
   ContinuousStateEpsilonGreedy(real (*getValue_)(const Vector&, const int&),
                                int n_states, int n_actions, real epsilon_)
       : ContinuousStateExplorationPolicy(getValue_),
@@ -49,14 +52,14 @@ class ContinuousStateEpsilonGreedy : public ContinuousStateExplorationPolicy {
   virtual ~ContinuousStateEpsilonGreedy() {}
 
   real getEpsilon() { return epsilon; }
+
   real setEpsilon(real epsilon_) {
     epsilon = epsilon_;
     assert(epsilon >= 0 && epsilon <= 1);
     return epsilon;
   }
-  virtual void setGeometricSchedule(real alpha_, real beta_)
 
-  {
+  virtual void setGeometricSchedule(real alpha_, real beta_) {
     alpha = alpha_;
     beta = beta_;
     use_geometric_schedule = true;
@@ -73,9 +76,8 @@ class ContinuousStateEpsilonGreedy : public ContinuousStateExplorationPolicy {
       return action;
     }
 
-    for (int i = 0; i < Q.Size(); ++i) {
-      Q(i) = (*getValue)(state, i);
-    }
+    for (int i = 0; i < Q.Size(); ++i) Q(i) = (*getValue)(state, i);
+
     return ArgMax(Q);
   }
 
@@ -123,17 +125,21 @@ class EpsilonGreedy : public VFExplorationPolicy {
   virtual ~EpsilonGreedy() {}
 
   real getEpsilon() { return epsilon; }
+
   real setEpsilon(real epsilon_) {
     epsilon = epsilon_;
     assert(epsilon >= 0 && epsilon <= 1);
     return epsilon;
   }
+
   virtual void setValueMatrix(const Matrix* Q_) { Q = Q_; }
+
   virtual void setGeometricSchedule(real alpha_, real beta_) {
     alpha = alpha_;
     beta = beta_;
     use_geometric_schedule = true;
   }
+
   virtual int SelectAction() {
     real threshold = epsilon;
     if (use_geometric_schedule) {
@@ -157,6 +163,7 @@ class EpsilonGreedy : public VFExplorationPolicy {
     }
     return argmax;
   }
+
   virtual void Observe(real reward, int state) { this->state = state; }
 
   virtual DiscretePolicy* getFixedPolicy() {
@@ -183,11 +190,13 @@ class SoftmaxPolicy : public VFExplorationPolicy {
   virtual ~SoftmaxPolicy() {}
 
   real getBeta() { return beta; }
+
   real setBeta(real beta_) {
     beta = beta_;
     assert(beta >= 0);
     return beta;
   }
+
   virtual void setValueMatrix(const Matrix* Q_) { Q = Q_; }
 
   virtual int SelectAction() {
@@ -274,4 +283,5 @@ class MaxSoftmaxPolicy : public VFExplorationPolicy {
     return NULL;
   }
 };
-#endif
+
+#endif  // SRC_ALGORITHMS_EXPLORATIONPOLICY_H_

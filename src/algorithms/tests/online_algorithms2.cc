@@ -154,28 +154,28 @@ int main(int argc, char** argv) {
       int this_option_optind = optind ? optind : 1;
       int option_index = 0;
       static struct option long_options[] = {
-          {"n_states", required_argument, 0, 0},  // 0
-          {"n_actions", required_argument, 0, 0},  // 1
-          {"gamma", required_argument, 0, 0},  // 2
-          {"lambda", required_argument, 0, 0},  // 3
-          {"n_runs", required_argument, 0, 0},  // 4
-          {"n_episodes", required_argument, 0, 0},  // 5
-          {"n_steps", required_argument, 0, 0},  // 6
-          {"max_samples", required_argument, 0, 0},  // 7
-          {"multi-sample", no_argument, 0, 0},  // 8
-          {"maze_name", required_argument, 0, 0},  // 9
-          {"epsilon", required_argument, 0, 0},  // 10
-          {"alpha", required_argument, 0, 0},  // 11
-          {"algorithm", required_argument, 0, 0},  // 12
-          {"environment", required_argument, 0, 0},  // 13
-          {"grid_size", required_argument, 0, 0},  // 14
-          {"randomness", required_argument, 0, 0},  // 15
-          {"episode_steps", required_argument, 0, 0},  // 16
-          {"initial_reward", required_argument, 0, 0},  // 17
-          {"reward_prior", required_argument, 0, 0},  // 18
-          {"goal_value", required_argument, 0, 0},  // 19
-          {"step_value", required_argument, 0, 0},  // 20
-          {"pit_value", required_argument, 0, 0},  // 21
+          {"n_states", required_argument, 0, 0},            // 0
+          {"n_actions", required_argument, 0, 0},           // 1
+          {"gamma", required_argument, 0, 0},               // 2
+          {"lambda", required_argument, 0, 0},              // 3
+          {"n_runs", required_argument, 0, 0},              // 4
+          {"n_episodes", required_argument, 0, 0},          // 5
+          {"n_steps", required_argument, 0, 0},             // 6
+          {"max_samples", required_argument, 0, 0},         // 7
+          {"multi-sample", no_argument, 0, 0},              // 8
+          {"maze_name", required_argument, 0, 0},           // 9
+          {"epsilon", required_argument, 0, 0},             // 10
+          {"alpha", required_argument, 0, 0},               // 11
+          {"algorithm", required_argument, 0, 0},           // 12
+          {"environment", required_argument, 0, 0},         // 13
+          {"grid_size", required_argument, 0, 0},           // 14
+          {"randomness", required_argument, 0, 0},          // 15
+          {"episode_steps", required_argument, 0, 0},       // 16
+          {"initial_reward", required_argument, 0, 0},      // 17
+          {"reward_prior", required_argument, 0, 0},        // 18
+          {"goal_value", required_argument, 0, 0},          // 19
+          {"step_value", required_argument, 0, 0},          // 20
+          {"pit_value", required_argument, 0, 0},           // 21
           {"sampling_threshold", required_argument, 0, 0},  // 22
           {0, 0, 0, 0}};
       c = getopt_long(argc, argv, "", long_options, &option_index);
@@ -184,10 +184,10 @@ int main(int argc, char** argv) {
       switch (c) {
         case 0:
 #if 0
-                printf ("option %s (%d)", long_options[option_index].name, option_index);
-                if (optarg)
-                    printf (" with arg %s", optarg);
-                printf ("\n");
+          printf("option %s (%d)", long_options[option_index].name,
+                 option_index);
+          if (optarg) printf(" with arg %s", optarg);
+          printf("\n");
 #endif
           switch (option_index) {
             case 0:
@@ -276,6 +276,7 @@ int main(int argc, char** argv) {
               break;
           }
           break;
+
         case '0':
         case '1':
         case '2':
@@ -284,6 +285,7 @@ int main(int argc, char** argv) {
           digit_optind = this_option_optind;
           printf("option %c\n", c);
           break;
+
         default:
           std::cout << help_text;
           exit(-1);
@@ -342,6 +344,7 @@ int main(int argc, char** argv) {
     statistics.reward[i] = 0;
     statistics.n_runs[i] = 0;
   }
+
   for (uint run = 0; run < n_runs; ++run) {
     std::cout << "Run: " << run << " - Creating environment.." << std::endl;
 
@@ -433,6 +436,7 @@ int main(int argc, char** argv) {
     OnlineAlgorithm<int, int>* algorithm = NULL;
     MDPModel* model = NULL;
     // Gridworld* g2 = gridworld;
+
     if (!strcmp(algorithm_name, "Oracle")) {
       algorithm = NULL;
     } else if (!strcmp(algorithm_name, "Sarsa")) {
@@ -482,37 +486,25 @@ int main(int argc, char** argv) {
       model = (MDPModel*)discrete_mdp;
       SampleBasedRL* sampling = new SampleBasedRL(
           n_states, n_actions, gamma, epsilon, model, rng, max_samples, false);
-      if (use_sampling_threshold) {
+      if (use_sampling_threshold)
         sampling->setSamplingThreshold(sampling_threshold);
-      }
       algorithm = sampling;
-
     } else if (!strcmp(algorithm_name, "USampling")) {
       discrete_mdp = new DiscreteMDPCounts(n_states, n_actions, dirichlet_mass,
                                            reward_prior);
       model = (MDPModel*)discrete_mdp;
       SampleBasedRL* sampling = new SampleBasedRL(
           n_states, n_actions, gamma, epsilon, model, rng, max_samples, true);
-      if (use_sampling_threshold) {
+      if (use_sampling_threshold)
         sampling->setSamplingThreshold(sampling_threshold);
-      }
       algorithm = sampling;
 #if 0
-        } else if (!strcmp(algorithm_name, "BMCSampling")) {
-            MDPModelClassPriors* mcp_mdp = new MDPModelClassPriors(n_states,
-                                            n_actions,
-                                            gamma,
-                                            dirichlet_mass,
-                                            reward_prior);
-            model = (MDPModel*) mcp_mdp;
-            algorithm = new SampleBasedRL(n_states,
-                                        n_actions,
-                                        gamma,
-                                        epsilon,
-                                        model,
-                                        rng,
-                                        max_samples,
-                                        false);
+    } else if (!strcmp(algorithm_name, "BMCSampling")) {
+      MDPModelClassPriors* mcp_mdp = new MDPModelClassPriors(
+          n_states, n_actions, gamma, dirichlet_mass, reward_prior);
+      model = (MDPModel*)mcp_mdp;
+      algorithm = new SampleBasedRL(n_states, n_actions, gamma, epsilon, model,
+                                    rng, max_samples, false);
 #endif
     } else if (!strcmp(algorithm_name, "ContextBanditGaussian")) {
       model = (MDPModel*)new ContextBanditGaussian(n_states, n_actions, 0.5,
@@ -570,119 +562,108 @@ int main(int argc, char** argv) {
     }
 
 #if 0
-        if (model && discrete_mdp) {
-                int n_samples = max_samples;
+    if (model && discrete_mdp) {
+      int n_samples = max_samples;
 
-                real threshold = 10e-6; //0;
-                int max_iter = 1;
-                if (gamma < 1.0) {
-                    max_iter = 10 * log(threshold * (1 - gamma)) / log(gamma);
-                } else {
-                    max_iter = 1.0 / threshold;
-                }
-                printf ("# using %f epsilon, %d iter, %d samples\n", threshold, max_iter, n_samples);
+      real threshold = 10e-6;  // 0;
+      int max_iter = 1;
+      if (gamma < 1.0) {
+        max_iter = 10 * log(threshold * (1 - gamma)) / log(gamma);
+      } else {
+        max_iter = 1.0 / threshold;
+      }
+      printf("# using %f epsilon, %d iter, %d samples\n", threshold, max_iter,
+             n_samples);
 
-                // mean MDP policy
-                const DiscreteMDP* const mean_mdp = discrete_mdp->getMeanMDP();
-                ValueIteration MVI(mean_mdp, gamma);
-                MVI.ComputeStateValues(threshold, max_iter);
-                FixedDiscretePolicy* mean_policy = MVI.getPolicy();
+      // mean MDP policy
+      const DiscreteMDP* const mean_mdp = discrete_mdp->getMeanMDP();
+      ValueIteration MVI(mean_mdp, gamma);
+      MVI.ComputeStateValues(threshold, max_iter);
+      FixedDiscretePolicy* mean_policy = MVI.getPolicy();
 
-                // Do MMVI
-                std::vector<const DiscreteMDP*> mdp_samples(n_samples);
-                Vector w(n_samples);                
-                for (int i=0; i<n_samples; ++i) {
-                    mdp_samples[i] = discrete_mdp->generate();
-                    w(i) = 1.0 / (real) n_samples;
-                }
-                MultiMDPValueIteration MMVI(w, mdp_samples, gamma);
-                MMVI.ComputeStateActionValues(threshold, max_iter);
-                //MMVI.ComputeStateValues(threshold, max_iter);
-                FixedDiscretePolicy* mmvi_policy = MMVI.getPolicy();
+      // Do MMVI
+      std::vector<const DiscreteMDP*> mdp_samples(n_samples);
+      Vector w(n_samples);
+      for (int i = 0; i < n_samples; ++i) {
+        mdp_samples[i] = discrete_mdp->generate();
+        w(i) = 1.0 / (real)n_samples;
+      }
+      MultiMDPValueIteration MMVI(w, mdp_samples, gamma);
+      MMVI.ComputeStateActionValues(threshold, max_iter);
+      // MMVI.ComputeStateValues(threshold, max_iter);
+      FixedDiscretePolicy* mmvi_policy = MMVI.getPolicy();
 
-                // sample-mean MDP policy
-                const DiscreteMDP* const sample_mean_mdp
-                    = new DiscreteMDP(mdp_samples, w);
-                ValueIteration SMVI(sample_mean_mdp, gamma);
-                SMVI.ComputeStateValues(threshold, max_iter);
-                FixedDiscretePolicy* sample_mean_policy = SMVI.getPolicy();
+      // sample-mean MDP policy
+      const DiscreteMDP* const sample_mean_mdp =
+          new DiscreteMDP(mdp_samples, w);
+      ValueIteration SMVI(sample_mean_mdp, gamma);
+      SMVI.ComputeStateValues(threshold, max_iter);
+      FixedDiscretePolicy* sample_mean_policy = SMVI.getPolicy();
 
-                // evaluate
-                Vector hV(n_states);
-                Vector hL(n_states);
-                Vector hL_nonstationary(n_states);
-                Vector hS(n_states);
-                Vector hU(n_states);
-                Vector Delta(n_samples);
-                for (int i=0; i<n_samples; ++i) {
-                    const DiscreteMDP* sample_mdp = mdp_samples[i];
-                    
-                    // mean policy
-                    PolicyEvaluation mean_PE(mean_policy, sample_mdp, gamma);
-                    mean_PE.ComputeStateValues(threshold, max_iter);
+      // evaluate
+      Vector hV(n_states);
+      Vector hL(n_states);
+      Vector hL_nonstationary(n_states);
+      Vector hS(n_states);
+      Vector hU(n_states);
+      Vector Delta(n_samples);
+      for (int i = 0; i < n_samples; ++i) {
+        const DiscreteMDP* sample_mdp = mdp_samples[i];
 
-                    // mean policy
-                    PolicyEvaluation sample_mean_PE(sample_mean_policy, sample_mdp, gamma);
-                    sample_mean_PE.ComputeStateValues(threshold, max_iter);
-                    
-                    // multi-MDP polichy
-                    PolicyEvaluation mmvi_PE(mmvi_policy, sample_mdp, gamma);
-                    mmvi_PE.ComputeStateValues(threshold, max_iter);
+        // mean policy
+        PolicyEvaluation mean_PE(mean_policy, sample_mdp, gamma);
+        mean_PE.ComputeStateValues(threshold, max_iter);
 
-                    // upper bound
-                    ValueIteration upper_VI(sample_mdp, gamma);
-                    upper_VI.ComputeStateValues(threshold, max_iter);
+        // mean policy
+        PolicyEvaluation sample_mean_PE(sample_mean_policy, sample_mdp, gamma);
+        sample_mean_PE.ComputeStateValues(threshold, max_iter);
 
-                    for (int s=0; s<n_states; ++s) {
-                        hV[s] += mean_PE.getValue(s);
-                        hS[s] += sample_mean_PE.getValue(s);
-                        hL[s] += mmvi_PE.getValue(s);
-                        hL_nonstationary[s] += MMVI.getValue(s);
-                        hU[s] += upper_VI.getValue(s);
-                    }
-                }                
+        // multi-MDP polichy
+        PolicyEvaluation mmvi_PE(mmvi_policy, sample_mdp, gamma);
+        mmvi_PE.ComputeStateValues(threshold, max_iter);
 
+        // upper bound
+        ValueIteration upper_VI(sample_mdp, gamma);
+        upper_VI.ComputeStateValues(threshold, max_iter);
 
-                real inv_n = 1.0 / (real) n_samples;
-                for (int s=0; s<n_states; ++s) {
-                    hV[s] *= inv_n;
-                    hL[s] *= inv_n;
-                    hL_nonstationary[s] *= inv_n;
-                    hS[s] *= inv_n;
-                    hU[s] *= inv_n;
-
-                    printf ("%f %f %f %f %d # hV hM V_xi hU state\n",
-                            hV[s],
-                            hL[s], 
-                            hL_nonstationary[s],
-                            hU[s],
-                            s);
-                }
-                real invS = 1.0 / (real) n_states;
-
-                printf ("%f %f %f %f %f  # Bounds\n",
-                        hV.Sum() * invS,
-                        hS.Sum() * invS,
-                        hL.Sum() * invS,
-                        hL_nonstationary.Sum() * invS,
-                        hU.Sum() * invS);
-                // clean up
-                delete mean_mdp;
-                delete mean_policy;
-                delete sample_mean_mdp;
-                delete sample_mean_policy;
-                delete mmvi_policy;
-
-                for (int i=0; i<n_samples; ++i) {
-                    delete mdp_samples[i];
-                }
-
+        for (int s = 0; s < n_states; ++s) {
+          hV[s] += mean_PE.getValue(s);
+          hS[s] += sample_mean_PE.getValue(s);
+          hL[s] += mmvi_PE.getValue(s);
+          hL_nonstationary[s] += MMVI.getValue(s);
+          hU[s] += upper_VI.getValue(s);
         }
+      }
+
+      real inv_n = 1.0 / (real)n_samples;
+      for (int s = 0; s < n_states; ++s) {
+        hV[s] *= inv_n;
+        hL[s] *= inv_n;
+        hL_nonstationary[s] *= inv_n;
+        hS[s] *= inv_n;
+        hU[s] *= inv_n;
+
+        printf("%f %f %f %f %d # hV hM V_xi hU state\n", hV[s], hL[s],
+               hL_nonstationary[s], hU[s], s);
+      }
+      real invS = 1.0 / (real)n_states;
+
+      printf("%f %f %f %f %f  # Bounds\n", hV.Sum() * invS, hS.Sum() * invS,
+             hL.Sum() * invS, hL_nonstationary.Sum() * invS, hU.Sum() * invS);
+      // clean up
+      delete mean_mdp;
+      delete mean_policy;
+      delete sample_mean_mdp;
+      delete sample_mean_policy;
+      delete mmvi_policy;
+
+      for (int i = 0; i < n_samples; ++i) {
+        delete mdp_samples[i];
+      }
+    }
 #endif
     delete algorithm;
-    if (model) {
-      delete model;
-    }
+    if (model) delete model;
     delete environment;
     delete exploration_policy;
   }

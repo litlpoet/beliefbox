@@ -143,28 +143,28 @@ int main(int argc, char** argv) {
       int this_option_optind = optind ? optind : 1;
       int option_index = 0;
       static struct option long_options[] = {
-          {"n_states", required_argument, 0, 0},  // 0
-          {"n_actions", required_argument, 0, 0},  // 1
-          {"gamma", required_argument, 0, 0},  // 2
-          {"lambda", required_argument, 0, 0},  // 3
-          {"n_runs", required_argument, 0, 0},  // 4
-          {"n_episodes", required_argument, 0, 0},  // 5
-          {"n_steps", required_argument, 0, 0},  // 6
-          {"max_samples", required_argument, 0, 0},  // 7
-          {"multi-sample", no_argument, 0, 0},  // 8
-          {"maze_name", required_argument, 0, 0},  // 9
-          {"epsilon", required_argument, 0, 0},  // 10
-          {"alpha", required_argument, 0, 0},  // 11
-          {"algorithm", required_argument, 0, 0},  // 12
-          {"environment", required_argument, 0, 0},  // 13
-          {"grid_size", required_argument, 0, 0},  // 14
-          {"randomness", required_argument, 0, 0},  // 15
-          {"adversary", required_argument, 0, 0},  // 16
-          {"upper_bound", no_argument, 0, 0},  // 17 - deprecated
+          {"n_states", required_argument, 0, 0},      // 0
+          {"n_actions", required_argument, 0, 0},     // 1
+          {"gamma", required_argument, 0, 0},         // 2
+          {"lambda", required_argument, 0, 0},        // 3
+          {"n_runs", required_argument, 0, 0},        // 4
+          {"n_episodes", required_argument, 0, 0},    // 5
+          {"n_steps", required_argument, 0, 0},       // 6
+          {"max_samples", required_argument, 0, 0},   // 7
+          {"multi-sample", no_argument, 0, 0},        // 8
+          {"maze_name", required_argument, 0, 0},     // 9
+          {"epsilon", required_argument, 0, 0},       // 10
+          {"alpha", required_argument, 0, 0},         // 11
+          {"algorithm", required_argument, 0, 0},     // 12
+          {"environment", required_argument, 0, 0},   // 13
+          {"grid_size", required_argument, 0, 0},     // 14
+          {"randomness", required_argument, 0, 0},    // 15
+          {"adversary", required_argument, 0, 0},     // 16
+          {"upper_bound", no_argument, 0, 0},         // 17 - deprecated
           {"reward_prior", required_argument, 0, 0},  // 18
-          {"goal_value", required_argument, 0, 0},  // 19
-          {"step_value", required_argument, 0, 0},  // 20
-          {"pit_value", required_argument, 0, 0},  // 21
+          {"goal_value", required_argument, 0, 0},    // 19
+          {"step_value", required_argument, 0, 0},    // 20
+          {"pit_value", required_argument, 0, 0},     // 21
           {0, 0, 0, 0}};
       c = getopt_long(argc, argv, "", long_options, &option_index);
       if (c == -1) break;
@@ -172,10 +172,10 @@ int main(int argc, char** argv) {
       switch (c) {
         case 0:
 #if 0
-                printf ("option %s (%d)", long_options[option_index].name, option_index);
-                if (optarg)
-                    printf (" with arg %s", optarg);
-                printf ("\n");
+          printf("option %s (%d)", long_options[option_index].name,
+                 option_index);
+          if (optarg) printf(" with arg %s", optarg);
+          printf("\n");
 #endif
           switch (option_index) {
             case 0:

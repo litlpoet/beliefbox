@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2005 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 // $Id: MDPModel.h,v 1.2 2006/10/31 16:59:39 cdimitrakakis Exp cdimitrakakis $
 /***************************************************************************
@@ -9,9 +8,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#ifndef MDP_MODEL_H_
-#define MDP_MODEL_H_
+#ifndef SRC_MODELS_MDPMODEL_H_
+#define SRC_MODELS_MDPMODEL_H_
 
 #include <cassert>
 #include <cmath>
@@ -28,7 +26,7 @@
   printf("%s:%d: %s(): ", __FILE__, __LINE__, __FUNCTION__); \
   printf
 #else
-//#define mdp_dbg (void)
+// #define mdp_dbg (void)
 inline void mdp_dbg(...) {}
 #endif
 
@@ -48,12 +46,12 @@ inline void mdp_dbg(...) {}
   an MDP.  However, it is _not_ an MDP.
 
   An implementation of this class is DiscreteMDPCounts
-
 */
 class MDPModel {
  protected:
   int n_states;   ///< number of states (or dimensionality of state space)
   int n_actions;  ///< number of actions (or dimensionality of action space)
+
  public:
   MDPModel(int n_states, int n_actions) {
     this->n_states = n_states;
@@ -61,16 +59,25 @@ class MDPModel {
     mdp_dbg("Creating MDPModel with %d states and %d actions\n", n_states,
             n_actions);
   }
+
   inline virtual int getNStates() const { return n_states; }
+
   inline virtual int getNActions() const { return n_actions; }
+
   virtual ~MDPModel() {}
+
   virtual void AddTransition(int s, int a, real r, int s2) = 0;
+
   virtual real GenerateReward(int s, int a) const { return 0.0; }
+
   virtual int GenerateTransition(int s, int a) const = 0;
+
   virtual real getTransitionProbability(int s, int a, int s2) const {
     return 0.0;
   }
+
   virtual real getExpectedReward(int s, int a) const { return 0.0; }
+
   /** This function passes a matrix of known rewards to the
       model. Ideally, all algorithms should automatically be able
       to tell that the reward is perfectly known in this case, but
@@ -79,10 +86,15 @@ class MDPModel {
   virtual void setFixedRewards(const Matrix& rewards) {
     // does nothing
   }
+
   virtual void Reset() = 0;
+
   virtual DiscreteMDP* CreateMDP() const;
+
   virtual DiscreteMDP* generate() const = 0;
+
   virtual const DiscreteMDP* const getMeanMDP() const = 0;
+
   virtual void ShowModel() const;
 };
 
@@ -92,6 +104,7 @@ class GradientDescentMDPModel : public MDPModel {
   real** P;
   real* R;
   int N;
+
   virtual int getID(int s, int a) const {
     // DISABLED_ASSERT(s>=0 && s<n_states)(s)(n_states);
     // DISABLED_ASSERT(a>=0 && a<n_actions)(a)(n_actions);
@@ -100,22 +113,33 @@ class GradientDescentMDPModel : public MDPModel {
 
  public:
   Distribution* initial_transitions;
+
   Distribution* initial_rewards;
+
   GradientDescentMDPModel(int n_states, int n_actions,
                           Distribution* initial_transitions,
                           Distribution* initial_rewards);
+
   virtual ~GradientDescentMDPModel();
+
   virtual void AddTransition(int s, int a, real r, int s2);
+
   virtual real GenerateReward(int s, int a) const;
+
   virtual int GenerateTransition(int s, int a) const;
+
   virtual real getTransitionProbability(int s, int a, int s2) const;
+
   virtual real getExpectedReward(int s, int a) const;
+
   // virtual int getNStates () { return N;}
+
   virtual void setLearningRate(real learning_rate) {
     alpha = learning_rate;
     assert(alpha >= 0.0f && alpha <= 1.0f);
   }
+
   virtual void Reset();
 };
 
-#endif
+#endif  // SRC_MODELS_MDPMODEL_H_

@@ -10,8 +10,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef AVERAGE_POLICY_EVALUATION_H
-#define AVERAGE_POLICY_EVALUATION_H
+#ifndef SRC_ALGORITHMS_AVERAGEPOLICYEVALUATION_H_
+#define SRC_ALGORITHMS_AVERAGEPOLICYEVALUATION_H_
 
 #include "PolicyEvaluation.h"
 
@@ -23,4 +23,4 @@ class AveragePolicyEvaluation : public PolicyEvaluation {
   virtual void ComputeStateValues(real threshold, int max_iter = -1);
 };
 
-#endif
+#endif  // SRC_ALGORITHMS_AVERAGEPOLICYEVALUATION_H_

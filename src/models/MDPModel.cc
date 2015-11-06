@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2005-2009 by Christos Dimitrakakis
 // <christos.dimitrakakis@gmail.com>
 // $Id: MDPModel.c,v 1.1 2006/10/23 08:33:32 olethros Exp cdimitrakakis $
@@ -12,7 +11,9 @@
  ***************************************************************************/
 
 #include "MDPModel.h"
+
 #include <iostream>
+
 #include "Distribution.h"
 #include "Random.h"
 #include "SingularDistribution.h"
@@ -20,14 +21,16 @@
 DiscreteMDP* MDPModel::CreateMDP() const {
   mdp_dbg("Making a DiscreteMDP with %d states, %d actions from model\n",
           n_states, n_actions);
+
   DiscreteMDP* mdp = new DiscreteMDP(n_states, n_actions, NULL);
+
   for (int i = 0; i < n_states; ++i) {
     for (int a = 0; a < n_actions; ++a) {
       SingularDistribution* ER =
           new SingularDistribution(getExpectedReward(i, a));
       mdp->reward_distribution.addRewardDistribution(i, a, ER);
-      real sum_p = 0.0;
 
+      real sum_p = 0.0;
       for (int j = 0; j < n_states; ++j) {
         real p = getTransitionProbability(i, a, j);
         sum_p += p;
@@ -36,6 +39,7 @@ DiscreteMDP* MDPModel::CreateMDP() const {
           // printf("p(s'=%d|s=%d, a=%d)=%f\n", j, i, a, p);
         }
       }
+
       if (fabs(sum_p - 1.0) > 0.001) {
         printf("sum_s' p(s'|s=%d, a=%d) = %f\n", i, a, sum_p);
         assert(0);

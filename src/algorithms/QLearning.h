@@ -9,9 +9,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#ifndef Q_LEARNING_H
-#define Q_LEARNING_H
+#ifndef SRC_ALGORITHMS_QLEARNING_H_
+#define SRC_ALGORITHMS_QLEARNING_H_
 
 #include <vector>
 #include "DiscreteMDP.h"
@@ -23,13 +22,13 @@
 
 /** A simple implementation of \f$Q(\lambda)\f$.
 
-        This is an online algorithm operating on discrete state-action
-        spaces. It is an off-policy algorithm.
+    This is an online algorithm operating on discrete state-action
+    spaces. It is an off-policy algorithm.
 
-        The main additional parameter is the exploration policy, which
-        can be defined separately from the learning algorithm itself.
+    The main additional parameter is the exploration policy, which
+    can be defined separately from the learning algorithm itself.
 
-        @see Sutton and Barto 1998: "Introduction to reinforcement learning".
+    @see Sutton and Barto 1998: "Introduction to reinforcement learning".
  */
 class QLearning : public OnlineAlgorithm<int, int> {
  protected:
@@ -47,21 +46,30 @@ class QLearning : public OnlineAlgorithm<int, int> {
 
   int state;   ///< current state
   int action;  ///< current action
+
  public:
   QLearning(int n_states_, int n_actions_, real gamma_, real lambda_,
             real alpha_, VFExplorationPolicy* exploration_policy_,
             real initial_value_ = 0.0, real baseline_ = 0.0);
-  /// Destructor
+
   virtual ~QLearning() {}
+
   virtual void Reset();
+
   virtual real Observe(real reward, int next_state, int next_action);
+
   virtual int Act(real reward, int next_state);
+
   /// Get value of state-action
   virtual real getValue(int s, int a) { return Q(s, a); }
+
   virtual real& QValue(int s, int a) { return Q(s, a); }
+
   Matrix getQMatrix() { return Q; }
+
   const Matrix* getQMatrixPointer() { return &Q; }
+
   void ClearTraces();
 };
 
-#endif
+#endif  // SRC_ALGORITHMS_QLEARNING_H_

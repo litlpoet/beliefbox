@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2005-2010 by Christos Dimitrakakis
 // <christos.dimitrakakis@gmail.com>
 // $Revision$
@@ -10,9 +9,8 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#ifndef DISCRETE_MDP_H
-#define DISCRETE_MDP_H
+#ifndef SRC_MODELS_DISCRETEMDP_H_
+#define SRC_MODELS_DISCRETEMDP_H_
 
 #ifndef NDEBUG
 #include "SmartAssert.h"
@@ -34,6 +32,7 @@ class MDP<int, int> {
   int n_states;   ///< number of states (or dimensionality of state space)
   int n_actions;  ///< number of actions (or dimensionality of action space)
   int N;
+
   inline int getID(int s, int a) const {
 #ifndef NDEBUG
 // DISABLED_ASSERT(s>=0 && s<n_states)(s)(n_states);
@@ -45,34 +44,46 @@ class MDP<int, int> {
  public:
   /// Reward distribution
   DiscreteSpaceRewardDistribution reward_distribution;
+
   /// Transition distribution
   DiscreteTransitionDistribution transition_distribution;
 
   /// Default constructor
   MDP<int, int>(int n_states_, int n_actions_,
                 real** initial_transitions = NULL);
+
   /// Copy constructor
   MDP<int, int>(const MDP<int, int>& mdp);
+
   /// Mean MDP constructor
   MDP<int, int>(const std::vector<const MDP<int, int>*>& mdp_list,
                 const Vector& w);
 
   inline int StateLowerBound() const { return 0; }
+
   inline int StateUpperBound() const { return n_states; }
+
   inline int getNStates() const { return n_states; }
+
   inline int getNActions() const { return n_actions; }
+
   virtual ~MDP<int, int>();
+
   int getState() const { return state; }
+
   real getReward() const { return reward; }
+
   int Reset(int new_state) {
     reward = 0.0;
     return setState(new_state);
   }
+
   int setState(int new_state) {
     assert(new_state >= 0 && new_state < n_states);
     state = new_state;
     return state;
   }
+
   // generate a new state given the current state and action, then set the
   // current state to be the new state.
   real Act(int a) {
@@ -80,6 +91,7 @@ class MDP<int, int> {
     state = generateState(state, a);
     return reward;
   }
+
   /// Simply show the model
   virtual void ShowModel() const;
 
@@ -104,12 +116,15 @@ class MDP<int, int> {
     // return P(ID, s2);
     return transition_distribution.pdf(s, a, s2);
   }
+
   virtual real getExpectedReward(const int& s, const int& a) const {
     return reward_distribution.expected(s, a);
   }
+
   virtual void setTransitionProbability(int s, int a, int s2, real p) {
     transition_distribution.SetTransition(s, a, s2, p);
   }
+
   virtual void setTransitionProbabilities(int s, int a, const Vector& p,
                                           real threshold = 0) {
     assert(s >= 0 && s < n_states);
@@ -118,29 +133,37 @@ class MDP<int, int> {
       transition_distribution.SetTransition(s, a, s2, p(s2));
     }
   }
+
   virtual const DiscreteStateSet& getNextStates(int s, int a) const {
     return transition_distribution.getNextStates(s, a);
   }
 
   void AperiodicityTransform(real tau);
+
   bool Check() const;
+
   real CalculateDiameter() const;
+
   virtual void setRewardDistribution(int s, int a, Distribution* reward) {
     assert(s >= 0 && s < n_states);
     reward_distribution.setRewardDistribution(s, a, reward);
   }
+
   virtual void addRewardDistribution(int s, int a, Distribution* reward) {
     assert(s >= 0 && s < n_states);
     reward_distribution.addRewardDistribution(s, a, reward);
   }
+
   virtual void addFixedReward(int s, int a, real reward) {
     assert(s >= 0 && s < n_states);
     reward_distribution.addFixedReward(s, a, reward);
   }
+
   virtual void setFixedReward(int s, int a, real reward) {
     assert(s >= 0 && s < n_states);
     reward_distribution.setFixedReward(s, a, reward);
   }
+
   virtual void setFixedRewards(const Matrix& R) {
     assert(R.Rows() == n_states);
     assert(R.Columns() == n_actions);
@@ -154,4 +177,4 @@ class MDP<int, int> {
 
 typedef MDP<int, int> DiscreteMDP;
 
-#endif
+#endif  // SRC_MODELS_DISCRETEMDP_H_
