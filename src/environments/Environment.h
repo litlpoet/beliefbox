@@ -9,11 +9,11 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#ifndef ENVIRONMENT_H
-#define ENVIRONMENT_H
+#ifndef SRC_ENVIRONMENTS_ENVIRONMENT_H_
+#define SRC_ENVIRONMENTS_ENVIRONMENT_H_
 
 #include <cstdlib>
+
 #include "MDP.h"
 #include "Vector.h"
 /**
@@ -34,6 +34,7 @@ class Environment {
   uint n_actions;       ///< The action dimension
   S state_lower_bound;  ///< lower bound on the states
   S state_upper_bound;  ///< upper bound on the states
+
  public:
   Environment() : n_states(1), n_actions(1) {
     state_lower_bound = 0;
@@ -72,25 +73,36 @@ class Environment {
   /// possible for some environments.  The MDP is required to be
   /// freed by the user!
   virtual MDP<S, A>* getMDP() const { return NULL; }
+
   virtual const char* Name() const { return "Undefined environment name"; }
+
   // --- The following functions are not supposed to be overwritten.. -- //
   /// returns a (reference to) the current state
   const S& getState() const { return state; }
+
   ///  sets the current state
   void setState(const S& s_next) { state = s_next; }
+
   /// returns the current reward
   real getReward() const { return reward; }
+
   /// indicates if the current state is absorbing or not
   bool getEndsim() const { return endsim; }
 
   void setEndsim(const bool& esim_) { endsim = esim_; }
+
   /// returns the number of state dimensions
   uint getNStates() const { return n_states; }
+
   uint getNActions() const { return n_actions; }
+
   /// Set the overall randomness of the environment
   virtual void setRandomness(real randomness) {}
+
   const S& StateUpperBound() const { return state_upper_bound; }
+
   const S& StateLowerBound() const { return state_lower_bound; }
+
   virtual real getTransitionProbability(const S& state, const A& action,
                                         const S& next_state) const {
     Serror("Should be implemented\n");
@@ -124,4 +136,4 @@ class EnvironmentGenerator {
 
 /*@}*/
 
-#endif
+#endif  // SRC_ENVIRONMENTS_ENVIRONMENT_H_

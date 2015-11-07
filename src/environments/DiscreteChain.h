@@ -9,12 +9,12 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef SRC_ENVIRONMENTS_DISCRETECHAIN_H_
+#define SRC_ENVIRONMENTS_DISCRETECHAIN_H_
 
-#ifndef DISCRETE_CHAIN_H
-#define DISCRETE_CHAIN_H
+#include "Environment.h"
 
 #include "DiscreteMDP.h"
-#include "Environment.h"
 #include "RandomNumberGenerator.h"
 
 /// A simple environment to test exploration.
@@ -44,11 +44,14 @@ class DiscreteChain : public DiscreteEnvironment {
 
  public:
   DiscreteMDP* mdp;
-  DiscreteChain(int n, real slip_ = 0.2, real start_ = 0.2, real end_ = 1.0);
+
+  explicit DiscreteChain(int n, real slip_ = 0.2, real start_ = 0.2,
+                         real end_ = 1.0);
 
   virtual ~DiscreteChain();
 
   virtual void Reset();
+
   virtual bool Act(const int& action);
 
   virtual const char* Name() const { return "Discrete Chain"; }
@@ -70,7 +73,8 @@ class DiscreteChainGenerator : public EnvironmentGenerator<int, int> {
   int n;
 
  public:
-  DiscreteChainGenerator(int n_) : n(n_) { assert(n > 0); }
+  explicit DiscreteChainGenerator(int n_) : n(n_) { assert(n > 0); }
+
   virtual DiscreteChain* Generate(bool random = true) {
     DiscreteChain* chain = NULL;
     if (random) {
@@ -83,7 +87,8 @@ class DiscreteChainGenerator : public EnvironmentGenerator<int, int> {
     }
     return chain;
   }
+
   virtual ~DiscreteChainGenerator() {}
 };
 
-#endif
+#endif  // SRC_ENVIRONMENTS_DISCRETECHAIN_H_

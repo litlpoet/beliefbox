@@ -1,4 +1,7 @@
+// Copyright (C) 2015
+
 #include "DiscreteChain.h"
+
 DiscreteChain::DiscreteChain(int n, real slip_, real start_, real end_)
     : Environment<int, int>(n, 2), slip(slip_), start(start_), end(end_) {
   // logmsg ("Discrete chain, slip: %f, r_s: %f, r_e: %f\n", slip, start, end);
@@ -17,28 +20,26 @@ void DiscreteChain::Reset() {
 bool DiscreteChain::Act(const int& action) {
   int action_taken = action;
   int forward = action;
-  if (urandom() < slip) {
-    forward = 1 - forward;
-  }
+
+  if (urandom() < slip) forward = 1 - forward;
   action_taken = forward;
+
   switch (action_taken) {
     case 0:
       reward = start;
       break;
+
     case 1:
-      if (state == (int)n_states - 1) {
+      if (state == static_cast<int>(n_states) - 1)
         reward = end;
-      } else {
+      else
         reward = 0.0;
-      }
       break;
   }
 
   if (forward) {
     state++;
-    if (state > (int)n_states - 1) {
-      state = n_states - 1;
-    }
+    if (state > static_cast<int>(n_states) - 1) state = n_states - 1;
   } else {
     state = 0;
   }
@@ -64,13 +65,13 @@ DiscreteMDP* DiscreteChain::getMDP() const {
     mdp->setTransitionProbability(s, 1, 0, slip);
 
 #if 0
-        if (s < n_states - 1) {
-            mdp->addFixedReward(s, 0, start * (1 - slip));
-            mdp->addFixedReward(s, 1, start * slip);
-        } else {
-            mdp->addFixedReward(s, 0, start * (1 - slip) + slip * end);
-            mdp->addFixedReward(s, 1, end * (1 - slip) + slip * start);
-        }
+    if (s < n_states - 1) {
+      mdp->addFixedReward(s, 0, start * (1 - slip));
+      mdp->addFixedReward(s, 1, start * slip);
+    } else {
+      mdp->addFixedReward(s, 0, start * (1 - slip) + slip * end);
+      mdp->addFixedReward(s, 1, end * (1 - slip) + slip * start);
+    }
 #else
     if (s == 0) {
       mdp->addFixedReward(s, 0, start);
