@@ -1,4 +1,3 @@
-// -*- Mode: c++ -*-
 // copyright (c) 2010 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
 // $Revision$
 /***************************************************************************
@@ -38,7 +37,7 @@
 class SampleBasedRL : public OnlineAlgorithm<int, int> {
  protected:
   const int n_states;   ///< number of states
-  const int n_actions;  ///< number
+  const int n_actions;  ///< number of actions
   real gamma;           ///< discount factor
   real epsilon;         ///< randomness
   int current_state;    ///< current state

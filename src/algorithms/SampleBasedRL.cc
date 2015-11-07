@@ -20,20 +20,20 @@ SampleBasedRL::SampleBasedRL(int n_states_, int n_actions_, real gamma_,
       gamma(gamma_),
       epsilon(epsilon_),
       model(model_),
-      tmpQ(n_actions),
-      VU(n_states),
-      VL(n_states),
-      QU(n_states, n_actions),
-      QL(n_states, n_actions),
+      tmpQ(n_actions),          // vector of reals
+      VU(n_states),             // vector
+      VL(n_states),             // vector
+      QU(n_states, n_actions),  // matrix
+      QL(n_states, n_actions),  // matrix
       max_samples(max_samples_),
-      rng(rng_),
-      T(0),
+      rng(rng_),  // random number generator
+      T(0),       // int
       update_interval(n_states + 1),
       next_update(0),
       use_upper_bound(use_upper_bound_),
       use_sampling_threshold(false),
       sampling_threshold(0.1),
-      weights(max_samples) {
+      weights(max_samples) {  // probability vector of MDPs : = max_samples = 1
   if (gamma < 1.0 && update_interval > 1.0 / (1.0 - gamma))
     update_interval = 1.0 / (1.0 - gamma);
 

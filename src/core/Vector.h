@@ -1,16 +1,17 @@
-/* -*- Mode: C++; -*- */
 /* "VER: $Id: Vector.h,v 1.1 2006/11/07 18:03:35 cdimitrakakis Exp cdimitrakakis
  * $" */
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef SRC_CORE_VECTOR_H_
+#define SRC_CORE_VECTOR_H_
+
+#include "Object.h"
 
 #include <cassert>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+
 #include "MathFunctions.h"
-#include "Object.h"
 #include "debug.h"
 #include "real.h"
 
@@ -37,69 +38,121 @@ class Vector : public Object {
   enum BoundsCheckingStatus { NO_CHECK_BOUNDS = 0, CHECK_BOUNDS = 1 };
   real* x;
   int n;
+
   Vector();
+
   Vector(int N_, real* y,
          enum BoundsCheckingStatus check = DEFAULT_CHECK_BOUNDS);
+
   explicit Vector(int N_,
                   enum BoundsCheckingStatus check = DEFAULT_CHECK_BOUNDS);
+
   explicit Vector(uint N_,
                   enum BoundsCheckingStatus check = DEFAULT_CHECK_BOUNDS);
+
   static Vector Unity(int N_,
                       enum BoundsCheckingStatus check = DEFAULT_CHECK_BOUNDS);
+
   static Vector Null(int N_,
                      enum BoundsCheckingStatus check = DEFAULT_CHECK_BOUNDS);
+
   explicit Vector(real x,
                   enum BoundsCheckingStatus check = DEFAULT_CHECK_BOUNDS);
 
   Vector(const Vector& rhs);
+
   Vector(const std::vector<real>& rhs);
+
   ~Vector();
+
   Vector& operator=(const real& rhs);
+
   Vector& operator=(const Vector& rhs);
+
   void Clear();
+
   void Resize(int N_);
+
   void AddElement(const real& rhs);
+
   void CheckBounds(enum BoundsCheckingStatus check = CHECK_BOUNDS) {
     checking_bounds = check;
   }
-  real& operator[](int index);              ///< return element for read-write
-  const real& operator[](int index) const;  ///< return element for read
+
+  ///< return element for read-write
+  real& operator[](int index);
+
+  ///< return element for read
+  const real& operator[](int index) const;
+
   /// return element for read-write
   inline real& operator()(int index) { return (*this)[index]; }
+
   /// return element for read
   inline const real& operator()(int index) const { return (*this)[index]; }
+
   int Size() const { return n; }
+
   real logSum() const;
+
   real Sum() const;
+
   real Sum(int start, int end) const;
+
   real Norm(real p) const;
+
   real L1Norm() const;
+
   real L2Norm() const;
+
   real SquareNorm() const;
+
   const bool operator<(const real& rhs) const;
+
   const bool operator<(const Vector& rhs) const;
+
   const bool operator>(const real& rhs) const;
+
   const bool operator>(const Vector& rhs) const;
+
   const bool operator==(const Vector& rhs) const;
+
   const Vector operator+(const Vector& rhs) const;
+
   const Vector operator-(const Vector& rhs) const;
+
   const Vector operator*(const Vector& rhs) const;
+
   const Vector operator/(const Vector& rhs) const;
+
   Vector& operator+=(const Vector& rhs);
+
   Vector& operator-=(const Vector& rhs);
+
   Vector& operator*=(const Vector& rhs);
+
   Vector& operator/=(const Vector& rhs);
+
   const Vector operator+(const real& rhs) const;
+
   const Vector operator-(const real& rhs) const;
+
   const Vector operator-() const;
+
   const Vector operator*(const real& rhs) const;
+
   const Vector operator/(const real& rhs) const;
+
   Vector& operator+=(const real& rhs);
+
   Vector& operator-=(const real& rhs);
+
   Vector& operator*=(const real& rhs);
+
   Vector& operator/=(const real& rhs);
 
   void print(FILE* f) const;
+
   void printf(FILE* f) const;
 
  private:
@@ -311,4 +364,4 @@ void log(const Vector& v, Vector& res);
 
 /**@}*/
 
-#endif /* VECTOR_H */
+#endif  // SRC_CORE_VECTOR_H_

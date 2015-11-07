@@ -8,11 +8,11 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
-
-#ifndef RANDOM_NUMBER_GENERATOR_H
-#define RANDOM_NUMBER_GENERATOR_H
+#ifndef SRC_STATISTICS_RANDOMNUMBERGENERATOR_H_
+#define SRC_STATISTICS_RANDOMNUMBERGENERATOR_H_
 
 #include <cmath>
+
 #include "Random.h"
 #include "real.h"
 
@@ -23,6 +23,7 @@ class RandomNumberGenerator {
 
   /// Initializes the random number generator with the computer clock.
   virtual void seed() { manualSeed(time(NULL)); }
+
   /// Initializes the random number generator with the given long "the_seed_".
   virtual void manualSeed(unsigned long seed) = 0;
 
@@ -63,7 +64,9 @@ class DefaultRandomNumberGenerator : public RandomNumberGenerator {
 
   /// Generates a uniform 32 bits integer.
   virtual unsigned long random() { return lrandom(); }
+
   /// Generates a uniform random number in [0,1[.
   virtual real uniform() { return urandom(); }
 };
-#endif
+
+#endif  // SRC_STATISTICS_RANDOMNUMBERGENERATOR_H_

@@ -1,4 +1,3 @@
-/* -*- Mode: C++; -*- */
 /* VER: $Id: Distribution.h,v 1.3 2006/11/06 15:48:53 cdimitrakakis Exp
  * cdimitrakakis $*/
 // copyright (c) 2004 by Christos Dimitrakakis <christos.dimitrakakis@gmail.com>
@@ -11,11 +10,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef MERSENNE_TWISTER_H
-#define MERSENNE_TWISTER_H
+#ifndef SRC_STATISTICS_MERSENNETWISTER_H_
+#define SRC_STATISTICS_MERSENNETWISTER_H_
 
 #include "RandomNumberGenerator.h"
-#include "real.h"
 
 // This is a static Mersenne Twister random number generator
 class MersenneTwister {
@@ -31,8 +29,10 @@ class MersenneTwister {
 
  public:
   ~MersenneTwister();
+
   /// Initializes the random number generator with the computer clock.
   static void seed();
+
   /// Initializes the random number generator with the given long "the_seed_".
   static void manualSeed(unsigned long the_seed_);
 
@@ -61,6 +61,7 @@ class MersenneTwisterRNG : public RandomNumberGenerator {
 
  public:
   MersenneTwisterRNG();
+
   virtual ~MersenneTwisterRNG();
 
   /// Seed to time
@@ -88,4 +89,4 @@ class MersenneTwisterRNG : public RandomNumberGenerator {
   }
 };
 
-#endif
+#endif  // SRC_STATISTICS_MERSENNETWISTER_H_

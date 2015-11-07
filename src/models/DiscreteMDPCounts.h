@@ -1,5 +1,3 @@
-
-// -*- Mode: c++ -*-
 // copyright (c) 2005-2008 by Christos Dimitrakakis
 // <christos.dimitrakakis@gmail.com>
 // $Revision$

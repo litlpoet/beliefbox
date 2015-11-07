@@ -87,6 +87,7 @@ struct Statistics {
 Statistics EvaluateAlgorithm(int episode_steps, int n_episodes, uint n_steps,
                              OnlineAlgorithm<int, int>* algorithm,
                              DiscreteEnvironment* environment, real gamma);
+
 static const char* const help_text =
     "Usage: online_algorithms [options] algorithm environment\n\
 \nOptions:\n\
