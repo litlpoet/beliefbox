@@ -1,0 +1,10 @@
+# files
+compile_commands.json
+*.depend
+
+# folders
+**/bin/
+src/export/
+src/lib/
+src/libs/ranlib/
+src/objs/
