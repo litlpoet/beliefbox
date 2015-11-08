@@ -96,9 +96,10 @@ void DiscreteMDPCounts::AddTransition(int s, int a, real r, int s2) {
   // printf ("(%d, %d) [%.2f] -> %d\n", s, a, r, s2);
   transitions.Observe(s, a, s2);
   ER[ID]->Observe(r);
-
   real expected_reward = getExpectedReward(s, a);
   mean_mdp.reward_distribution.setFixedReward(s, a, expected_reward);
+
+  // bk: for all states
   for (int s_next = 0; s_next < n_states; s_next++) {
     real p = transitions.marginal_pdf(s, a, s_next);
     mean_mdp.setTransitionProbability(s, a, s_next, p);

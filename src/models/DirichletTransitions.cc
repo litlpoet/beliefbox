@@ -36,12 +36,16 @@ DirichletTransitions::~DirichletTransitions() {
 real DirichletTransitions::Observe(int state, int action, int next_state) {
   DiscreteStateAction SA(state, action);
   auto got = P.find(SA);
+
+  // bk : if there is no existing transitions
   if (got == P.end()) {
     // arrgh C++
     return P.insert(
                 std::make_pair(SA, DirichletDistribution(n_states, prior_mass)))
         .first->second.Observe(next_state);
   } else {
+    // got->second is Dirichlet dist
+    // observe a new data
     return got->second.Observe(next_state);
   }
 }
@@ -52,6 +56,8 @@ int DirichletTransitions::marginal_generate(int state, int action) const {
 
 Vector DirichletTransitions::generate(int state, int action) const {
   auto got = P.find(DiscreteStateAction(state, action));
+
+  // bk : if there is no existing transitions, return peak vector
   if (got == P.end()) {
     Vector p(n_states);
     if (uniform_unknown) {
@@ -64,6 +70,8 @@ Vector DirichletTransitions::generate(int state, int action) const {
     }
     return p;
   }
+  // bk: generate arbitrary distribution along gamma dist?
+  // posterior dist. for transition computed here? got->second is Dirichlet dist
   return got->second.generate();
 }
 

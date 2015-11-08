@@ -9,20 +9,19 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+#ifndef SRC_ALGORITHMS_MODELBASEDRL_H_
+#define SRC_ALGORITHMS_MODELBASEDRL_H_
 
-#ifndef MODEL_BASED_RL_H
-#define MODEL_BASED_RL_H
+#include "OnlineAlgorithm.h"
 
 #include <vector>
+
 #include "DiscreteMDP.h"
 #include "DiscretePolicy.h"
 #include "ExplorationPolicy.h"
 #include "MDPModel.h"
-#include "Matrix.h"
-#include "OnlineAlgorithm.h"
 #include "RandomNumberGenerator.h"
 #include "ValueIteration.h"
-#include "real.h"
 
 /**
     \ingroup ReinforcementLearning
@@ -31,7 +30,7 @@
 
 /** Direct model-based reinforcement learning.
 
-        This class maintains a model of the (discrete) MDP.
+    This class maintains a model of the (discrete) MDP.
 
  */
 class ModelBasedRL : public OnlineAlgorithm<int, int> {
@@ -54,13 +53,18 @@ class ModelBasedRL : public OnlineAlgorithm<int, int> {
   ModelBasedRL(int n_states_, int n_actions_, real gamma_, real epsilon_,
                MDPModel* model_, RandomNumberGenerator* rng_,
                bool use_value_iteration_ = true);
+
   virtual ~ModelBasedRL();
+
   virtual void Reset();
+
   /// Full observation
   virtual real Observe(int state, int action, real reward, int next_state,
                        int next_action);
+
   /// Partial observation
   virtual real Observe(real reward, int next_state, int next_action);
+
   /// Get an action using the current exploration policy.
   /// it calls Observe as a side-effect.
   virtual int Act(real reward, int next_state);
@@ -80,4 +84,4 @@ class ModelBasedRL : public OnlineAlgorithm<int, int> {
 };
 
 /*@}*/
-#endif
+#endif  // SRC_ALGORITHMS_MODELBASEDRL_H_

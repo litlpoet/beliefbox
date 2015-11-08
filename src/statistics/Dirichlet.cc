@@ -126,10 +126,12 @@ void DirichletDistribution::update(Vector* x) {
 
 /// When there is only one observation, give it directly.
 real DirichletDistribution::Observe(int i) {
+  // bk : i is (next) state index
+  //      when Action is happened, then transition is added to increase dist.
   // real p = alpha(i) / alpha.Sum();
   assert(fabs(alpha.Sum() - alpha_sum) < 1e-6);
   real p = alpha(i) / alpha_sum;  // alpha.Sum();
-  alpha(i) += 1.0;
+  alpha(i) += 1.0;  // bk : increasing the count for next state 'i'
   alpha_sum += 1.0;
   n_observations++;
   return p;
@@ -156,5 +158,6 @@ Vector DirichletDistribution::getMarginal() const {
 
 /// Return the marginal probabilities
 real DirichletDistribution::marginal_pdf(int i) const {
+  // bk : i is (next) state index
   return alpha(i) / alpha_sum;
 }

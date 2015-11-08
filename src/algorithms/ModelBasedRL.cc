@@ -52,17 +52,13 @@ void ModelBasedRL::Reset() {
 /// Full observation
 real ModelBasedRL::Observe(int state, int action, real reward, int next_state,
                            int next_action) {
-  if (state >= 0) {
-    model->AddTransition(state, action, reward, next_state);
-  }
+  if (state >= 0) model->AddTransition(state, action, reward, next_state);
   return 0.0;
 }
 
 /// Partial observation
 real ModelBasedRL::Observe(real reward, int next_state, int next_action) {
-  if (state >= 0) {
-    model->AddTransition(state, action, reward, next_state);
-  }
+  if (state >= 0) model->AddTransition(state, action, reward, next_state);
   state = next_state;
   action = next_action;
   total_steps++;
@@ -75,9 +71,7 @@ int ModelBasedRL::Act(real reward, int next_state) {
   assert(next_state >= 0 && next_state < n_states);
 
   // update the model
-  if (state >= 0) {
-    model->AddTransition(state, action, reward, next_state);
-  }
+  if (state >= 0) model->AddTransition(state, action, reward, next_state);
   state = next_state;
 
   if (use_value_iteration) {
