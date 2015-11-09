@@ -8,6 +8,7 @@
 #include "MersenneTwister.h"
 #include "ModelBasedRL.h"
 #include "OnlineAlgorithm.h"
+#include "QLearning.h"
 #include "SampleBasedRL.h"
 
 struct EpisodeStatistics {
@@ -42,14 +43,16 @@ int main(int argc, char** argv) {
   int n_actions = 2;
 
   int episode_steps = -1;  // ignore maximum
-  uint n_runs = 3;
+  uint n_runs = 1;
   uint n_episodes = 1;
   uint n_steps = 1000;
 
+  real alpha = 0.1;
   real gamma = 1.0;
   real lambda = 0.0;
   real epsilon = 0.01;
   real dirichlet_mass = 0.5;
+  real initial_reward = 0.0;
 
   enum DiscreteMDPCounts::RewardFamily reward_prior = DiscreteMDPCounts::NORMAL;
 
@@ -84,13 +87,18 @@ int main(int argc, char** argv) {
     MDPModel* model = nullptr;                  // only for Bayesian RL
     OnlineAlgorithm<int, int>* algorithm = nullptr;
 
-    // Model-based (Bayesian) RL
-    model = new DiscreteMDPCounts(n_states, n_actions, dirichlet_mass,
-                                  reward_prior);
-    // algorithm =
-    //     new ModelBasedRL(n_states, n_actions, gamma, epsilon, model, rng);
-    algorithm = new SampleBasedRL(n_states, n_actions, gamma, epsilon, model,
-                                  rng, 1, false);
+    if (0) {
+      // Model-based (Bayesian) RL
+      model = new DiscreteMDPCounts(n_states, n_actions, dirichlet_mass,
+                                    reward_prior);
+      algorithm = new SampleBasedRL(n_states, n_actions, gamma, epsilon, model,
+                                    rng, 1, false);
+    } else {
+      // Primitive RL
+      exp_policy = new EpsilonGreedy(n_actions, epsilon);
+      algorithm = new QLearning(n_states, n_actions, gamma, lambda, alpha,
+                                exp_policy, initial_reward);
+    }
 
     // Evaluate Algorithms
     std::cout << "Evaluate algorithms: run " << run << std::endl;
@@ -135,12 +143,11 @@ int main(int argc, char** argv) {
   //             << "# MSE" << std::endl;
   // }
 
-  // for (uint i = 0; i < statics.reward.size(); ++i) {
-  //   statics.reward[i] /= n_runs;
-  //   std::cout << statics.n_runs[i] << " " << statics.reward[i] << " #
-  //   INST_PAYOFF"
-  //             << std::endl;
-  // }
+  for (uint i = 0; i < statics.reward.size(); ++i) {
+    statics.reward[i] /= n_runs;
+    std::cout << statics.n_runs[i] << " " << statics.reward[i]
+              << " #INST_PAYOFF " << std::endl;
+  }
 
   std::cout << "Done" << std::endl;
 
